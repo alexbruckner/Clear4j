@@ -14,5 +14,6 @@ public class FileProcessor implements Processor {
 
     public Instruction toLoad(File aFile){
         //create instruction message
+        return null;
     }
 }
