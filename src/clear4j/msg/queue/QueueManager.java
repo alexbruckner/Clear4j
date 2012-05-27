@@ -2,6 +2,7 @@ package clear4j.msg.queue;
 
 import clear4j.msg.Message;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -12,34 +13,108 @@ import java.util.logging.Logger;
  * Date: 25/05/12
  * Time: 15:08
  */
-public class QueueManager {
+public final class QueueManager {
+    private QueueManager(){}
 
     private static final Logger LOG = Logger.getLogger(QueueManager.class.getName());
 
-    private static final ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Message>> container = new ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Message>>();
+    private static final ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Message>> messages = new ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Message>>();
+    private static final ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Receiver>> receivers = new ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Receiver>>();
 
+    private static final Object lock = new Object();
+
+    static {
+        start();
+    }
+
+    /*
+     * SENDING
+     */
 
     public static void add(Message message) {
         Queue name = message.getQueue();
-        ConcurrentLinkedQueue<Message> queue = container.get(name);
+        ConcurrentLinkedQueue<Message> queue = messages.get(name);
         if (queue == null) {
-            createQueue(name);
-            queue = container.get(name);
+            createMessageQueue(name);
+            queue = messages.get(name);
         }
         if (LOG.isLoggable(Level.INFO)){
             LOG.log(Level.INFO, String.format("Adding message [%s]", message));
         }
         queue.add(message);
+
+        synchronized (lock){
+            lock.notifyAll();
+        }
     }
 
-
-    private static void createQueue(Queue name) {
-        if (!container.contains(name)) {
+    private static void createMessageQueue(Queue name) {
+        if (!messages.contains(name)) {
             if (LOG.isLoggable(Level.INFO)){
-                LOG.log(Level.INFO, String.format("Creating queue [%s]", name));
+                LOG.log(Level.INFO, String.format("Creating message queue [%s]", name));
             }
-            container.put(name, new ConcurrentLinkedQueue<Message>());
+            messages.put(name, new ConcurrentLinkedQueue<Message>());
         }
+    }
+
+    /*
+     * RECEIVING
+     */
+
+    public static void add(Receiver receiver) {
+        Queue name = receiver.getQueue();
+        ConcurrentLinkedQueue<Receiver> queue = receivers.get(name);
+        if (queue == null) {
+            createReceiverQueue(name);
+            queue = receivers.get(name);
+        }
+        if (LOG.isLoggable(Level.INFO)){
+            LOG.log(Level.INFO, String.format("Adding receiver [%s]", receiver));
+        }
+        queue.add(receiver);
+    }
+
+    private static void createReceiverQueue(Queue name) {
+        if (!receivers.contains(name)) {
+            if (LOG.isLoggable(Level.INFO)){
+                LOG.log(Level.INFO, String.format("Creating receiver queue [%s]", name));
+            }
+            receivers.put(name, new ConcurrentLinkedQueue<Receiver>());
+        }
+    }
+
+    /*
+     * RECEIVER THREAD ACCESS
+     */
+    public static void start(){
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                while(true){
+                    try{
+                        for (Map.Entry<Queue, ConcurrentLinkedQueue<Message>> entry : messages.entrySet()){
+                            final Queue name = entry.getKey();
+                            final ConcurrentLinkedQueue<Message> queue = entry.getValue();
+                            while (!queue.isEmpty()) {
+                                final Message message = queue.poll();
+                                ConcurrentLinkedQueue<Receiver> receiverQueue = receivers.get(name);
+                                if (receiverQueue != null) {
+                                    for (Receiver receiver : receiverQueue){
+                                        receiver.onMessage(message);
+                                    }
+                                }
+                            }
+                        }
+                        //wait for a new message to arrive, before processing the queues again
+                        synchronized (lock) {
+                            lock.wait();
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
 }

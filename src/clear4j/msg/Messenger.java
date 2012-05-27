@@ -11,6 +11,10 @@ import clear4j.msg.queue.QueueManager;
 public final class Messenger {
     private Messenger(){}
 
+    /*
+     * SENDING
+     */
+
     public static void send(clear4j.msg.Message message){
         QueueManager.add(message);
     }
@@ -55,6 +59,42 @@ public final class Messenger {
         }
     }
 
+    /*
+     * RECEIVING
+     */
+
+    public static void register(Receiver receiver) {
+        QueueManager.add(receiver);
+    }
+
+    public static Receiver register(Consumer callback){
+        return new Receiver(callback);
+    }
+
+    public static class Receiver implements clear4j.msg.queue.Receiver {
+        private final Consumer callback;
+        private Queue queue;
+
+        private Receiver(Consumer callback){
+            this.callback = callback;
+        }
+
+        @Override
+        public void to(Queue queue) {
+            this.queue = queue;
+            register(this);
+        }
+
+        @Override
+        public Queue getQueue() {
+            return queue;
+        }
+
+        @Override
+        public void onMessage(clear4j.msg.Message message) {
+            callback.onMessage(message);
+        }
+    }
 
 
 }

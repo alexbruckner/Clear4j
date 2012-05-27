@@ -7,8 +7,6 @@ import clear4j.msg.queue.Queue;
  * Date: 25/05/12
  * Time: 14:42
  */
-public interface Message {
+public interface Message extends QueueInfo {
     String getMessage();
-    void to(Queue queue);
-    Queue getQueue();
 }

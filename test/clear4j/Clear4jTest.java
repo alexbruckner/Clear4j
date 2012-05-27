@@ -1,9 +1,9 @@
 package clear4j;
 
+import clear4j.msg.Consumer;
+import clear4j.msg.Message;
 import clear4j.msg.Messenger;
 import clear4j.msg.queue.Queue;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -13,22 +13,34 @@ import org.junit.Test;
  */
 public class Clear4jTest {
 
-    @BeforeClass
-    public static void setup(){
-        FileUtils.writeTextToFile(TestConfig.TEST_FILE_PATH.getValue(), TestConfig.TEST_FILE_CONTENT.getValue());
-    }
-
-    @AfterClass
-    public static void tearDown(){
-        FileUtils.removeFile(TestConfig.TEST_FILE_PATH.getValue());
-    }
+//    @BeforeClass
+//    public static void setup(){
+//        FileUtils.writeTextToFile(TestConfig.TEST_FILE_PATH.getValue(), TestConfig.TEST_FILE_CONTENT.getValue());
+//    }
+//
+//    @AfterClass
+//    public static void tearDown(){
+//        FileUtils.removeFile(TestConfig.TEST_FILE_PATH.getValue());
+//    }
 
     @Test
     public void testMessaging(){
 
+        Messenger.register(new Consumer() {
+            @Override
+            public void onMessage(Message message) {
+                System.out.format("RECEIVED: %s\n", message);
+            }
+        }).to(Queue.TEST_QUEUE);
+
+        Messenger.send("test").to(Queue.TEST_QUEUE);
         Messenger.send("test").to(Queue.TEST_QUEUE);
 
-
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
