@@ -4,6 +4,7 @@ import clear4j.msg.Receiver;
 import clear4j.msg.Message;
 import clear4j.msg.Messenger;
 import clear4j.msg.queue.Queue;
+import junit.framework.Assert;
 import org.junit.Test;
 
 /**
@@ -26,21 +27,28 @@ public class Clear4jTest {
     @Test
     public void testMessaging(){
 
+        String sent = "test";
+
+        final String[] msg = new String[1];
+
         Messenger.register(new Receiver() {
             @Override
             public void onMessage(Message message) {
-                System.out.format("RECEIVED: %s\n", message);
+                msg[0] = message.getMessage();
             }
         }).to(Queue.TEST_QUEUE);
 
-        Messenger.send("test").to(Queue.TEST_QUEUE);
-        Messenger.send("test").to(Queue.TEST_QUEUE);
+        Messenger.send(sent).to(Queue.TEST_QUEUE);
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        String received = msg[0];
+
+        Assert.assertEquals(sent, received);
 
     }
 
