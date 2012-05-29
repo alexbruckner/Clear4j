@@ -5,6 +5,6 @@ package clear4j.msg;
  * Date: 27/05/12
  * Time: 16:15
  */
-public interface Consumer {
+public interface Receiver {
     void onMessage(Message message);
 }

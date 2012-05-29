@@ -1,6 +1,6 @@
 package clear4j;
 
-import clear4j.msg.Consumer;
+import clear4j.msg.Receiver;
 import clear4j.msg.Message;
 import clear4j.msg.Messenger;
 import clear4j.msg.queue.Queue;
@@ -26,7 +26,7 @@ public class Clear4jTest {
     @Test
     public void testMessaging(){
 
-        Messenger.register(new Consumer() {
+        Messenger.register(new Receiver() {
             @Override
             public void onMessage(Message message) {
                 System.out.format("RECEIVED: %s\n", message);

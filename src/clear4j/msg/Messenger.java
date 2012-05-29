@@ -67,15 +67,15 @@ public final class Messenger {
         QueueManager.add(receiver);
     }
 
-    public static Receiver register(Consumer callback){
+    public static Receiver register(clear4j.msg.Receiver callback){
         return new Receiver(callback);
     }
 
     public static class Receiver implements clear4j.msg.queue.Receiver {
-        private final Consumer callback;
+        private final clear4j.msg.Receiver callback;
         private Queue queue;
 
-        private Receiver(Consumer callback){
+        private Receiver(clear4j.msg.Receiver callback){
             this.callback = callback;
         }
 
