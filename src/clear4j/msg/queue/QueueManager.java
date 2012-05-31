@@ -100,7 +100,7 @@ public final class QueueManager {
                                 ConcurrentLinkedQueue<Receiver> receiverQueue = receivers.get(name);
                                 if (receiverQueue != null) {
                                     for (Receiver receiver : receiverQueue){
-                                        receiver.onMessage(message);
+                                        callReceiver(receiver, message);
                                     }
                                 }
                             }
@@ -114,6 +114,16 @@ public final class QueueManager {
                     }
                 }
             }
+
+            private void callReceiver(final Receiver receiver, final Message message) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        receiver.onMessage(message);
+                    }
+                }).start();
+            }
+
         }).start();
     }
 
