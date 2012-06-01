@@ -40,9 +40,10 @@ public final class Messenger {
         }
 
         @Override
-        public void to(Queue queue) {
+        public Receiver to(Queue queue) {
             this.queue = queue;
             send(this);
+            return null;
         }
 
         @Override
@@ -74,15 +75,17 @@ public final class Messenger {
     public static class Receiver implements clear4j.msg.queue.Receiver {
         private final clear4j.msg.Receiver callback;
         private Queue queue;
+        private final Object lock = new Object();
 
         private Receiver(clear4j.msg.Receiver callback){
             this.callback = callback;
         }
 
         @Override
-        public void to(Queue queue) {
+        public Receiver to(Queue queue) {
             this.queue = queue;
             register(this);
+            return this;
         }
 
         @Override
@@ -93,6 +96,25 @@ public final class Messenger {
         @Override
         public void onMessage(clear4j.msg.Message message) {
             callback.onMessage(message);
+            synchronized (lock) {
+                lock.notifyAll();
+            }
+        }
+
+        public void waitForOneMessage(){
+            waitFor(1);
+        }
+
+        public void waitFor(int numberOfMessages) {
+            for (int i = 0; i < numberOfMessages; i++){
+                synchronized (lock) {
+                    try {
+                        lock.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 

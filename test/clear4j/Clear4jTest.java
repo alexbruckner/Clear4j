@@ -31,7 +31,7 @@ public class Clear4jTest {
 
         final String[] msg = new String[1];
 
-        Messenger.register(new Receiver() {
+        Messenger.Receiver receiver = Messenger.register(new Receiver() {
             @Override
             public void onMessage(Message message) {
                 msg[0] = message.getMessage();
@@ -40,11 +40,7 @@ public class Clear4jTest {
 
         Messenger.send(sent).to(Queue.TEST_QUEUE);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        receiver.waitForOneMessage();
 
         String received = msg[0];
 

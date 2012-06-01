@@ -8,6 +8,6 @@ import clear4j.msg.queue.Queue;
  * Time: 17:10
  */
 public interface QueueInfo {
-    void to(Queue queue);
+    Messenger.Receiver to(Queue queue);
     Queue getQueue();
 }
