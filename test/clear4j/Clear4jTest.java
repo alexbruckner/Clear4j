@@ -29,12 +29,12 @@ public class Clear4jTest {
 
         String sent = "test";
 
-        final String[] msg = new String[1];
+        final String[] checkReceived = new String[1];
 
         Messenger.Receiver receiver = Messenger.register(new Receiver() {
             @Override
             public void onMessage(Message message) {
-                msg[0] = message.getMessage();
+                checkReceived[0] = message.getMessage();
             }
         }).to(Queue.TEST_QUEUE);
 
@@ -42,9 +42,30 @@ public class Clear4jTest {
 
         receiver.waitForOneMessage();
 
-        String received = msg[0];
+        String received = checkReceived[0];
 
         Assert.assertEquals(sent, received);
+
+
+
+    }
+
+    @Test
+    public void testSeparateReceiverCreationWithoutQueue(){
+
+        Messenger.Receiver receiver2 = Messenger.register(new Receiver() {
+            @Override
+            public void onMessage(Message message) {
+            }
+        });
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        Assert.assertNotNull(receiver2.getQueue());
 
     }
 

@@ -65,11 +65,28 @@ public final class Messenger {
      */
 
     public static void register(Receiver receiver) {
+        if (receiver.getQueue() == null) {
+            throw new RuntimeException("Receiver needs a queue");
+        }
         QueueManager.add(receiver);
     }
 
     public static Receiver register(clear4j.msg.Receiver callback){
-        return new Receiver(callback);
+        final Receiver receiver = new Receiver(callback);
+        new Thread(new Runnable(){   //TODO is this wise?
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (receiver.getQueue() == null){
+                    throw new RuntimeException("Receiver needs a queue. Either use Messaenger.send(a message).to(a queue), or register a receiver and then activate it.");
+                }
+            }
+        }).start();
+        return receiver;
     }
 
     public static class Receiver implements clear4j.msg.queue.Receiver {
@@ -86,6 +103,11 @@ public final class Messenger {
             this.queue = queue;
             register(this);
             return this;
+        }
+
+        public void setQueue(Queue queue) {
+            this.queue = queue;
+            register(this);
         }
 
         @Override
@@ -116,6 +138,8 @@ public final class Messenger {
                 }
             }
         }
+
+
     }
 
 
