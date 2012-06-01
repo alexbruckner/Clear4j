@@ -7,6 +7,8 @@ import clear4j.msg.queue.Queue;
 import junit.framework.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 /**
  * User: alexb
  * Date: 24/05/12
@@ -45,28 +47,6 @@ public class Clear4jTest {
         String received = checkReceived[0];
 
         Assert.assertEquals(sent, received);
-
-
-
-    }
-
-    @Test
-    public void testSeparateReceiverCreationWithoutQueue(){
-
-        Messenger.Receiver receiver2 = Messenger.register(new Receiver() {
-            @Override
-            public void onMessage(Message message) {
-            }
-        });
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-//        Assert.assertNotNull(receiver2.getQueue());
-
     }
 
 //    @Test
