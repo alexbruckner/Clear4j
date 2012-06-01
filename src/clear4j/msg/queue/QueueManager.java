@@ -23,6 +23,9 @@ public final class QueueManager {
 
     private static final Object lock = new Object();
 
+    private static volatile boolean working = false;
+    private static volatile boolean runagain = false;
+
     static {
         start();
     }
@@ -44,6 +47,11 @@ public final class QueueManager {
         queue.add(message);
 
         synchronized (lock){
+            if (!working){
+                runagain = false;
+            } else {
+                runagain = true;
+            }
             lock.notifyAll();
         }
     }
@@ -92,6 +100,7 @@ public final class QueueManager {
             public void run() {
                 while(true){
                     try{
+                        working = true;
                         for (Map.Entry<Queue, ConcurrentLinkedQueue<Message>> entry : messages.entrySet()){
                             final Queue name = entry.getKey();
                             final ConcurrentLinkedQueue<Message> queue = entry.getValue();
@@ -105,9 +114,13 @@ public final class QueueManager {
                                 }
                             }
                         }
+                        working = false;
                         //wait for a new message to arrive, before processing the queues again
+
                         synchronized (lock) {
-                            lock.wait();
+                            if (!runagain){
+                                lock.wait();
+                            }
                         }
                     } catch (Exception e){
                         e.printStackTrace();
