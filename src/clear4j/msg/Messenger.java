@@ -82,7 +82,7 @@ public final class Messenger {
                     e.printStackTrace();
                 }
                 if (receiver.getQueue() == null){
-                    throw new RuntimeException("Receiver needs a queue. Either use Messaenger.send(a message).to(a queue), or register a receiver and then activate it.");
+                    throw new RuntimeException("Receiver needs a queue. Use Messenger.send(a message).to(a queue).");
                 }
             }
         }).start();
