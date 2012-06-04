@@ -31,18 +31,18 @@ public class Clear4jTest {
     public void testMessaging(){
         Random random = new Random();
 
+        final String[] checkReceived = new String[1];
+
+        Messenger.Receiver receiver = Messenger.register(new Receiver() {
+            @Override
+            public void onMessage(Message message) {
+                checkReceived[0] = message.getMessage();
+            }
+        }).to(Queue.TEST_QUEUE);
+
         for (int i = 0; i <  100; i++){
 
             String sent = "test-" + random.nextInt(1000);
-
-            final String[] checkReceived = new String[1];
-
-            Messenger.Receiver receiver = Messenger.register(new Receiver() {
-                @Override
-                public void onMessage(Message message) {
-                    checkReceived[0] = message.getMessage();
-                }
-            }).to(Queue.TEST_QUEUE);
 
             Messenger.send(sent).to(Queue.TEST_QUEUE);
 
