@@ -1,4 +1,4 @@
-package clear4j.processors;
+package clear4j.processor;
 
 import clear4j.Instruction;
 import clear4j.Processor;

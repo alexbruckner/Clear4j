@@ -1,6 +1,6 @@
 package clear4j;
 
-import clear4j.processors.FileProcessor;
+import clear4j.processor.FileProcessor;
 
 /**
  * User: alexb
@@ -9,7 +9,7 @@ import clear4j.processors.FileProcessor;
  */
 public class The {
 
-    public static final FileProcessor FileProcessor = new clear4j.processors.FileProcessor();
+    public static final FileProcessor FileProcessor = new clear4j.processor.FileProcessor();
 
 
 
