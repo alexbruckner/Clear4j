@@ -88,7 +88,6 @@ public final class Messenger {
     public static class Receiver implements clear4j.msg.queue.Receiver {
         private final clear4j.msg.Receiver callback;
         private Queue queue;
-        private final Object lock = new Object();
 
         private Receiver(clear4j.msg.Receiver callback) {
             this.callback = callback;
@@ -112,39 +111,9 @@ public final class Messenger {
                 LOG.log(Level.INFO, String.format("onMessage [%s]", message));
             }
             callback.onMessage(message);
-            synchronized (lock) {
-                lock.notifyAll();
-            }
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("called on message"));
             }
         }
-
-        public void waitForOneMessage() {
-            waitForOneMessage(50);
-        }
-
-        public void waitForOneMessage(long timeout) {
-            waitFor(1, timeout);
-        }
-
-        public void waitFor(int numberOfMessages, long timeout) {
-            if (LOG.isLoggable(Level.INFO)) {
-                LOG.log(Level.INFO, String.format("waiting for [%s] messages\n", numberOfMessages));
-            }
-            for (int i = 0; i < numberOfMessages; i++) {
-                synchronized (lock) {
-                    try {
-                        lock.wait(timeout);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-
     }
-
-
 }

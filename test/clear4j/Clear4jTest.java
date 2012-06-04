@@ -7,7 +7,9 @@ import clear4j.msg.queue.Queue;
 import junit.framework.Assert;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +34,9 @@ public class Clear4jTest {
 //    }
 
     @Test
-    public void testMessaging(){
+    public void testMessaging() throws Exception {
+
+        int NUM = 1000;
 
         if (LOG.isLoggable(Level.INFO)){
             LOG.log(Level.INFO, "starting testMessaging test");
@@ -40,7 +44,8 @@ public class Clear4jTest {
 
         Random random = new Random();
 
-        final String[] checkReceived = new String[1];
+        final List<String> sentMessages = new CopyOnWriteArrayList<String>();
+        final List<String> receivedMessages = new CopyOnWriteArrayList<String>();
 
         if (LOG.isLoggable(Level.INFO)){
             LOG.log(Level.INFO, "creating receiver");
@@ -49,7 +54,7 @@ public class Clear4jTest {
         Messenger.Receiver receiver = Messenger.register(new Receiver() {
             @Override
             public void onMessage(Message message) {
-                checkReceived[0] = message.getMessage();
+                receivedMessages.add(message.getMessage());
             }
         }).to(Queue.TEST_QUEUE);
 
@@ -57,7 +62,7 @@ public class Clear4jTest {
             LOG.log(Level.INFO, "starting loop");
         }
 
-        for (int i = 0; i <  1000; i++){
+        for (int i = 0; i <  NUM; i++){
 
             String sent = "test-" + random.nextInt(1000);
 
@@ -65,25 +70,19 @@ public class Clear4jTest {
                 LOG.log(Level.INFO, String.format("sending [%s]", sent));
             }
 
+            sentMessages.add(sent);
             Messenger.send(sent).to(Queue.TEST_QUEUE);
+        }
 
+        while (receivedMessages.size() != NUM) {
             if (LOG.isLoggable(Level.INFO)){
-                LOG.log(Level.INFO, String.format("sent [%s] and waiting for message.\n", sent));
+                LOG.log(Level.INFO, "waiting for all messages");
             }
+            Thread.sleep(1000);
+        }
 
-            receiver.waitForOneMessage();
-
-            if (LOG.isLoggable(Level.INFO)){
-                LOG.log(Level.INFO, String.format("waiting over for [%s].\n", sent));
-            }
-
-            String received = checkReceived[0];
-
-            if (LOG.isLoggable(Level.INFO)){
-                LOG.log(Level.INFO, String.format("asserting [%s] == [%s].\n", sent, received));
-            }
-
-            Assert.assertEquals(sent, received);
+        for (String sent : sentMessages){
+            Assert.assertTrue(String.format("%s not in received messages!", sent), receivedMessages.contains(sent));
         }
     }
 
