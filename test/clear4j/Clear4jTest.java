@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * User: alexb
@@ -28,25 +29,29 @@ public class Clear4jTest {
 
     @Test
     public void testMessaging(){
+        Random random = new Random();
 
-        String sent = "test";
+        for (int i = 0; i <  100; i++){
 
-        final String[] checkReceived = new String[1];
+            String sent = "test-" + random.nextInt(1000);
 
-        Messenger.Receiver receiver = Messenger.register(new Receiver() {
-            @Override
-            public void onMessage(Message message) {
-                checkReceived[0] = message.getMessage();
-            }
-        }).to(Queue.TEST_QUEUE);
+            final String[] checkReceived = new String[1];
 
-        Messenger.send(sent).to(Queue.TEST_QUEUE);
+            Messenger.Receiver receiver = Messenger.register(new Receiver() {
+                @Override
+                public void onMessage(Message message) {
+                    checkReceived[0] = message.getMessage();
+                }
+            }).to(Queue.TEST_QUEUE);
 
-        receiver.waitForOneMessage();
+            Messenger.send(sent).to(Queue.TEST_QUEUE);
 
-        String received = checkReceived[0];
+            receiver.waitForOneMessage();
 
-        Assert.assertEquals(sent, received);
+            String received = checkReceived[0];
+
+            Assert.assertEquals(sent, received);
+        }
     }
 
 //    @Test

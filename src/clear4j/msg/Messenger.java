@@ -73,19 +73,6 @@ public final class Messenger {
 
     public static Receiver register(clear4j.msg.Receiver callback){
         final Receiver receiver = new Receiver(callback);
-        new Thread(new Runnable(){   //TODO is this wise?
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (receiver.getQueue() == null){
-                    throw new RuntimeException("Receiver needs a queue. Use Messenger.send(a message).to(a queue).");
-                }
-            }
-        }).start();
         return receiver;
     }
 
