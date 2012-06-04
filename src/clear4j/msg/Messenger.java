@@ -124,6 +124,9 @@ public final class Messenger {
         }
 
         public void waitFor(int numberOfMessages) {
+            if (LOG.isLoggable(Level.INFO)){
+                LOG.log(Level.INFO, String.format("waiting for [%s] messages\n", numberOfMessages));
+            }
             for (int i = 0; i < numberOfMessages; i++){
                 synchronized (lock) {
                     try {
