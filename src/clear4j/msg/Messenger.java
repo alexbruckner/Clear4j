@@ -3,6 +3,9 @@ package clear4j.msg;
 import clear4j.msg.queue.Queue;
 import clear4j.msg.queue.QueueManager;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * User: alexb
  * Date: 25/05/12
@@ -10,6 +13,9 @@ import clear4j.msg.queue.QueueManager;
  */
 public final class Messenger {
     private Messenger(){}
+
+    private static final Logger LOG = Logger.getLogger(Messenger.class.getName());
+
 
     /*
      * SENDING
@@ -42,6 +48,9 @@ public final class Messenger {
         @Override
         public Receiver to(Queue queue) {
             this.queue = queue;
+            if (LOG.isLoggable(Level.INFO)){
+                LOG.log(Level.INFO, String.format("sending [%s]", this));
+            }
             send(this);
             return null;
         }
@@ -72,8 +81,7 @@ public final class Messenger {
     }
 
     public static Receiver register(clear4j.msg.Receiver callback){
-        final Receiver receiver = new Receiver(callback);
-        return receiver;
+        return new Receiver(callback);
     }
 
     public static class Receiver implements clear4j.msg.queue.Receiver {
@@ -92,11 +100,6 @@ public final class Messenger {
             return this;
         }
 
-        public void setQueue(Queue queue) {
-            this.queue = queue;
-            register(this);
-        }
-
         @Override
         public Queue getQueue() {
             return queue;
@@ -104,9 +107,15 @@ public final class Messenger {
 
         @Override
         public void onMessage(clear4j.msg.Message message) {
+            if (LOG.isLoggable(Level.INFO)){
+                LOG.log(Level.INFO, String.format("onMessage [%s]", message));
+            }
             callback.onMessage(message);
             synchronized (lock) {
                 lock.notifyAll();
+            }
+            if (LOG.isLoggable(Level.INFO)){
+                LOG.log(Level.INFO, String.format("called on message"));
             }
         }
 

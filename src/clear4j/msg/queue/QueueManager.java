@@ -35,24 +35,38 @@ public final class QueueManager {
      */
 
     public static void add(Message message) {
+
+        if (LOG.isLoggable(Level.INFO)){
+            LOG.log(Level.INFO, String.format("Adding message [%s]", message));
+        }
+
+        if (LOG.isLoggable(Level.INFO)){
+            LOG.log(Level.INFO, String.format("getting queue"));
+        }
         Queue name = message.getQueue();
         ConcurrentLinkedQueue<Message> queue = messages.get(name);
         if (queue == null) {
             createMessageQueue(name);
             queue = messages.get(name);
         }
+
         if (LOG.isLoggable(Level.INFO)){
-            LOG.log(Level.INFO, String.format("Adding message [%s]", message));
+            LOG.log(Level.INFO, String.format("Adding message."));
         }
+
         queue.add(message);
 
+        if (LOG.isLoggable(Level.INFO)){
+            LOG.log(Level.INFO, String.format("Added message [%s]", message));
+        }
+
         synchronized (lock){
-            if (!working){
-                runagain = false;
-            } else {
-                runagain = true;
-            }
+            runagain = working;
             lock.notifyAll();
+        }
+
+        if (LOG.isLoggable(Level.INFO)){
+            LOG.log(Level.INFO, "Done adding");
         }
     }
 
@@ -114,10 +128,9 @@ public final class QueueManager {
                                 }
                             }
                         }
-                        working = false;
                         //wait for a new message to arrive, before processing the queues again
-
                         synchronized (lock) {
+                            working = false;
                             if (!runagain){
                                 lock.wait();
                             }

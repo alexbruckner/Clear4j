@@ -40,7 +40,7 @@ public class Clear4jTest {
             }
         }).to(Queue.TEST_QUEUE);
 
-        for (int i = 0; i <  100; i++){
+        for (int i = 0; i <  100000; i++){
 
             String sent = "test-" + random.nextInt(1000);
 
