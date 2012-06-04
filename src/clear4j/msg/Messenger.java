@@ -12,7 +12,8 @@ import java.util.logging.Logger;
  * Time: 14:41
  */
 public final class Messenger {
-    private Messenger(){}
+    private Messenger() {
+    }
 
     private static final Logger LOG = Logger.getLogger(Messenger.class.getName());
 
@@ -21,15 +22,15 @@ public final class Messenger {
      * SENDING
      */
 
-    public static void send(clear4j.msg.Message message){
+    public static void send(clear4j.msg.Message message) {
         QueueManager.add(message);
     }
 
-    public static clear4j.msg.Message send(String message){
+    public static clear4j.msg.Message send(String message) {
         return Messenger.newMessage(message);
     }
 
-    public static Message newMessage(String message){
+    public static Message newMessage(String message) {
         return new Message(message);
     }
 
@@ -48,7 +49,7 @@ public final class Messenger {
         @Override
         public Receiver to(Queue queue) {
             this.queue = queue;
-            if (LOG.isLoggable(Level.INFO)){
+            if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("sending [%s]", this));
             }
             send(this);
@@ -80,7 +81,7 @@ public final class Messenger {
         QueueManager.add(receiver);
     }
 
-    public static Receiver register(clear4j.msg.Receiver callback){
+    public static Receiver register(clear4j.msg.Receiver callback) {
         return new Receiver(callback);
     }
 
@@ -89,7 +90,7 @@ public final class Messenger {
         private Queue queue;
         private final Object lock = new Object();
 
-        private Receiver(clear4j.msg.Receiver callback){
+        private Receiver(clear4j.msg.Receiver callback) {
             this.callback = callback;
         }
 
@@ -107,30 +108,34 @@ public final class Messenger {
 
         @Override
         public void onMessage(clear4j.msg.Message message) {
-            if (LOG.isLoggable(Level.INFO)){
+            if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("onMessage [%s]", message));
             }
             callback.onMessage(message);
             synchronized (lock) {
                 lock.notifyAll();
             }
-            if (LOG.isLoggable(Level.INFO)){
+            if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("called on message"));
             }
         }
 
-        public void waitForOneMessage(){
-            waitFor(1);
+        public void waitForOneMessage() {
+            waitForOneMessage(50);
         }
 
-        public void waitFor(int numberOfMessages) {
-            if (LOG.isLoggable(Level.INFO)){
+        public void waitForOneMessage(long timeout) {
+            waitFor(1, timeout);
+        }
+
+        public void waitFor(int numberOfMessages, long timeout) {
+            if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("waiting for [%s] messages\n", numberOfMessages));
             }
-            for (int i = 0; i < numberOfMessages; i++){
+            for (int i = 0; i < numberOfMessages; i++) {
                 synchronized (lock) {
                     try {
-                        lock.wait();
+                        lock.wait(timeout);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
