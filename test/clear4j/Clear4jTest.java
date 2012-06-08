@@ -52,9 +52,13 @@ public class Clear4jTest {
         }
 
         Messenger.Receiver receiver = Messenger.register(new Receiver() {
+            private int count;
             @Override
             public void onMessage(Message message) {
                 receivedMessages.add(message.getMessage());
+                if (LOG.isLoggable(Level.INFO)){
+                    LOG.log(Level.INFO, String.format("messages received: %s", ++count));
+                }
             }
         }).to(Queue.TEST_QUEUE);
 
