@@ -34,6 +34,10 @@ public final class Messenger {
         return new Message(message);
     }
 
+    public static void waitForAll() {
+        QueueManager.waitFor();
+    }
+
     private static class Message implements clear4j.msg.Message {
         private final String message;
         private Queue queue;

@@ -38,7 +38,7 @@ public class Clear4jTest {
 
         int NUM = 1000;
 
-        if (LOG.isLoggable(Level.INFO)){
+        if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "starting testMessaging test");
         }
 
@@ -47,30 +47,31 @@ public class Clear4jTest {
         final List<String> sentMessages = new CopyOnWriteArrayList<String>();
         final List<String> receivedMessages = new CopyOnWriteArrayList<String>();
 
-        if (LOG.isLoggable(Level.INFO)){
+        if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "creating receiver");
         }
 
-        Messenger.Receiver receiver = Messenger.register(new Receiver() {
+        Messenger.register(new Receiver() {
             private int count;
+
             @Override
             public void onMessage(Message message) {
                 receivedMessages.add(message.getMessage());
-                if (LOG.isLoggable(Level.INFO)){
+                if (LOG.isLoggable(Level.INFO)) {
                     LOG.log(Level.INFO, String.format("messages received: %s", ++count));
                 }
             }
         }).to(Queue.TEST_QUEUE);
 
-        if (LOG.isLoggable(Level.INFO)){
+        if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "starting loop");
         }
 
-        for (int i = 0; i <  NUM; i++){
+        for (int i = 0; i < NUM; i++) {
 
             String sent = "test-" + random.nextInt(1000);
 
-            if (LOG.isLoggable(Level.INFO)){
+            if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("sending [%s]", sent));
             }
 
@@ -78,14 +79,13 @@ public class Clear4jTest {
             Messenger.send(sent).to(Queue.TEST_QUEUE);
         }
 
-        while (receivedMessages.size() != NUM) {
-            if (LOG.isLoggable(Level.INFO)){
-                LOG.log(Level.INFO, "waiting for all messages");
-            }
-            Thread.sleep(1000);
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, "waiting for all messages");
         }
 
-        for (String sent : sentMessages){
+        Messenger.waitForAll();
+
+        for (String sent : sentMessages) {
             Assert.assertTrue(String.format("%s not in received messages!", sent), receivedMessages.contains(sent));
         }
     }
@@ -112,7 +112,6 @@ public class Clear4jTest {
 //        Assert.assertEquals(text2, text1);
 //
 //    }
-
 
 
 }

@@ -14,14 +14,16 @@ import java.util.logging.Logger;
  * Time: 15:08
  */
 public final class QueueManager {
-    private QueueManager(){}
+    private QueueManager() {
+    }
 
     private static final Logger LOG = Logger.getLogger(QueueManager.class.getName());
 
     private static final ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Message>> messages = new ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Message>>();
     private static final ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Receiver>> receivers = new ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Receiver>>();
 
-    private static final Object lock = new Object();
+    private static final Object receiverLock = new Object();   // for queue iterations themselves
+    private static final Object waitForLock = new Object();  // for checking queue state (ie. empty)
 
     private static volatile boolean working = false;
     private static volatile boolean runagain = false;
@@ -36,11 +38,11 @@ public final class QueueManager {
 
     public static void add(Message message) {
 
-        if (LOG.isLoggable(Level.INFO)){
+        if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Adding message [%s]", message));
         }
 
-        if (LOG.isLoggable(Level.INFO)){
+        if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("getting queue"));
         }
         Queue name = message.getQueue();
@@ -50,29 +52,29 @@ public final class QueueManager {
             queue = messages.get(name);
         }
 
-        if (LOG.isLoggable(Level.INFO)){
+        if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Adding message."));
         }
 
         queue.add(message);
 
-        if (LOG.isLoggable(Level.INFO)){
+        if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Added message [%s]", message));
         }
 
-        synchronized (lock){
+        synchronized (receiverLock) {
             runagain = working;
-            lock.notifyAll();
+            receiverLock.notifyAll();
         }
 
-        if (LOG.isLoggable(Level.INFO)){
+        if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "Done adding");
         }
     }
 
     private static void createMessageQueue(Queue name) {
         if (!messages.contains(name)) {
-            if (LOG.isLoggable(Level.INFO)){
+            if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("Creating message queue [%s]", name));
             }
             messages.put(name, new ConcurrentLinkedQueue<Message>());
@@ -90,7 +92,7 @@ public final class QueueManager {
             createReceiverQueue(name);
             queue = receivers.get(name);
         }
-        if (LOG.isLoggable(Level.INFO)){
+        if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Adding receiver [%s]", receiver));
         }
         queue.add(receiver);
@@ -98,7 +100,7 @@ public final class QueueManager {
 
     private static void createReceiverQueue(Queue name) {
         if (!receivers.contains(name)) {
-            if (LOG.isLoggable(Level.INFO)){
+            if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("Creating receiver queue [%s]", name));
             }
             receivers.put(name, new ConcurrentLinkedQueue<Receiver>());
@@ -108,34 +110,40 @@ public final class QueueManager {
     /*
      * RECEIVER THREAD ACCESS
      */
-    public static void start(){
-        new Thread(new Runnable(){
+    public static void start() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                while(true){
-                    try{
+                while (true) {
+                    try {
                         working = true;
-                        for (Map.Entry<Queue, ConcurrentLinkedQueue<Message>> entry : messages.entrySet()){
+                        for (Map.Entry<Queue, ConcurrentLinkedQueue<Message>> entry : messages.entrySet()) {
                             final Queue name = entry.getKey();
                             final ConcurrentLinkedQueue<Message> queue = entry.getValue();
                             while (!queue.isEmpty()) {
                                 final Message message = queue.poll();
                                 ConcurrentLinkedQueue<Receiver> receiverQueue = receivers.get(name);
                                 if (receiverQueue != null) {
-                                    for (Receiver receiver : receiverQueue){
+                                    for (Receiver receiver : receiverQueue) {
                                         callReceiver(receiver, message);
                                     }
                                 }
                             }
                         }
+
+                        // unlock threads waiting for empty queues
+                        synchronized (waitForLock) {
+                            waitForLock.notifyAll();
+                        }
+
                         //wait for a new message to arrive, before processing the queues again
-                        synchronized (lock) {
+                        synchronized (receiverLock) {
                             working = false;
-                            if (!runagain){
-                                lock.wait();
+                            if (!runagain) {
+                                receiverLock.wait();
                             }
                         }
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -153,4 +161,18 @@ public final class QueueManager {
         }).start();
     }
 
+    public static void waitFor() {
+        for (Queue name : messages.keySet()) {
+            while ( messages.get(name).size() != 0) {
+                synchronized (waitForLock) {
+                    try {
+                        waitForLock.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+    }
 }
