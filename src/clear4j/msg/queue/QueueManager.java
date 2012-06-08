@@ -98,6 +98,14 @@ public final class QueueManager {
         queue.add(receiver);
     }
 
+    public static void remove(Receiver receiver) {
+        Queue name = receiver.getQueue();
+        ConcurrentLinkedQueue<Receiver> queue = receivers.get(name);
+        if (!queue.remove(receiver)) {
+            LOG.log(Level.SEVERE, "Could not remove %s", receiver);
+        }
+    }
+
     private static void createReceiverQueue(Queue name) {
         if (!receivers.contains(name)) {
             if (LOG.isLoggable(Level.INFO)) {
@@ -163,7 +171,7 @@ public final class QueueManager {
 
     public static void waitFor() {
         for (Queue name : messages.keySet()) {
-            while ( messages.get(name).size() != 0) {
+            while (messages.get(name).size() != 0) {
                 synchronized (waitForLock) {
                     try {
                         waitForLock.wait();
@@ -173,6 +181,5 @@ public final class QueueManager {
                 }
             }
         }
-
     }
 }

@@ -82,11 +82,21 @@ public final class Messenger {
         if (receiver.getQueue() == null) {
             throw new RuntimeException("Receiver needs a queue");
         }
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, String.format("registering receiver: %s", receiver));
+        }
         QueueManager.add(receiver);
     }
 
     public static Receiver register(clear4j.msg.Receiver callback) {
         return new Receiver(callback);
+    }
+
+    public static void unregister(Receiver receiver) {
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, String.format("un-registering receiver: %s", receiver));
+        }
+        QueueManager.remove(receiver);
     }
 
     public static class Receiver implements clear4j.msg.queue.Receiver {
@@ -118,6 +128,14 @@ public final class Messenger {
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("called on message"));
             }
+        }
+
+        @Override
+        public String toString() {
+            return "Receiver{" +
+                    "callback=" + callback +
+                    ", queue=" + queue +
+                    '}';
         }
     }
 }

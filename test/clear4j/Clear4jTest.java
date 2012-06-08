@@ -34,6 +34,13 @@ public class Clear4jTest {
 //    }
 
     @Test
+    public void testMessaging100() throws Exception {
+        for (int i = 0; i < 100; i++){
+            testMessaging();
+        }
+    }
+
+    @Test
     public void testMessaging() throws Exception {
 
         int NUM = 1000;
@@ -51,7 +58,7 @@ public class Clear4jTest {
             LOG.log(Level.INFO, "creating receiver");
         }
 
-        Messenger.register(new Receiver() {
+        Messenger.Receiver receiver = Messenger.register(new Receiver() {
             private int count;
 
             @Override
@@ -88,6 +95,8 @@ public class Clear4jTest {
         for (String sent : sentMessages) {
             Assert.assertTrue(String.format("%s not in received messages!", sent), receivedMessages.contains(sent));
         }
+
+        Messenger.unregister(receiver);
     }
 
 //    @Test
