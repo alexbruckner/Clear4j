@@ -3,6 +3,7 @@ package clear4j.msg;
 import clear4j.msg.queue.Queue;
 import clear4j.msg.queue.QueueManager;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,6 +18,7 @@ public final class Messenger {
 
     private static final Logger LOG = Logger.getLogger(Messenger.class.getName());
 
+    private static final Object LOCK = new Object();
 
     /*
      * SENDING
@@ -34,16 +36,53 @@ public final class Messenger {
         return new Message(message);
     }
 
-    public static void waitForAll() {
-        QueueManager.waitFor();
+    public static void waitFor(Queue name) {
+        // register temporary receiver and send a message. once we get it back,
+        // we know that all previous messages should have been dealt with.
+        final Message waitForMessage = new Message(String.format("<waitFor queue=\"%s\"/>", name));
+
+        final boolean[] received = {false};
+
+        //register
+        Receiver receiver = Messenger.register(new clear4j.msg.Receiver() {
+            @Override
+            public void onMessage(clear4j.msg.Message message) {
+                if (message.getId() == waitForMessage.getId()) {
+                    received[0] = true;
+                    synchronized (LOCK) {
+                        LOCK.notifyAll();
+                    }
+                }
+            }
+        }).to(name);
+
+        //send
+        waitForMessage.to(name);
+
+        //wait
+        while(!received[0]) {
+            synchronized (LOCK) {
+                try {
+                    LOCK.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        //unregister
+        Messenger.unregister(receiver);
     }
 
     private static class Message implements clear4j.msg.Message {
         private final String message;
         private Queue queue;
+        private long id;
+        private static AtomicLong count = new AtomicLong();
 
         private Message(String message) {
             this.message = message;
+            this.id = count.addAndGet(1);
         }
 
         public String getMessage() {
@@ -63,6 +102,10 @@ public final class Messenger {
         @Override
         public Queue getQueue() {
             return queue;
+        }
+
+        public long getId() {
+            return id;
         }
 
         @Override

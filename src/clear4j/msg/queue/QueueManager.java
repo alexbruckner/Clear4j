@@ -168,18 +168,4 @@ public final class QueueManager {
 
         }).start();
     }
-
-    public static void waitFor() {
-        for (Queue name : messages.keySet()) {
-            while (messages.get(name).size() != 0) {
-                synchronized (waitForLock) {
-                    try {
-                        waitForLock.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
 }

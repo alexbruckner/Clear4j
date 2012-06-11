@@ -90,7 +90,7 @@ public class Clear4jTest {
             LOG.log(Level.INFO, "waiting for all messages");
         }
 
-        Messenger.waitForAll();
+        Messenger.waitFor(Queue.TEST_QUEUE);
 
         for (String sent : sentMessages) {
             Assert.assertTrue(String.format("%s not in received messages!", sent), receivedMessages.contains(sent));

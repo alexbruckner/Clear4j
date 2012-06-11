@@ -1,7 +1,5 @@
 package clear4j.msg;
 
-import clear4j.msg.queue.Queue;
-
 /**
  * User: alexb
  * Date: 25/05/12
@@ -9,4 +7,5 @@ import clear4j.msg.queue.Queue;
  */
 public interface Message extends QueueInfo {
     String getMessage();
+    long getId();
 }
