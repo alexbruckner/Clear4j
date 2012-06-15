@@ -19,8 +19,8 @@ public final class QueueManager {
 
     private static final Logger LOG = Logger.getLogger(QueueManager.class.getName());
 
-    private static final ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Message>> messages = new ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Message>>();
-    private static final ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Receiver>> receivers = new ConcurrentHashMap<Queue, ConcurrentLinkedQueue<Receiver>>();
+    private static final ConcurrentHashMap<String, ConcurrentLinkedQueue<Message>> messages = new ConcurrentHashMap<String, ConcurrentLinkedQueue<Message>>();
+    private static final ConcurrentHashMap<String, ConcurrentLinkedQueue<Receiver>> receivers = new ConcurrentHashMap<String, ConcurrentLinkedQueue<Receiver>>();
 
     private static final Object receiverLock = new Object();   // for queue iterations themselves
     private static final Object waitForLock = new Object();  // for checking queue state (ie. empty)
@@ -45,7 +45,7 @@ public final class QueueManager {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("getting queue"));
         }
-        Queue name = message.getQueue();
+        String name = message.getQueue();
         ConcurrentLinkedQueue<Message> queue = messages.get(name);
         if (queue == null) {
             createMessageQueue(name);
@@ -72,7 +72,7 @@ public final class QueueManager {
         }
     }
 
-    private static void createMessageQueue(Queue name) {
+    private static void createMessageQueue(String name) {
         if (!messages.contains(name)) {
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("Creating message queue [%s]", name));
@@ -86,7 +86,7 @@ public final class QueueManager {
      */
 
     public static void add(Receiver receiver) {
-        Queue name = receiver.getQueue();
+        String name = receiver.getQueue();
         ConcurrentLinkedQueue<Receiver> queue = receivers.get(name);
         if (queue == null) {
             createReceiverQueue(name);
@@ -99,14 +99,14 @@ public final class QueueManager {
     }
 
     public static void remove(Receiver receiver) {
-        Queue name = receiver.getQueue();
+        String name = receiver.getQueue();
         ConcurrentLinkedQueue<Receiver> queue = receivers.get(name);
         if (!queue.remove(receiver)) {
             LOG.log(Level.SEVERE, "Could not remove %s", receiver);
         }
     }
 
-    private static void createReceiverQueue(Queue name) {
+    private static void createReceiverQueue(String name) {
         if (!receivers.contains(name)) {
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("Creating receiver queue [%s]", name));
@@ -125,8 +125,8 @@ public final class QueueManager {
                 while (true) {
                     try {
                         working = true;
-                        for (Map.Entry<Queue, ConcurrentLinkedQueue<Message>> entry : messages.entrySet()) {
-                            final Queue name = entry.getKey();
+                        for (Map.Entry<String, ConcurrentLinkedQueue<Message>> entry : messages.entrySet()) {
+                            final String name = entry.getKey();
                             final ConcurrentLinkedQueue<Message> queue = entry.getValue();
                             while (!queue.isEmpty()) {
                                 final Message message = queue.poll();

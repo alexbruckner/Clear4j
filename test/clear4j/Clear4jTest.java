@@ -3,7 +3,6 @@ package clear4j;
 import clear4j.msg.Message;
 import clear4j.msg.Messenger;
 import clear4j.msg.Receiver;
-import clear4j.msg.queue.Queue;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -68,7 +67,7 @@ public class Clear4jTest {
                     LOG.log(Level.INFO, String.format("messages received: %s", ++count));
                 }
             }
-        }).to(Queue.TEST_QUEUE);
+        }).to("test");
 
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "starting loop");
@@ -83,14 +82,14 @@ public class Clear4jTest {
             }
 
             sentMessages.add(sent);
-            Messenger.send(sent).to(Queue.TEST_QUEUE);
+            Messenger.send(sent).to("test");
         }
 
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "waiting for all messages");
         }
 
-        Messenger.waitFor(Queue.TEST_QUEUE);
+        Messenger.waitFor("test");
 
         for (String sent : sentMessages) {
             Assert.assertTrue(String.format("%s not in received messages!", sent), receivedMessages.contains(sent));

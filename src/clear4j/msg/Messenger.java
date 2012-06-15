@@ -1,6 +1,5 @@
 package clear4j.msg;
 
-import clear4j.msg.queue.Queue;
 import clear4j.msg.queue.QueueManager;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,7 +35,7 @@ public final class Messenger {
         return new Message(message);
     }
 
-    public static void waitFor(Queue name) {
+    public static void waitFor(String name) {
         // register temporary receiver and send a message. once we get it back,
         // we know that all previous messages should have been dealt with.
         final Message waitForMessage = new Message(String.format("<waitFor queue=\"%s\"/>", name));
@@ -76,7 +75,7 @@ public final class Messenger {
 
     private static class Message implements clear4j.msg.Message {
         private final String message;
-        private Queue queue;
+        private String queue;
         private long id;
         private static AtomicLong count = new AtomicLong();
 
@@ -90,7 +89,7 @@ public final class Messenger {
         }
 
         @Override
-        public Receiver to(Queue queue) {
+        public Receiver to(String queue) {
             this.queue = queue;
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("sending [%s]", this));
@@ -100,7 +99,7 @@ public final class Messenger {
         }
 
         @Override
-        public Queue getQueue() {
+        public String getQueue() {
             return queue;
         }
 
@@ -144,21 +143,21 @@ public final class Messenger {
 
     public static class Receiver implements clear4j.msg.queue.Receiver {
         private final clear4j.msg.Receiver callback;
-        private Queue queue;
+        private String queue;
 
         private Receiver(clear4j.msg.Receiver callback) {
             this.callback = callback;
         }
 
         @Override
-        public Receiver to(Queue queue) {
+        public Receiver to(String queue) {
             this.queue = queue;
             register(this);
             return this;
         }
 
         @Override
-        public Queue getQueue() {
+        public String getQueue() {
             return queue;
         }
 
