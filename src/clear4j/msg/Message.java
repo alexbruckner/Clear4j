@@ -1,5 +1,6 @@
 package clear4j.msg;
 
+
 /**
  * User: alexb
  * Date: 25/05/12

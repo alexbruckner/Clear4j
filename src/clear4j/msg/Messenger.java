@@ -76,8 +76,8 @@ public final class Messenger {
     private static class Message implements clear4j.msg.Message {
         private final String message;
         private String queue;
-        private long id;
-        private static AtomicLong count = new AtomicLong();
+        private final long id;
+        private final static AtomicLong count = new AtomicLong();
 
         private Message(String message) {
             this.message = message;

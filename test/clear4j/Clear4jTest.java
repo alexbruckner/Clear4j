@@ -32,12 +32,12 @@ public class Clear4jTest {
 //        FileUtils.removeFile(TestConfig.TEST_FILE_PATH.getValue());
 //    }
 
-    @Test
-    public void testMessaging100() throws Exception {
-        for (int i = 0; i < 100; i++){
-            testMessaging();
-        }
-    }
+//    @Test
+//    public void testMessaging100() throws Exception {
+//        for (int i = 0; i < 100; i++){
+//            testMessaging();
+//        }
+//    }
 
     @Test
     public void testMessaging() throws Exception {
