@@ -13,11 +13,16 @@ public final class Queue<T> {
 		return new Queue<T>(name, null);
 	}
 	
-	static <T> Queue<T> add(Queue<T> queue, T payload) {
-		if (queue.last == null) {
-			return new Queue<T>(queue.name, Node.create(payload));
-		} else {
-			return new Queue<T>(queue.name, Node.append(queue.last, payload));
-		}
+	static <T> Queue<T> push(Queue<T> queue, T payload) {
+		return new Queue<T>(
+				queue.name, 
+				queue.last == null ? Node.create(payload) 
+				  	                : Node.append(queue.last, payload));
 	}
+	
+	@Override
+	public String toString(){
+		return String.format("<<Queue:%s\n%s>>\n", name, last);
+	}
+	
 }
