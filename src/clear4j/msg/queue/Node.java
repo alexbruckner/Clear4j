@@ -16,15 +16,15 @@ public final class Node<T> {
 		this.payload = payload;
 	}
 	
-	static <T> Node<T> create(final T payload){
+	static final <T> Node<T> create(final T payload){
 		return new Node<T>(null, payload);
 	}
 	
-	static <T> Node<T> append(final Node<T> node, T payload){
+	static final <T> Node<T> append(final Node<T> node, final T payload){
 		return new Node<T>(node, payload);
 	}
 
-	public T getPayload() {
+	public final T getPayload() {
 		return payload;
 	}
 
