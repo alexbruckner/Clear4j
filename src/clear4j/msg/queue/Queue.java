@@ -34,7 +34,20 @@ public final class Queue<T> implements Iterable<T> {
 
     private final class QueueIterator implements Iterator<T> {
 
-        Node<T> current = last;
+    	Node<T> current;
+    	
+        public QueueIterator(){
+        	//create queue in reverse.
+        	if (last != null){
+        		Node<T> first = Node.create(last.getPayload());
+        		if (last.getPrevious() != null){
+		        	for (T payload : last.getPrevious()){
+		        		first = Node.append(first, payload);
+		        	}
+        		}
+	        	current = first;
+        	}
+        }
 
         @Override
         public boolean hasNext() {

@@ -23,9 +23,14 @@ public class NodeTest {
 						+ "Node[(2)(1,2)]\n"
 						+ "Node[(1)(-1,1)]\n";
 		
-		System.out.println(current);
-		
 		Assert.assertEquals(expected, current.toString());
+		
+		StringBuilder sb = new StringBuilder();
+        for (Integer i : current){
+            sb.append(i);
+        }
+
+        Assert.assertEquals("54321", sb.toString());
 	}
 	
 }

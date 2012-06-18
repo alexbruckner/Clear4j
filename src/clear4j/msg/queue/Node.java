@@ -1,11 +1,13 @@
 package clear4j.msg.queue;
 
+import java.util.Iterator;
+
 /**
  * User: alexb
  * Date: 15/06/12
  * Time: 15:56
  */
-public final class Node<T> {
+public final class Node<T> implements Iterable<T> {
 
 	private final T payload;
 	private final Node<T> previous;
@@ -48,5 +50,36 @@ public final class Node<T> {
 		} while(current != null);
 		return sb.toString();
 	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new NodeIterator(this);
+	}
+	
+	private final class NodeIterator implements Iterator<T> {
+
+        Node<T> current;
+        
+        public NodeIterator(Node<T> node){
+        	current = node;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public T next() {
+            T payload = current.getPayload();
+            current = current.getPrevious();
+            return payload;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
 
 }
