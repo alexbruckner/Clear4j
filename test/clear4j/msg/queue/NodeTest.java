@@ -17,11 +17,11 @@ public class NodeTest {
 		
 		// format: Node[(id)(previous.id, payload, next.id)]
 		// previous node written below current one until first node.
-		String expected = "Node[(5)(4,5,-1)]\n"
-						+ "Node[(4)(3,4,5)]\n"
-						+ "Node[(3)(2,3,4)]\n"
-						+ "Node[(2)(1,2,3)]\n"
-						+ "Node[(1)(-1,1,2)]\n";
+		String expected = "Node[(5)(4,5)]\n"
+						+ "Node[(4)(3,4)]\n"
+						+ "Node[(3)(2,3)]\n"
+						+ "Node[(2)(1,2)]\n"
+						+ "Node[(1)(-1,1)]\n";
 		
 		System.out.println(current);
 		
