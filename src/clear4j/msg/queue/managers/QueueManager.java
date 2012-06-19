@@ -1,13 +1,14 @@
-package clear4j.msg.queue;
+package clear4j.msg.queue.managers;
 
+
+import clear4j.msg.Message;
+import clear4j.msg.queue.Receiver;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import clear4j.msg.Message;
 
 /**
  * User: alexb

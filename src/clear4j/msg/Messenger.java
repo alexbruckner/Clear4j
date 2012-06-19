@@ -1,6 +1,6 @@
 package clear4j.msg;
 
-import clear4j.msg.queue.QueueManager;
+import clear4j.msg.queue.managers.QueueManager;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
