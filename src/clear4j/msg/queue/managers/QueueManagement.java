@@ -7,5 +7,4 @@ public interface QueueManagement {
     void add(Message message);
     void add(Receiver receiver);
     void remove(Receiver receiver);
-    void start();
 }

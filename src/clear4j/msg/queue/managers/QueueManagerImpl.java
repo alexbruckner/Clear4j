@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 public class QueueManagerImpl implements QueueManagement {
 
-    QueueManagerImpl() {}
 
     private static final Logger LOG = Logger.getLogger(QueueManager.class.getName());
 
@@ -23,16 +22,16 @@ public class QueueManagerImpl implements QueueManagement {
 
     private volatile boolean working = false;
     private volatile boolean runagain = false;
+    
+    QueueManagerImpl() {
+    	start();
+    }
 
     /*
      * SENDING
      */
 
     public void add(Message message) {
-
-        if (LOG.isLoggable(Level.INFO)) {
-            LOG.log(Level.INFO, String.format("Adding message [%s]", message));
-        }
 
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("getting queue"));
@@ -50,18 +49,11 @@ public class QueueManagerImpl implements QueueManagement {
 
         queue.add(message);
 
-        if (LOG.isLoggable(Level.INFO)) {
-            LOG.log(Level.INFO, String.format("Added message [%s]", message));
-        }
-
         synchronized (receiverLock) {
             runagain = working;
             receiverLock.notifyAll();
         }
 
-        if (LOG.isLoggable(Level.INFO)) {
-            LOG.log(Level.INFO, "Done adding");
-        }
     }
 
     private void createMessageQueue(String name) {
@@ -84,9 +76,7 @@ public class QueueManagerImpl implements QueueManagement {
             createReceiverQueue(name);
             queue = receivers.get(name);
         }
-        if (LOG.isLoggable(Level.INFO)) {
-            LOG.log(Level.INFO, String.format("Adding receiver [%s]", receiver));
-        }
+
         queue.add(receiver);
     }
 

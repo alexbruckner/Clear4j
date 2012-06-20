@@ -18,17 +18,20 @@ public final class QueueManager {
     private static final Logger LOG = Logger.getLogger(QueueManager.class.getName());
     private static final QueueManagement QUEUE_MANAGER = new QueueManagerImpl();
 
-    static {
-        LOG.log(Level.INFO, String.format("starting Queue Manager: %s", QUEUE_MANAGER));
-        QUEUE_MANAGER.start();
-    }
-
     /*
      * SENDING
      */
 
     public static void add(Message message) {
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, String.format("Adding message [%s]", message));
+        }
+        
         QUEUE_MANAGER.add(message);
+        
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, String.format("Added message [%s]", message));
+        }
     }
 
     /*
@@ -36,10 +39,16 @@ public final class QueueManager {
      */
 
     public static void add(Receiver receiver) {
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, String.format("Adding receiver [%s]", receiver));
+        }
         QUEUE_MANAGER.add(receiver);
     }
 
     public static void remove(Receiver receiver) {
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, String.format("Removing receiver [%s]", receiver));
+        }
         QUEUE_MANAGER.remove(receiver);
     }
 

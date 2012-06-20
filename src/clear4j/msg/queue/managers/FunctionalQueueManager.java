@@ -20,8 +20,4 @@ public class FunctionalQueueManager implements QueueManagement {
         throw new UnsupportedOperationException("to be implemented...");
     }
 
-    @Override
-    public void start() {
-        throw new UnsupportedOperationException("to be implemented...");
-    }
 }
