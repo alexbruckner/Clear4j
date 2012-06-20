@@ -1,4 +1,4 @@
-package clear4j.msg.queue;
+package clear4j.msg.queue.functional;
 
 import java.util.Iterator;
 

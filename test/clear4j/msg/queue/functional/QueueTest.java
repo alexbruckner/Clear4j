@@ -1,5 +1,6 @@
-package clear4j.msg.queue;
+package clear4j.msg.queue.functional;
 
+import clear4j.msg.queue.functional.Queue;
 import junit.framework.Assert;
 import org.junit.Test;
 
