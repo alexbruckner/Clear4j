@@ -16,7 +16,7 @@ public final class QueueManager {
     private QueueManager() {}
 
     private static final Logger LOG = Logger.getLogger(QueueManager.class.getName());
-    private static final QueueManagement QUEUE_MANAGER = new QueueManagerImpl();
+    private static final QueueManagement QUEUE_MANAGER = new BlockingQueueManager();
 
     /*
      * SENDING
