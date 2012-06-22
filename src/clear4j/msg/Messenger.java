@@ -5,6 +5,7 @@ import clear4j.msg.queue.managers.QueueManager;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,8 @@ import java.util.logging.Logger;
 public final class Messenger {
     private Messenger() {
     }
+
+    private static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     private static final Logger LOG = Logger.getLogger(Messenger.class.getName());
 
@@ -133,7 +136,7 @@ public final class Messenger {
      * RECEIVING
      */
 
-    public static void register(Receiver receiver) {
+    private static void register(Receiver receiver) {
         if (receiver.getQueue() == null) {
             throw new RuntimeException("Receiver needs a queue");
         }
@@ -145,6 +148,41 @@ public final class Messenger {
 
     public static Receiver register(clear4j.msg.Receiver callback) {
         return new Receiver(callback);
+    }
+
+    /*
+     * implicitly creates a Receiver to receive one message from a queue
+     * primarily for testing otherwise use Messenger.register(clear4j.msg.Receiver).to(queue);
+     */
+    public static Future<clear4j.msg.Message> register(final String queue) {
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final clear4j.msg.Message[] returned = new clear4j.msg.Message[1];
+
+        final Receiver receiver = register(new clear4j.msg.Receiver() {
+            @Override
+            public void onMessage(clear4j.msg.Message message) {
+                System.out.println(message + "!!!!!!!!!!!!!!!!!!!");
+                returned[0] = message;
+                latch.countDown();
+            }
+        }).to(queue);
+
+        FutureTask<clear4j.msg.Message> futureTask = new FutureTask<clear4j.msg.Message>(
+            new Callable<clear4j.msg.Message>() {
+                @Override
+                public clear4j.msg.Message call() throws InterruptedException {
+                    latch.await();
+                    unregister(receiver);
+                    return returned[0];
+                }
+            }
+        );
+
+        executor.execute(futureTask);
+
+        return futureTask;
+
     }
 
     public static void unregister(Receiver receiver) {

@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,9 +41,23 @@ public class Clear4jTest {
 //    }
 
     @Test
-    public void testRemoteAdapter(){
-        Messenger.send("local test").to("local queue");
-        Messenger.send("remote test").on("localhost", 9876).to("remote queue");
+    public void testRemoteAdapter() throws Exception {
+
+        String localQueue = "local queue";
+        String localMessage = "local test";
+        String remoteQueue = "remote queue";
+        String remoteMessage = "remote test";
+
+        Future<Message> remoteValue = Messenger.register(remoteQueue);
+        Messenger.send(remoteMessage).on("localhost", 9876).to(remoteQueue);
+        Message remote = remoteValue.get();
+        Assert.assertEquals(remoteMessage, remote.getMessage());
+
+        Future<Message> localValue = Messenger.register(localQueue);
+        Messenger.send(localMessage).to(localQueue);
+        Message local = localValue.get();
+        Assert.assertEquals(localMessage, local.getMessage());
+
     }
 
 
