@@ -6,7 +6,6 @@ import clear4j.msg.queue.Receiver;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class BlockingQueueManager implements QueueManagement {
@@ -65,7 +64,7 @@ public final class BlockingQueueManager implements QueueManagement {
                                 notifyReceiver(receiver, message);
                             }
                         } catch (InterruptedException e) {
-                            LOG.log(Level.SEVERE, e.getMessage());
+                            Thread.currentThread().interrupt();
                         }
                     }
                 }

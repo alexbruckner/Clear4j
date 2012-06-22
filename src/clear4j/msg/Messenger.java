@@ -64,7 +64,7 @@ public final class Messenger {
                 try {
                     LOCK.wait();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             }
         }
