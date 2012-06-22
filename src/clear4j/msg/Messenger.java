@@ -162,7 +162,6 @@ public final class Messenger {
         final Receiver receiver = register(new clear4j.msg.Receiver() {
             @Override
             public void onMessage(clear4j.msg.Message message) {
-                System.out.println(message + "!!!!!!!!!!!!!!!!!!!");
                 returned[0] = message;
                 latch.countDown();
             }
