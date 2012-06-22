@@ -2,6 +2,9 @@ package clear4j.msg;
 
 import clear4j.msg.queue.managers.QueueManager;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,6 +79,9 @@ public final class Messenger {
     private static class Message implements clear4j.msg.Message {
         private final String message;
         private String queue;
+        private String host;
+        private int port;
+
         private final long id;
         private final static AtomicLong count = new AtomicLong();
 
@@ -96,6 +102,13 @@ public final class Messenger {
             }
             send(this);
             return null;
+        }
+
+        @Override
+        public Adapter on(String host, int port) {
+            this.host = host;
+            this.port = port;
+            return new Adapter(this);
         }
 
         @Override
@@ -179,5 +192,30 @@ public final class Messenger {
                     ", queue=" + queue +
                     '}';
         }
+    }
+
+    private static class Adapter implements clear4j.msg.queue.Adapter {
+
+        private final Message message;
+
+        private Adapter(Message message) {
+            this.message = message;
+        }
+
+        public void to(String queue) {
+            message.queue = queue;
+            try {
+                Socket socket = new Socket(message.host, message.port);
+                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                out.flush();
+                out.writeObject(message);
+                out.flush();
+                out.close();
+                socket.close();
+            } catch (IOException e) {
+                LOG.log(Level.SEVERE, e.getMessage());
+            }
+        }
+
     }
 }

@@ -3,6 +3,7 @@ package clear4j.msg.queue.managers;
 
 import clear4j.msg.Message;
 import clear4j.msg.queue.Receiver;
+import clear4j.msg.queue.managers.remote.RemoteAdapter;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,11 @@ public final class QueueManager {
 
     private static final Logger LOG = Logger.getLogger(QueueManager.class.getName());
     private static final QueueManagement QUEUE_MANAGER = new BlockingQueueManager();
+
+    static {
+        //start remote adapter
+        new RemoteAdapter();
+    }
 
     /*
      * SENDING

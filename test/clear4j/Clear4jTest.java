@@ -40,6 +40,13 @@ public class Clear4jTest {
 //    }
 
     @Test
+    public void testRemoteAdapter(){
+        Messenger.send("local test").to("local queue");
+        Messenger.send("remote test").on("localhost", 9876).to("remote queue");
+    }
+
+
+    @Test
     public void testMessaging() throws Exception {
 
         int NUM = 1000;

@@ -6,7 +6,7 @@ package clear4j.msg;
  * Date: 25/05/12
  * Time: 14:42
  */
-public interface Message extends QueueInfo {
+public interface Message extends QueueInfo, RemoteInfo {
     String getMessage();
     long getId();
 }
