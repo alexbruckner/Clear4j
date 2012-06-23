@@ -54,7 +54,7 @@ public class Clear4jTest {
             }
         }).on("localhost", 9876).to(remoteQueue);
 
-        Thread.sleep(1000);
+        Thread.sleep(3000);   //have to wait for registration //todo
 
     	Messenger.send(remoteMessage).on("localhost", 9876).to(remoteQueue);
 
