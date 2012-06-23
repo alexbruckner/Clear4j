@@ -72,10 +72,14 @@ public final class Messenger {
         return new Message(message);
     }
 
-    public static void waitFor(String name) {
+    public static void waitFor(String name){
+        waitFor(name, String.format("<waitFor queue=\"%s\"/>", name));
+    }
+
+    public static void waitFor(String name, String message) {
         // register temporary receiver and send a message. once we get it back,
         // we know that all previous messages should have been dealt with.
-        final Message waitForMessage = new Message(String.format("<waitFor queue=\"%s\"/>", name));
+        final Message waitForMessage = new Message(message);
 
         final boolean[] received = {false};
 

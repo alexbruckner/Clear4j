@@ -38,32 +38,31 @@ public class Clear4jTest {
 //            testMessaging();
 //        }
 //    }
-    
+
     @Test
     public void testRemoteReceiver() throws Exception { 
     	
     	String remoteQueue = "remote queue";
         String remoteMessage = "remote test";
-        
+
+        final String[] received = new String[1];
+
         Messenger.Receiver receiver = Messenger.register(new Receiver(){
             @Override
             public void onMessage(Message message) {
-                if (LOG.isLoggable(Level.INFO)) {
-                    LOG.log(Level.INFO, String.format("!!!!!!!!!!!!!!!!!!!!!!!!!!! --> remote receiver: messages received: %s", message));
-                }
+                received[0] = message.getMessage();
             }
         }).on("localhost", 9876).to(remoteQueue);
-
 
         Thread.sleep(1000);
 
     	Messenger.send(remoteMessage).on("localhost", 9876).to(remoteQueue);
-    	
-    	Thread.sleep(1000);
+
+    	Messenger.waitFor(receiver.getQueue(), remoteMessage);
+
+        Assert.assertEquals(remoteMessage, received[0]);
     	
     	Messenger.unregister(receiver);  //TODO remote unregistering.
-
-        Thread.sleep(1000);
     }
 
     @Test
