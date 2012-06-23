@@ -6,11 +6,8 @@ import clear4j.msg.queue.Receiver;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
-import java.util.logging.Logger;
 
 public final class BlockingQueueManager implements QueueManagement {
-
-    private static final Logger LOG = Logger.getLogger(QueueManager.class.getName());
 
 	private final Map<String, Queue> store;
 	

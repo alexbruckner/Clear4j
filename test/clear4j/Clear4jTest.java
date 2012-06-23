@@ -41,12 +41,12 @@ public class Clear4jTest {
 //    }
     
     @Test
-    public void testRemoteReceiver(){
+    public void testRemoteReceiver() throws Exception { 
     	
     	String remoteQueue = "remote queue";
         String remoteMessage = "remote test";
         
-    	Messenger.Receiver receiver = Messenger.register(new Receiver() {
+    	Messenger.register(new Receiver(){
             @Override
             public void onMessage(Message message) {
                 if (LOG.isLoggable(Level.INFO)) {

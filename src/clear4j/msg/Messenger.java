@@ -1,5 +1,6 @@
 package clear4j.msg;
 
+import clear4j.msg.queue.Adapter;
 import clear4j.msg.queue.managers.QueueManager;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ public final class Messenger {
         final boolean[] received = {false};
 
         //register
-        Receiver receiver = Messenger.register(new clear4j.msg.Receiver() {
+        Receiver receiver = register(new clear4j.msg.Receiver() {
             @Override
             public void onMessage(clear4j.msg.Message message) {
                 if (message.getId() == waitForMessage.getId()) {
@@ -76,11 +77,12 @@ public final class Messenger {
         }
 
         //unregister
-        Messenger.unregister(receiver);
+        unregister(receiver);
     }
 
     private static class Message implements clear4j.msg.Message {
-        private final String message;
+		private static final long serialVersionUID = 1L;
+		private final String message;
         private String queue;
         private String host;
         private int port;
@@ -111,7 +113,7 @@ public final class Messenger {
         public Adapter on(String host, int port) {
             this.host = host;
             this.port = port;
-            return new Adapter(this);
+            return new MessageAdapter(this);
         }
 
         @Override
@@ -194,6 +196,8 @@ public final class Messenger {
     public static class Receiver implements clear4j.msg.queue.Receiver {
         private final clear4j.msg.Receiver callback;
         private String queue;
+        private String host;
+        private int port;
 
         private Receiver(clear4j.msg.Receiver callback) {
             this.callback = callback;
@@ -229,13 +233,41 @@ public final class Messenger {
                     ", queue=" + queue +
                     '}';
         }
+
+		@Override
+        public Adapter on(String host, int port) {
+            this.host = host;
+            this.port = port;
+            return new ReceiverAdapter(this);
+        }
+    }
+    
+    private static class ReceiverAdapter implements clear4j.msg.queue.Adapter {
+
+    	private final Receiver receiver;
+    	
+		public ReceiverAdapter(Receiver receiver) {
+			this.receiver = receiver;
+		}
+
+		@Override
+		public void to(String queue) {
+			receiver.queue = queue;
+			//create local proxy queue for this receiver.
+			//TODO
+			//send message to remote qm instructing to create a proxy for this receiver
+			// remote proxy to send messages to local proxy queue.
+			//TODO
+			newMessage("").on(receiver.host, receiver.port).to(queue);
+		}
+
     }
 
-    private static class Adapter implements clear4j.msg.queue.Adapter {
+    private static class MessageAdapter implements clear4j.msg.queue.Adapter {
 
         private final Message message;
 
-        private Adapter(Message message) {
+        private MessageAdapter(Message message) {
             this.message = message;
         }
 
