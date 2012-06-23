@@ -2,6 +2,7 @@ package clear4j.processor;
 
 import clear4j.Instruction;
 import clear4j.Processor;
+import clear4j.Workflow;
 
 import java.io.File;
 
@@ -12,7 +13,7 @@ import java.io.File;
  */
 public class FileProcessor implements Processor {
 
-    public Instruction toLoad(File aFile){
+    public Workflow to(Instruction loadAFile){
         //create instruction message
         return null;
     }

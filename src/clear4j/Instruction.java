@@ -6,5 +6,5 @@ package clear4j;
  * Time: 17:28
  */
 public interface Instruction {
-
+    //load message with life plan
 }

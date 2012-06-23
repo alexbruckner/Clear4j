@@ -5,6 +5,6 @@ package clear4j;
  * Date: 24/05/12
  * Time: 16:48
  */
-public interface Processor {
-
+public interface Processor<T> {
+    Workflow to(Instruction doSomething);
 }
