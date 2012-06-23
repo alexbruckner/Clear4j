@@ -6,6 +6,7 @@ import clear4j.msg.queue.managers.QueueManager;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
@@ -25,7 +26,36 @@ public final class Messenger {
     private static final Logger LOG = Logger.getLogger(Messenger.class.getName());
 
     private static final Object LOCK = new Object();
-
+    
+    private static final int DEFAULT_PORT = 9876;
+    
+    private static final String LOCAL_HOST = getLocalHost();
+    
+    private static final int LOCAL_PORT = getLocalPort();
+    
+    private static String getLocalHost(){
+    	try {
+			return java.net.InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			LOG.log(Level.SEVERE, e.getMessage());
+		}
+    	return null;
+    }
+    
+    private static int getLocalPort(){
+    	String property = System.getProperty("clear4j.port");
+    	if (property != null){
+    		try{
+    			return Integer.parseInt(property);
+    		} catch (NumberFormatException e){
+    			LOG.log(Level.WARNING, e.getMessage());
+    			return DEFAULT_PORT;
+    		}
+    	} else {
+    		return DEFAULT_PORT;
+    	}
+    }
+    
     /*
      * SENDING
      */
@@ -95,7 +125,7 @@ public final class Messenger {
             this.id = count.addAndGet(1);
         }
 
-        public String getMessage() {
+        public String getMessage() { 
             return message;
         }
 
@@ -106,7 +136,7 @@ public final class Messenger {
                 LOG.log(Level.INFO, String.format("sending [%s]", this));
             }
             send(this);
-            return null;
+            return null; //TODO fix interface salad or allow to specify synchronous receiver of one message with FutureTask.
         }
 
         @Override
@@ -121,7 +151,7 @@ public final class Messenger {
             return queue;
         }
 
-        public long getId() {
+        public long getId() { //TODO add host/port
             return id;
         }
 
@@ -251,14 +281,16 @@ public final class Messenger {
 		}
 
 		@Override
-		public void to(String queue) {
-			receiver.queue = queue;
+		public Receiver to(String queue) {
 			//create local proxy queue for this receiver.
-			//TODO
-			//send message to remote qm instructing to create a proxy for this receiver
-			// remote proxy to send messages to local proxy queue.
-			//TODO
-			newMessage("").on(receiver.host, receiver.port).to(queue);
+			String localProxyQueue = String.format("(%s-%s-%s)", receiver.host, receiver.port, queue);
+			receiver.to(localProxyQueue);
+			//send request to remote host, ie put a receiver message to its receivers queue
+			//this message will get picked up by the RemoteAdapter and a ('local' to the remote host) receiver created.
+			//which proxies all messages received back to the localProxyQueue.
+			String message = String.format("(%s-%s-%s)", LOCAL_HOST, LOCAL_PORT, localProxyQueue);
+			newMessage(message).on(receiver.host, receiver.port).to("remote-receivers");
+			return receiver;
 		}
 
     }
@@ -271,7 +303,7 @@ public final class Messenger {
             this.message = message;
         }
 
-        public void to(String queue) {
+        public Receiver to(String queue) {
             message.queue = queue;
             try {
                 Socket socket = new Socket(message.host, message.port);
@@ -284,6 +316,7 @@ public final class Messenger {
             } catch (IOException e) {
                 LOG.log(Level.SEVERE, e.getMessage());
             }
+            return null; //TODO fix interface salad
         }
 
     }

@@ -27,6 +27,10 @@ public class RemoteAdapter {
         try {
             final ServerSocket serverSocket = new ServerSocket(PORT);
 
+            // create remote-receivers queue listener
+            //TODO
+            
+            // create server socket to listen for messages from the beyond
             new Thread() {
                 @Override
                 public void run() {
@@ -38,7 +42,8 @@ public class RemoteAdapter {
                                 public void run() {
                                     try {
                                         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-                                        QueueManager.add((Message)in.readObject());
+                                        Message received = (Message) in.readObject();
+                                        QueueManager.add(received);
                                     } catch (Exception e) {
                                         LOG.log(Level.SEVERE, e.getMessage());
                                     }

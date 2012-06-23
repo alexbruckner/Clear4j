@@ -1,5 +1,7 @@
 package clear4j.msg.queue;
 
+import clear4j.msg.Messenger;
+
 public interface Adapter {
-    void to(String queue);
+    Messenger.Receiver to(String queue);
 }

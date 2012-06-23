@@ -22,7 +22,6 @@ public class Clear4jTest {
 
     private static final Logger LOG = Logger.getLogger(Clear4jTest.class.getName());
 
-
 //    @BeforeClass
 //    public static void setup(){
 //        FileUtils.writeTextToFile(TestConfig.TEST_FILE_PATH.getValue(), TestConfig.TEST_FILE_CONTENT.getValue());
@@ -46,11 +45,11 @@ public class Clear4jTest {
     	String remoteQueue = "remote queue";
         String remoteMessage = "remote test";
         
-    	Messenger.register(new Receiver(){
+        Messenger.Receiver receiver = Messenger.register(new Receiver(){
             @Override
             public void onMessage(Message message) {
                 if (LOG.isLoggable(Level.INFO)) {
-                    LOG.log(Level.INFO, String.format("messages received: %s", message));
+                    LOG.log(Level.INFO, String.format("remote receiver: messages received: %s", message));
                 }
             }
         }).on("localhost", 9876).to(remoteQueue);
@@ -58,6 +57,8 @@ public class Clear4jTest {
     	Messenger.send(remoteMessage).on("localhost", 9876).to(remoteQueue);
     	
     	Thread.sleep(1000);
+    	
+    	Messenger.unregister(receiver);
     	
     }
 
