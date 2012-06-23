@@ -49,17 +49,21 @@ public class Clear4jTest {
             @Override
             public void onMessage(Message message) {
                 if (LOG.isLoggable(Level.INFO)) {
-                    LOG.log(Level.INFO, String.format("remote receiver: messages received: %s", message));
+                    LOG.log(Level.INFO, String.format("!!!!!!!!!!!!!!!!!!!!!!!!!!! --> remote receiver: messages received: %s", message));
                 }
             }
         }).on("localhost", 9876).to(remoteQueue);
-    	
+
+
+        Thread.sleep(1000);
+
     	Messenger.send(remoteMessage).on("localhost", 9876).to(remoteQueue);
     	
     	Thread.sleep(1000);
     	
-    	Messenger.unregister(receiver);
-    	
+    	Messenger.unregister(receiver);  //TODO remote unregistering.
+
+        Thread.sleep(1000);
     }
 
     @Test

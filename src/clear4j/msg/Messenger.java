@@ -283,12 +283,12 @@ public final class Messenger {
 		@Override
 		public Receiver to(String queue) {
 			//create local proxy queue for this receiver.
-			String localProxyQueue = String.format("(%s-%s-%s)", receiver.host, receiver.port, queue);
+			String localProxyQueue = String.format("(%s/%s/%s)", receiver.host, receiver.port, queue);
 			receiver.to(localProxyQueue);
 			//send request to remote host, ie put a receiver message to its receivers queue
 			//this message will get picked up by the RemoteAdapter and a ('local' to the remote host) receiver created.
 			//which proxies all messages received back to the localProxyQueue.
-			String message = String.format("(%s-%s-%s)", LOCAL_HOST, LOCAL_PORT, localProxyQueue);
+			String message = String.format("(%s/%s/%s)", LOCAL_HOST, LOCAL_PORT, localProxyQueue);
 			newMessage(message).on(receiver.host, receiver.port).to("remote-receivers");
 			return receiver;
 		}
