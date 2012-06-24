@@ -68,6 +68,12 @@ public final class Messenger {
         return Messenger.newMessage(message);
     }
 
+	public static QueueInfo send(String message, String value) {
+		Message m = Messenger.newMessage(message);
+		m.setValue(value);
+		return m;
+	}
+
     public static Message newMessage(String message) {
         return new Message(message);
     }
@@ -123,13 +129,22 @@ public final class Messenger {
 
         private final long id;
         private final static AtomicLong count = new AtomicLong();
+        private String value;
 
         private Message(String message) {
             this.message = message;
             this.id = count.addAndGet(1);
         }
 
-        public String getMessage() { 
+        public void setValue(String value) {
+        	this.value = value;
+		}
+        
+        public String getValue(){
+        	return value;
+        }
+
+		public String getMessage() { 
             return message;
         }
 
@@ -324,4 +339,5 @@ public final class Messenger {
         }
 
     }
+
 }

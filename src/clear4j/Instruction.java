@@ -1,10 +1,12 @@
 package clear4j;
 
+import java.io.File;
+
 /**
- * User: alexb
- * Date: 24/05/12
- * Time: 17:28
+ * User: alex
+ * Date: 23/06/12
+ * Time: 14:33
  */
-public interface Instruction {
-    //load message with life plan
+public enum Instruction {    //TODO load from folder
+    LOAD_A_FILE;
 }

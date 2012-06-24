@@ -36,7 +36,7 @@ public class Clear4jTest {
     }
 
     @Test
-    public void testSimpleWorkFlow() {
+    public void testSimpleWorkFlow() throws Exception {
 
         // under the bonnet: we send an instruction message "load" to the file processor
         // with payload Payload.FILE_PATH = "/tmp/test.txt"
@@ -46,7 +46,7 @@ public class Clear4jTest {
         File aFile = new File(TestConfig.TEST_FILE_PATH.getValue());
 
         // start the workflow process
-        Workflow workflow = Clear.instruct(The.FILE_PROCESSOR).to(Instructions.LOAD_A_FILE);
+        Workflow workflow = Clear.instruct(The.FILE_PROCESSOR).to(Instruction.LOAD_A_FILE, TestConfig.TEST_FILE_PATH.getValue());
 
 //        Payload payload = workflow.waitFor();
 //        String text1 = payload.get(Payload.TEXT);
@@ -56,6 +56,8 @@ public class Clear4jTest {
 //
 //        // assert same content
 //        Assert.assertEquals(text2, text1);
+        
+        Thread.sleep(1000);
 
         Assert.fail("to be implemented;");
 

@@ -6,5 +6,5 @@ package clear4j;
  * Time: 16:48
  */
 public interface Processor {
-    Workflow to(Instruction doSomething);
+	Workflow to(Instruction doSomething, String value);
 }
