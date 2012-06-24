@@ -8,7 +8,7 @@ package clear4j;
 public final class Clear {
     private Clear(){}
 
-    public static <T extends Processor> T instruct(T processor) {
+    public static The instruct(The processor) {
         return processor;
     }
 

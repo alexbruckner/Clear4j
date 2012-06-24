@@ -1,18 +1,24 @@
 package clear4j;
 
-import clear4j.processor.FileProcessor;
-
 /**
  * User: alexb
  * Date: 24/05/12
  * Time: 16:45
  */
-public class The {      //TODO don't make this static but have a directory of defined processors (system adapaters)
+public enum The implements Processor {      //TODO don't make this static but have a directory of defined processors (system adapaters)
 
-    public static final FileProcessor FileProcessor = new clear4j.processor.FileProcessor();
+    FileProcessor("clear4j.processors.FileProcessor"); 
 
+    private String processorClass;
+    
+    The(String processorClass) {
+    	this.processorClass = processorClass;
+    }
 
-
-
+	@Override
+	public Workflow to(Instruction doSomething) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
