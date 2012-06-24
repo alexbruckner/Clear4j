@@ -46,7 +46,7 @@ public class Clear4jTest {
         File aFile = new File(TestConfig.TEST_FILE_PATH.getValue());
 
         // start the workflow process
-        Workflow workflow = Clear.instruct(The.FileProcessor).to(Instructions.LOAD_A_FILE);
+        Workflow workflow = Clear.instruct(The.FILE_PROCESSOR).to(Instructions.LOAD_A_FILE);
 
 //        Payload payload = workflow.waitFor();
 //        String text1 = payload.get(Payload.TEXT);
