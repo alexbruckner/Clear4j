@@ -1,14 +1,12 @@
-package clear4j.processors;
+package clear4j.processor;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import clear4j.processor.Processor;
-
 
 public class ProcessorLoader {
-	public static final String DEFAULT_PROCESSOR_PACKAGE = "clear4j.processors";
+	public static final String DEFAULT_PROCESSOR_PACKAGE = "clear4j";
 	
 	private static final Map<String, Class> processors = new HashMap<String, Class>();
 	

@@ -1,4 +1,4 @@
-package clear4j.processors;
+package clear4j.processor;
 
 import java.io.File;
 import java.io.IOException;

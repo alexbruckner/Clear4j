@@ -1,15 +1,13 @@
 package clear4j;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import clear4j.msg.Message;
 import clear4j.msg.Messenger;
 import clear4j.msg.Receiver;
 import clear4j.processor.Instruction;
+
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * User: alexb
@@ -47,7 +45,7 @@ public enum The implements Processor {      //TODO don't make this static but ha
 									
 									Object result = method.invoke(processorObject, message.getValue()); //TODO args
 									System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!: result = " + result);
-									
+									//TODO CONTINUE HERE.
 									//TODO add result to message and pass on to... somewhere. 
 								}
 							}

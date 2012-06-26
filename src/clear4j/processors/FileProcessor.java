@@ -1,8 +1,7 @@
 package clear4j.processors;
 
-import clear4j.FileUtils;
-import clear4j.processor.Instruction;
 import clear4j.The;
+import clear4j.processor.Instruction;
 import clear4j.processor.Processor;
 
 @Processor(The.FILE_PROCESSOR)

@@ -3,6 +3,7 @@ package clear4j;
 import clear4j.msg.Message;
 import clear4j.msg.Messenger;
 import clear4j.msg.Receiver;
+import clear4j.processors.FileUtils;
 import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -64,7 +65,7 @@ public class Clear4jTest {
     }
 
 
-    @Test
+    @Test   //TODO not thread safe
     public void testRemoteReceiver() throws Exception { 
     	
     	String remoteQueue = "remote queue";
