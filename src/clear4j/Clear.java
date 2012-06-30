@@ -28,7 +28,7 @@ public final class Clear {
     	private final String key;
     	private final Serializable value;
     	
-    	private Instruction(String key, Serializable value){
+    	private Instruction(final String key, final Serializable value){
     		this.key = key;
     		this.value = value;
     	}
