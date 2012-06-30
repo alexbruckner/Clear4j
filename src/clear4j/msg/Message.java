@@ -11,5 +11,5 @@ import java.io.Serializable;
 public interface Message extends QueueInfo, RemoteInfo, Serializable {
     String getMessage();
     long getId();
-    String getValue();
+    Serializable getPayload();
 }

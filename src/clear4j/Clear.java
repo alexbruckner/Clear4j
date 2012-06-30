@@ -4,6 +4,7 @@ import clear4j.msg.Message;
 import clear4j.msg.Messenger;
 import clear4j.msg.Receiver;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,26 +15,27 @@ import java.util.logging.Logger;
  * Time: 16:44
  */
 public final class Clear {
-    private Clear(){}
 
-    public static Processor instruct(The processor) {    //TODO interface here
-        return new Processor(processor);
+	private Clear(){}
+
+    public static clear4j.Instruction send(String key, Serializable value) {    //TODO interface here
+    	return new Instruction(key, value);
     }
+    
+    private static final class Instruction implements clear4j.Instruction{
+    	private final String key;
+    	private final Serializable value;
+    	
+    	private Instruction(String key, Serializable value){
+    		this.key = key;
+    		this.value = value;
+    	}
 
-    public static final class Processor implements clear4j.Processor{
-
-        private final The processor;
-
-        private Processor(The processor){
-            this.processor = processor;
-        }
-
-        @Override
-        public Workflow to(clear4j.Instruction doSomething, String value) {
-            // TODO send a message to the in-queue for the processor.
-            Messenger.send(doSomething.name(), value).to(processor.name());
-            return null;
-        }
+		@Override
+		public void to(The processor) { //TODO check this
+			Message m = Messenger.send(key, value);
+			m.to(processor.name()); //TODO message
+		}
     }
 
     private static final Logger LOG = Logger.getLogger(The.class.getName());
@@ -53,16 +55,13 @@ public final class Clear {
                     try {
                         Object processorObject = processor.getProcessorClass().getConstructor().newInstance();
                         for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
-                            clear4j.processor.Instruction annotation = method.getAnnotation(clear4j.processor.Instruction.class);
+                            clear4j.processor.Process annotation = method.getAnnotation(clear4j.processor.Process.class);
                             if (annotation != null){
-                                clear4j.Instruction instruction = annotation.value();
-                                if (message.getMessage().equals(instruction.name())){
+                                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!: key = " + message.getMessage() + ", value = " + message.getPayload());
 
-                                    Object result = method.invoke(processorObject, message.getValue()); //TODO args
-                                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!: result = " + result);
-                                    //TODO CONTINUE HERE.
-                                    //TODO add result to message and pass on to... somewhere.
-                                }
+//                                    Object result = method.invoke(processorObject, message.getValue()); //TODO args
+//                                    //TODO CONTINUE HERE.
+//                                    //TODO add result to message and pass on to... somewhere.
                             }
                         }
 

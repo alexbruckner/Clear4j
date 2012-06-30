@@ -5,6 +5,7 @@ import clear4j.msg.queue.managers.QueueManager;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.*;
@@ -57,7 +58,8 @@ public final class Messenger {
     }
     
     /*
-     * SENDING
+     * SENDING //TODO clean up multiple declarations essentially all doing the same
+     * 
      */
 
     public static void send(clear4j.msg.Message message) {
@@ -68,14 +70,12 @@ public final class Messenger {
         return Messenger.newMessage(message);
     }
 
-	public static QueueInfo send(String message, String value) {
-		Message m = Messenger.newMessage(message);
-		m.setValue(value);
-		return m;
-	}
-
     public static Message newMessage(String message) {
         return new Message(message);
+    }
+    
+    public static Message send(String key, Serializable value){
+    	return new Message(key, value);
     }
 
     public static void waitFor(String name){
@@ -123,26 +123,25 @@ public final class Messenger {
     private static class Message implements clear4j.msg.Message {
 		private static final long serialVersionUID = 1L;
 		private final String message;
+		private final Serializable payload;
         private String queue;
         private String host;
         private int port;
 
         private final long id;
         private final static AtomicLong count = new AtomicLong();
-        private String value;
 
         private Message(String message) {
             this.message = message;
             this.id = count.addAndGet(1);
+            this.payload = null;
         }
 
-        public void setValue(String value) {
-        	this.value = value;
+		private Message(String key, Serializable value) {
+			this.message = key;
+			this.id = count.addAndGet(1);
+			this.payload = value;
 		}
-        
-        public String getValue(){
-        	return value;
-        }
 
 		public String getMessage() { 
             return message;
@@ -181,6 +180,11 @@ public final class Messenger {
                     ", queue=" + queue +
                     '}';
         }
+
+		@Override
+		public Serializable getPayload() {
+			return payload;
+		}
     }
 
     /*

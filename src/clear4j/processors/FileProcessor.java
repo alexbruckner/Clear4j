@@ -1,13 +1,13 @@
 package clear4j.processors;
 
-import clear4j.processor.Instruction;
-import clear4j.processor.Processor;
+import clear4j.processor.Key;
+import clear4j.processor.Process;
 
-@Processor
+
 public class FileProcessor {
 	
-	@Instruction(clear4j.Instruction.LOAD_A_FILE)
-	public String loadText(String path){
+	@Process
+	public String process(@Key("path") String path){
 		return FileUtils.loadTextFromFile(path);
 	}
 	

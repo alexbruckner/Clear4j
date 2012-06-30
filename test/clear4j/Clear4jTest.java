@@ -47,8 +47,10 @@ public class Clear4jTest {
         File aFile = new File(TestConfig.TEST_FILE_PATH.getValue());
 
         // start the workflow process
-        Workflow workflow = Clear.instruct(The.FILE_PROCESSOR).to(Instruction.LOAD_A_FILE, TestConfig.TEST_FILE_PATH.getValue());
-
+//        Workflow workflow = Clear.instruct(The.FILE_PROCESSOR).to(Instruction.LOAD_A_FILE, TestConfig.TEST_FILE_PATH.getValue());
+        //TODO Key enum for "path"
+        Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).to(The.FILE_PROCESSOR);
+        
 //        Payload payload = workflow.waitFor();
 //        String text1 = payload.get(Payload.TEXT);
 //
