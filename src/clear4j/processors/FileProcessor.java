@@ -6,8 +6,8 @@ import clear4j.processor.Process;
 
 public class FileProcessor {
 	
-	@Process
-	public String process(@Key("path") String path){
+	@Process("text") // puts result of process(message['path']) into message['text'].
+	public String process(@Key("path") String path){ 
 		return FileUtils.loadTextFromFile(path);
 	}
 	

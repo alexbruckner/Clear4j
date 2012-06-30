@@ -21,7 +21,7 @@ public final class Clear {
 	private Clear(){}
 
     public static clear4j.Instruction send(String key, Serializable value) {    //TODO interface here
-    	return new Instruction(key, value);
+    	return new Instruction(key, value); //TODO on(remote).to()
     }
     
     private static final class Instruction implements clear4j.Instruction{
@@ -59,7 +59,9 @@ public final class Clear {
                         for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
                             clear4j.processor.Process annotation = method.getAnnotation(clear4j.processor.Process.class);
                             if (annotation != null){
-                                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!: message = " + message.getMessage() + ", key = " + message.getPayload());
+                                  if (LOG.isLoggable(Level.INFO)){
+                                	  LOG.log(Level.INFO, String.format("%s=%s", message.getMessage(), message.getPayload()));
+                                  }
                                   //TODO redesign to allow for multiple annotations
                                   String key = null;
                                   for (Annotation[] paramAnnotations : method.getParameterAnnotations()){
@@ -72,12 +74,16 @@ public final class Clear {
                                   
                                   if (key != null && message.getMessage().equals(key)){
                                       Object result = method.invoke(processorObject, message.getPayload()); //TODO args
-                                      System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!: value = " + result);
-	
+                                      String resultKey = annotation.value();
+                                      if (LOG.isLoggable(Level.INFO)){
+                                    	  LOG.log(Level.INFO, String.format("%s=%s", resultKey, result));
+                                      }
+                                      // TODO put result into message and send on to somewhere...
+                                      // if somewhere not specified, return message to ... finalProcessor.                       }
+                                      // or put it into some workflow object?
+                                      
+                                      //TODO CONTINUE HERE.
                                   }
-//                                    //TODO CONTINUE HERE.
-//                                    //TODO add result to message and pass on to... somewhere.
-                                  
                             }
                         }
 
