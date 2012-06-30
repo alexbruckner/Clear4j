@@ -3,8 +3,10 @@ package clear4j;
 import clear4j.msg.Message;
 import clear4j.msg.Messenger;
 import clear4j.msg.Receiver;
+import clear4j.processor.Key;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,11 +59,25 @@ public final class Clear {
                         for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
                             clear4j.processor.Process annotation = method.getAnnotation(clear4j.processor.Process.class);
                             if (annotation != null){
-                                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!: key = " + message.getMessage() + ", value = " + message.getPayload());
-
-//                                    Object result = method.invoke(processorObject, message.getValue()); //TODO args
+                                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!: message = " + message.getMessage() + ", key = " + message.getPayload());
+                                  //TODO redesign to allow for multiple annotations
+                                  String key = null;
+                                  for (Annotation[] paramAnnotations : method.getParameterAnnotations()){
+                                	for (Annotation paramAnnotation : paramAnnotations) {
+                                		if (paramAnnotation instanceof Key){
+                                			key = ((Key) paramAnnotation).value();
+                                		}
+                                	}
+                                  }
+                                  
+                                  if (key != null && message.getMessage().equals(key)){
+                                      Object result = method.invoke(processorObject, message.getPayload()); //TODO args
+                                      System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!: value = " + result);
+	
+                                  }
 //                                    //TODO CONTINUE HERE.
 //                                    //TODO add result to message and pass on to... somewhere.
+                                  
                             }
                         }
 
