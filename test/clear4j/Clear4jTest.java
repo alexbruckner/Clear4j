@@ -54,8 +54,7 @@ public class Clear4jTest {
         //TODO Key enum for "path"
         Instruction<String> instruction = Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).to(The.FILE_PROCESSOR);
         
-        instruction.waitFor();
-        
+        //TODO not thread safe
         ConcurrentHashMap<String, String> map = instruction.waitFor();
         String text1 = map.get("text"); //TODO Key enum for "text"
 
