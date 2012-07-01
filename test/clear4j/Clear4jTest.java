@@ -54,6 +54,8 @@ public class Clear4jTest {
         //TODO Key enum for "path"
         Instruction<String> instruction = Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).to(The.FILE_PROCESSOR);
         
+        instruction.waitFor();
+        
         ConcurrentHashMap<String, String> map = instruction.waitFor();
         String text1 = map.get("text"); //TODO Key enum for "text"
 
@@ -62,10 +64,6 @@ public class Clear4jTest {
 
         // assert same content
         Assert.assertEquals(text2, text1);
-        
-        Thread.sleep(1000);
-
-//        Assert.fail("to be implemented;");
 
     }
 
