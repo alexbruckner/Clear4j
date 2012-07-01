@@ -8,6 +8,7 @@ import clear4j.processor.Key;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +60,7 @@ public final class Clear {
                             clear4j.processor.Process annotation = method.getAnnotation(clear4j.processor.Process.class);
                             if (annotation != null){
                                   if (LOG.isLoggable(Level.INFO)){
-                                	  LOG.log(Level.INFO, String.format("%s=%s", message.getPayload(), message.getPayload()));
+                                	  LOG.log(Level.INFO, String.format("payload=%s", message.getPayload()));
                                   }
                                   //TODO redesign to allow for multiple annotations
                                   String key = null;
@@ -71,8 +72,8 @@ public final class Clear {
                                 	}
                                   }
                                   
-                                  if (key != null && message.getPayload().equals(key)){
-                                      Object result = method.invoke(processorObject, message.getPayload()); //TODO args
+                                  if (key != null && ((Map)message.getPayload()).get(key)!=null){
+                                      Object result = method.invoke(processorObject, ((Map)message.getPayload()).get(key)); //TODO args
                                       String resultKey = annotation.value();
                                       if (LOG.isLoggable(Level.INFO)){
                                     	  LOG.log(Level.INFO, String.format("%s=%s", resultKey, result));
