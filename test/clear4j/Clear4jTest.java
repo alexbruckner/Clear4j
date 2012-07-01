@@ -75,10 +75,10 @@ public class Clear4jTest {
 
         final String[] received = new String[1];
 
-        Messenger.Receiver receiver = Messenger.register(new Receiver(){
+        Messenger.Receiver receiver = Messenger.register(new Receiver<String>(){
             @Override
-            public void onMessage(Message message) {
-                received[0] = message.getMessage();
+            public void onMessage(Message<String> message) {
+                received[0] = message.getPayload();
             }
         }).on("localhost", 9876).to(remoteQueue);
 
@@ -104,12 +104,12 @@ public class Clear4jTest {
         Future<Message> remoteValue = Messenger.register(remoteQueue);
         Messenger.send(remoteMessage).on("localhost", 9876).to(remoteQueue);
         Message remote = remoteValue.get();
-        Assert.assertEquals(remoteMessage, remote.getMessage());
+        Assert.assertEquals(remoteMessage, remote.getPayload());
 
         Future<Message> localValue = Messenger.register(localQueue);
         Messenger.send(localMessage).to(localQueue);
         Message local = localValue.get();
-        Assert.assertEquals(localMessage, local.getMessage());
+        Assert.assertEquals(localMessage, local.getPayload());
 
     }
 
@@ -132,12 +132,12 @@ public class Clear4jTest {
             LOG.log(Level.INFO, "creating receiver");
         }
 
-        Messenger.Receiver receiver = Messenger.register(new Receiver() {
+        Messenger.Receiver receiver = Messenger.register(new Receiver<String>() {
             private int count;
 
             @Override
-            public void onMessage(Message message) {
-                receivedMessages.add(message.getMessage());
+            public void onMessage(Message<String> message) {
+                receivedMessages.add(message.getPayload());
                 if (LOG.isLoggable(Level.INFO)) {
                     LOG.log(Level.INFO, String.format("messages received: %s", ++count));
                 }

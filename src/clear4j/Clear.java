@@ -8,6 +8,7 @@ import clear4j.processor.Key;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,22 +21,20 @@ public final class Clear {
 
 	private Clear(){}
 
-    public static clear4j.Instruction send(String key, Serializable value) {    //TODO interface here
+    public static clear4j.Instruction send(final String key, final Serializable value) {    //TODO interface here
     	return new Instruction(key, value); //TODO on(remote).to()
     }
     
     private static final class Instruction implements clear4j.Instruction{
-    	private final String key;
-    	private final Serializable value;
+    	private final ConcurrentHashMap<String, Serializable> values = new ConcurrentHashMap<String, Serializable>();
     	
-    	private Instruction(final String key, final Serializable value){
-    		this.key = key;
-    		this.value = value;
+    	private Instruction(String key, Serializable value){
+    		values.put(key, value);
     	}
 
 		@Override
 		public void to(The processor) { //TODO check this
-			Message m = Messenger.send(key, value);
+			Message<ConcurrentHashMap<String, Serializable>> m = Messenger.send(values);
 			m.to(processor.name()); //TODO message
 		}
     }
@@ -60,7 +59,7 @@ public final class Clear {
                             clear4j.processor.Process annotation = method.getAnnotation(clear4j.processor.Process.class);
                             if (annotation != null){
                                   if (LOG.isLoggable(Level.INFO)){
-                                	  LOG.log(Level.INFO, String.format("%s=%s", message.getMessage(), message.getPayload()));
+                                	  LOG.log(Level.INFO, String.format("%s=%s", message.getPayload(), message.getPayload()));
                                   }
                                   //TODO redesign to allow for multiple annotations
                                   String key = null;
@@ -72,7 +71,7 @@ public final class Clear {
                                 	}
                                   }
                                   
-                                  if (key != null && message.getMessage().equals(key)){
+                                  if (key != null && message.getPayload().equals(key)){
                                       Object result = method.invoke(processorObject, message.getPayload()); //TODO args
                                       String resultKey = annotation.value();
                                       if (LOG.isLoggable(Level.INFO)){

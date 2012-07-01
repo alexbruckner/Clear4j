@@ -8,8 +8,7 @@ import java.io.Serializable;
  * Date: 25/05/12
  * Time: 14:42
  */
-public interface Message extends QueueInfo, RemoteInfo, Serializable {
-    String getMessage();
+public interface Message<T extends Serializable> extends QueueInfo, RemoteInfo, Serializable {
     long getId();
-    Serializable getPayload();
+    T getPayload();
 }

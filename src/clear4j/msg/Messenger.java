@@ -58,24 +58,12 @@ public final class Messenger {
     }
     
     /*
-     * SENDING //TODO clean up multiple declarations essentially all doing the same
-     * 
+     * SENDING 
      */
-
-    public static void send(clear4j.msg.Message message) {
-        QueueManager.add(message);
-    }
-
-    public static clear4j.msg.Message send(String message) {
-        return Messenger.newMessage(message);
-    }
-
-    public static Message newMessage(String message) {
-        return new Message(message);
-    }
     
-    public static Message send(String key, Serializable value){
-    	return new Message(key, value);
+   
+    public static <T extends Serializable> clear4j.msg.Message<T> send(T payload){
+    	return new Message<T>(payload);
     }
 
     public static void waitFor(String name){
@@ -120,10 +108,9 @@ public final class Messenger {
         unregister(receiver);
     }
 
-    private static class Message implements clear4j.msg.Message {
+    private static class Message<T extends Serializable> implements clear4j.msg.Message<T> {
 		private static final long serialVersionUID = 1L;
-		private final String message;
-		private final Serializable payload;
+		private final T payload;
         private String queue;
         private String host;
         private int port;
@@ -131,20 +118,14 @@ public final class Messenger {
         private final long id;
         private final static AtomicLong count = new AtomicLong();
 
-        private Message(String message) {
-            this.message = message;
+        private Message(T payload) {
+            this.payload = payload;
             this.id = count.addAndGet(1);
-            this.payload = null;
         }
-
-		private Message(String key, Serializable value) {
-			this.message = key;
-			this.id = count.addAndGet(1);
-			this.payload = value;
-		}
-
-		public String getMessage() { 
-            return message;
+        
+        @Override
+		public T getPayload() { 
+            return payload;
         }
 
         @Override
@@ -153,7 +134,7 @@ public final class Messenger {
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("sending [%s]", this));
             }
-            send(this);
+            QueueManager.add(this);
             return null; //TODO fix interface salad or allow to specify synchronous receiver of one message with FutureTask.
         }
 
@@ -176,15 +157,11 @@ public final class Messenger {
         @Override
         public String toString() {
             return "Message{" +
-                    "message='" + message + '\'' +
+                    "payload='" + payload + '\'' +
                     ", queue=" + queue +
                     '}';
         }
 
-		@Override
-		public Serializable getPayload() {
-			return payload;
-		}
     }
 
     /*
@@ -312,7 +289,7 @@ public final class Messenger {
 			//this message will get picked up by the RemoteAdapter and a ('local' to the remote host) receiver created.
 			//which proxies all messages received back to the localProxyQueue.
 			String message = String.format("(%s/%s/%s)", LOCAL_HOST, LOCAL_PORT, localProxyQueue);
-			newMessage(message).on(receiver.host, receiver.port).to("remote-receivers");
+			new Message(message).on(receiver.host, receiver.port).to("remote-receivers");
 			return receiver;
 		}
 

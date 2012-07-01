@@ -33,11 +33,11 @@ public class RemoteAdapter {
             //TODO
             // expected message format: (remoteHost/remotePort/remoteQueue)
             // where remoteQueue = (localHost/localPort/localQueue);
-            Messenger.register(new Receiver() {
+            Messenger.register(new Receiver<String>() {
                 @Override
-                public void onMessage(Message message) {
+                public void onMessage(Message<String> message) {
 
-                    String msg = message.getMessage();
+                    String msg = message.getPayload();
 
                     int index;
 
@@ -46,10 +46,11 @@ public class RemoteAdapter {
                     final String remoteQueue = msg.substring(index + 1, msg.length() - 1);
                     final String localQueue = remoteQueue.substring(remoteQueue.lastIndexOf("/") + 1, remoteQueue.length() - 1);
 
-                    Messenger.register(new Receiver() {
+                    Messenger.register(new Receiver<String>() {
                         @Override
-                        public void onMessage(Message message) {
-                            Messenger.send(message.getMessage()).on(remoteHost, remotePort).to(remoteQueue);
+                        public void onMessage(Message<String> message) {
+                            Message<String> msg = Messenger.send(message.getPayload());
+                            msg.on(remoteHost, remotePort).to(remoteQueue);
                         }
                     }).to(localQueue);
                 }
