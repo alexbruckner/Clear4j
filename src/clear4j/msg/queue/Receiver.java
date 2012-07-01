@@ -1,5 +1,7 @@
 package clear4j.msg.queue;
 
+import java.io.Serializable;
+
 import clear4j.msg.QueueInfo;
 import clear4j.msg.RemoteInfo;
 
@@ -8,5 +10,5 @@ import clear4j.msg.RemoteInfo;
  * Date: 27/05/12
  * Time: 17:11
  */
-public interface Receiver extends clear4j.msg.Receiver, QueueInfo, RemoteInfo {
+public interface Receiver<T extends Serializable> extends clear4j.msg.Receiver<T>, QueueInfo<T>, RemoteInfo {
 }

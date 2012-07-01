@@ -75,7 +75,7 @@ public class Clear4jTest {
 
         final String[] received = new String[1];
 
-        Messenger.Receiver receiver = Messenger.register(new Receiver<String>(){
+        Messenger.Receiver<String> receiver = Messenger.register(new Receiver<String>(){
             @Override
             public void onMessage(Message<String> message) {
                 received[0] = message.getPayload();
@@ -101,14 +101,14 @@ public class Clear4jTest {
         String remoteQueue = "remote queue";
         String remoteMessage = "remote test";
 
-        Future<Message> remoteValue = Messenger.register(remoteQueue);
+        Future<Message<String>> remoteValue = Messenger.register(remoteQueue);
         Messenger.send(remoteMessage).on("localhost", 9876).to(remoteQueue);
-        Message remote = remoteValue.get();
+        Message<String> remote = remoteValue.get();
         Assert.assertEquals(remoteMessage, remote.getPayload());
 
-        Future<Message> localValue = Messenger.register(localQueue);
+        Future<Message<String>> localValue = Messenger.register(localQueue);
         Messenger.send(localMessage).to(localQueue);
-        Message local = localValue.get();
+        Message<String> local = localValue.get();
         Assert.assertEquals(localMessage, local.getPayload());
 
     }
@@ -132,7 +132,7 @@ public class Clear4jTest {
             LOG.log(Level.INFO, "creating receiver");
         }
 
-        Messenger.Receiver receiver = Messenger.register(new Receiver<String>() {
+        Messenger.Receiver<String> receiver = Messenger.register(new Receiver<String>() {
             private int count;
 
             @Override

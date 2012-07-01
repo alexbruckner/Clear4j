@@ -5,6 +5,7 @@ import clear4j.msg.Message;
 import clear4j.msg.queue.Receiver;
 import clear4j.msg.queue.managers.remote.RemoteAdapter;
 
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +29,7 @@ public final class QueueManager {
      * SENDING
      */
 
-    public static void add(Message message) {
+    public static <T extends Serializable> void add(Message<T> message) {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Adding message [%s]", message));
         }
@@ -44,14 +45,14 @@ public final class QueueManager {
      * RECEIVING
      */
 
-    public static void add(Receiver receiver) {
+    public static <T extends Serializable> void add(Receiver<T> receiver) {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Adding receiver [%s]", receiver));
         }
         QUEUE_MANAGER.add(receiver);
     }
 
-    public static void remove(Receiver receiver) {
+    public static <T extends Serializable> void remove(Receiver<T> receiver) {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Removing receiver [%s]", receiver));
         }

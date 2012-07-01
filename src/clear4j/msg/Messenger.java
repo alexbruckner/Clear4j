@@ -70,17 +70,17 @@ public final class Messenger {
         waitFor(name, String.format("<waitFor queue=\"%s\"/>", name));
     }
 
-    public static void waitFor(String name, String message) {
+    public static <T extends Serializable> void waitFor(String name, T message) {
         // register temporary receiver and send a message. once we get it back,
         // we know that all previous messages should have been dealt with.
-        final Message waitForMessage = new Message(message);
+        final Message<T> waitForMessage = new Message<T>(message);
 
         final boolean[] received = {false};
 
         //register
-        Receiver receiver = register(new clear4j.msg.Receiver() {
+        Receiver<T> receiver = register(new clear4j.msg.Receiver<T>() {
             @Override
-            public void onMessage(clear4j.msg.Message message) {
+            public void onMessage(clear4j.msg.Message<T> message) {
                 if (message.getId() == waitForMessage.getId()) {
                     received[0] = true;
                     synchronized (LOCK) {
@@ -129,7 +129,7 @@ public final class Messenger {
         }
 
         @Override
-        public Receiver to(String queue) {
+        public Receiver<T> to(String queue) {
             this.queue = queue;
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("sending [%s]", this));
@@ -142,7 +142,7 @@ public final class Messenger {
         public Adapter on(String host, int port) {
             this.host = host;
             this.port = port;
-            return new MessageAdapter(this);
+            return new MessageAdapter<T>(this);
         }
 
         @Override
@@ -168,7 +168,7 @@ public final class Messenger {
      * RECEIVING
      */
 
-    private static void register(Receiver receiver) {
+    private static <T extends Serializable> void register(Receiver<T> receiver) {
         if (receiver.getQueue() == null) {
             throw new RuntimeException("Receiver needs a queue");
         }
@@ -178,31 +178,31 @@ public final class Messenger {
         QueueManager.add(receiver);
     }
 
-    public static Receiver register(clear4j.msg.Receiver callback) {
-        return new Receiver(callback);
+    public static <T extends Serializable> Receiver<T> register(clear4j.msg.Receiver<T> callback) {
+        return new Receiver<T>(callback);
     }
 
     /*
      * implicitly creates a Receiver to receive one message from a queue
      * primarily for testing otherwise use Messenger.register(clear4j.msg.Receiver).to(queue);
      */
-    public static Future<clear4j.msg.Message> register(final String queue) {
+    public static <T extends Serializable> Future<clear4j.msg.Message<T>> register(final String queue) {
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final clear4j.msg.Message[] returned = new clear4j.msg.Message[1];
+        final clear4j.msg.Message<T>[] returned = new clear4j.msg.Message[1];
 
-        final Receiver receiver = register(new clear4j.msg.Receiver() {
+        final Receiver<T> receiver = register(new clear4j.msg.Receiver<T>() {
             @Override
-            public void onMessage(clear4j.msg.Message message) {
+            public void onMessage(clear4j.msg.Message<T> message) {
                 returned[0] = message;
                 latch.countDown();
             }
         }).to(queue);
 
-        FutureTask<clear4j.msg.Message> futureTask = new FutureTask<clear4j.msg.Message>(
-            new Callable<clear4j.msg.Message>() {
+        FutureTask<clear4j.msg.Message<T>> futureTask = new FutureTask<clear4j.msg.Message<T>>(
+            new Callable<clear4j.msg.Message<T>>() {
                 @Override
-                public clear4j.msg.Message call() throws InterruptedException {
+                public clear4j.msg.Message<T> call() throws InterruptedException {
                     latch.await();
                     unregister(receiver);
                     return returned[0];
@@ -216,25 +216,25 @@ public final class Messenger {
 
     }
 
-    public static void unregister(Receiver receiver) {
+    public static <T extends Serializable> void unregister(Receiver<T> receiver) {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("un-registering receiver: %s", receiver));
         }
         QueueManager.remove(receiver);
     }
 
-    public static class Receiver implements clear4j.msg.queue.Receiver {
-        private final clear4j.msg.Receiver callback;
+    public static class Receiver<T extends Serializable> implements clear4j.msg.queue.Receiver<T> {
+        private final clear4j.msg.Receiver<T> callback;
         private String queue;
         private String host;
         private int port;
 
-        private Receiver(clear4j.msg.Receiver callback) {
+        private Receiver(clear4j.msg.Receiver<T> callback) {
             this.callback = callback;
         }
 
         @Override
-        public Receiver to(String queue) {
+        public Receiver<T> to(String queue) {
             this.queue = queue;
             register(this);
             return this;
@@ -246,7 +246,7 @@ public final class Messenger {
         }
 
         @Override
-        public void onMessage(clear4j.msg.Message message) {
+        public void onMessage(clear4j.msg.Message<T> message) {
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("onMessage [%s]", message));
             }
@@ -268,20 +268,20 @@ public final class Messenger {
         public Adapter on(String host, int port) {
             this.host = host;
             this.port = port;
-            return new ReceiverAdapter(this);
+            return new ReceiverAdapter<T>(this);
         }
     }
     
-    private static class ReceiverAdapter implements clear4j.msg.queue.Adapter {
+    private static class ReceiverAdapter<T extends Serializable> implements clear4j.msg.queue.Adapter {
 
-    	private final Receiver receiver;
+    	private final Receiver<T> receiver;
     	
-		public ReceiverAdapter(Receiver receiver) {
+		public ReceiverAdapter(Receiver<T> receiver) {
 			this.receiver = receiver;
 		}
 
 		@Override
-		public Receiver to(String queue) {
+		public Receiver<T> to(String queue) {
 			//create local proxy queue for this receiver.
 			String localProxyQueue = String.format("(%s/%s/%s)", receiver.host, receiver.port, queue);
 			receiver.to(localProxyQueue);
@@ -289,21 +289,21 @@ public final class Messenger {
 			//this message will get picked up by the RemoteAdapter and a ('local' to the remote host) receiver created.
 			//which proxies all messages received back to the localProxyQueue.
 			String message = String.format("(%s/%s/%s)", LOCAL_HOST, LOCAL_PORT, localProxyQueue);
-			new Message(message).on(receiver.host, receiver.port).to("remote-receivers");
+			new Message<String>(message).on(receiver.host, receiver.port).to("remote-receivers");
 			return receiver;
 		}
 
     }
 
-    private static class MessageAdapter implements clear4j.msg.queue.Adapter {
+    private static class MessageAdapter<T extends Serializable> implements clear4j.msg.queue.Adapter {
 
-        private final Message message;
+        private final Message<T> message;
 
-        private MessageAdapter(Message message) {
+        private MessageAdapter(Message<T> message) {
             this.message = message;
         }
 
-        public Receiver to(String queue) {
+        public Receiver<T> to(String queue) {
             message.queue = queue;
             try {
                 Socket socket = new Socket(message.host, message.port);

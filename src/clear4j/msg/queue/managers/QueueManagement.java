@@ -1,10 +1,12 @@
 package clear4j.msg.queue.managers;
 
+import java.io.Serializable;
+
 import clear4j.msg.Message;
 import clear4j.msg.queue.Receiver;
 
-public interface QueueManagement {
-    void add(Message message);
-    void add(Receiver receiver);
-    void remove(Receiver receiver);
+public interface QueueManagement<T extends Serializable> {
+    void add(Message<T> message);
+    void add(Receiver<T> receiver);
+    void remove(Receiver<T> receiver);
 }

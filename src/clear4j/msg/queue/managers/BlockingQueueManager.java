@@ -3,61 +3,62 @@ package clear4j.msg.queue.managers;
 import clear4j.msg.Message;
 import clear4j.msg.queue.Receiver;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
-public final class BlockingQueueManager implements QueueManagement {
+public final class BlockingQueueManager<T extends Serializable> implements QueueManagement<T> {
 
-	private final Map<String, Queue> store;
+	private final Map<String, Queue<T>> store;
 	
 	BlockingQueueManager() {
-		this.store = new ConcurrentHashMap<String, Queue>();
+		this.store = new ConcurrentHashMap<String, Queue<T>>();
 	}
 
     @Override
-    public void add(Message message) {
+    public void add(Message<T> message) {
     	getQueue(message.getQueue()).getQueue().offer(message);
     }
 
     @Override
-    public void add(Receiver receiver) {
+    public void add(Receiver<T> receiver) {
     	getQueue(receiver.getQueue()).getReceivers().add(receiver);
     }
 
     @Override
-    public void remove(Receiver receiver) {
+    public void remove(Receiver<T> receiver) {
     	getQueue(receiver.getQueue()).getReceivers().remove(receiver);
     }
     
     private Queue getQueue(String name){
-    	Queue queue = store.get(name);
+    	Queue<T> queue = store.get(name);
     	if (queue == null) {
-    		queue = new Queue();
+    		queue = new Queue<T>();
     		store.put(name, queue);
     	}
     	return queue;
     }
 
 
-    private static final class Queue {
+    private static final class Queue<T extends Serializable> {
 
-        private final BlockingQueue<Message> queue;
-        private final List<Receiver> receivers;
+        private final BlockingQueue<Message<T>> queue;
+        private final List<Receiver<T>> receivers;
 
         private static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     	public Queue(){
-    		this.queue = new LinkedBlockingQueue<Message>();
-    		this.receivers = new CopyOnWriteArrayList<Receiver>();
+    		this.queue = new LinkedBlockingQueue<Message<T>>();
+    		this.receivers = new CopyOnWriteArrayList<Receiver<T>>();
 
             new Thread(){
                 @Override
                 public void run(){
                     while (true) {
                         try {
-                            final Message message = queue.take();
-                            for (final Receiver receiver : receivers){
+                            final Message<T> message = queue.take();
+                            for (final Receiver<T> receiver : receivers){
                                 notifyReceiver(receiver, message);
                             }
                         } catch (InterruptedException e) {
@@ -66,7 +67,7 @@ public final class BlockingQueueManager implements QueueManagement {
                     }
                 }
 
-                private void notifyReceiver(final Receiver receiver, final Message message) {
+                private void notifyReceiver(final Receiver<T> receiver, final Message<T> message) {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
@@ -79,11 +80,11 @@ public final class BlockingQueueManager implements QueueManagement {
     	}
 
 
-        public BlockingQueue<Message> getQueue(){
+        public BlockingQueue<Message<T>> getQueue(){
     		return queue;
     	}
 
-		public List<Receiver> getReceivers() {
+		public List<Receiver<T>> getReceivers() {
 			return receivers;
 		}
     }
