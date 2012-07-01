@@ -10,6 +10,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,16 +30,25 @@ public final class Clear {
     
     private static final class Instruction implements clear4j.Instruction{
     	private final ConcurrentHashMap<String, Serializable> values = new ConcurrentHashMap<String, Serializable>();
-    	
-    	private Instruction(String key, Serializable value){
+    	private String queue;
+    	private Message<ConcurrentHashMap<String, Serializable>> msg;
+    	private Instruction (String key, Serializable value){
     		values.put(key, value);
     	}
 
 		@Override
-		public void to(The processor) { //TODO check this
-			Message<ConcurrentHashMap<String, Serializable>> m = Messenger.send(values);
-			m.to(processor.name()); //TODO message
+		public clear4j.Instruction to(The processor) { //TODO check this
+			this.queue = processor.name(); 
+			this.msg = Messenger.send(values);
+			msg.to(queue);
+			return this;
 		}
+
+		@Override
+		public ConcurrentHashMap<String, Serializable> waitFor() {
+			Messenger.waitFor(queue, msg);
+			return msg.getPayload();
+    	}
     }
 
     private static final Logger LOG = Logger.getLogger(The.class.getName());
@@ -81,7 +92,7 @@ public final class Clear {
                                       // TODO put result into message and send on to somewhere...
                                       // if somewhere not specified, return message to ... finalProcessor.                       }
                                       // or put it into some workflow object?
-                                      
+                                      ((Map)message.getPayload()).put(resultKey, result);
                                       //TODO CONTINUE HERE.
                                   }
                             }

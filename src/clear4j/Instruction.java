@@ -1,10 +1,17 @@
 package clear4j;
 
+import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import clear4j.msg.Message;
+
 /**
  * User: alex
  * Date: 23/06/12
  * Time: 14:33
  */
-public interface Instruction {    
-    void to(The processor);
+public interface Instruction<T> {    
+    Instruction<T> to(The processor);
+    ConcurrentHashMap<String, T> waitFor();
 }

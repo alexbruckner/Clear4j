@@ -10,8 +10,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
@@ -49,20 +52,20 @@ public class Clear4jTest {
         // start the workflow process
 //        Workflow workflow = Clear.instruct(The.FILE_PROCESSOR).to(Instruction.LOAD_A_FILE, TestConfig.TEST_FILE_PATH.getValue());
         //TODO Key enum for "path"
-        Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).to(The.FILE_PROCESSOR);
+        Instruction<String> instruction = Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).to(The.FILE_PROCESSOR);
         
-//        Payload payload = workflow.waitFor();
-//        String text1 = payload.get(Payload.TEXT);
-//
-//        // load it the boring way
-//        String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
-//
-//        // assert same content
-//        Assert.assertEquals(text2, text1);
+        ConcurrentHashMap<String, String> map = instruction.waitFor();
+        String text1 = map.get("text"); //TODO Key enum for "text"
+
+        // load it the boring way
+        String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
+
+        // assert same content
+        Assert.assertEquals(text2, text1);
         
         Thread.sleep(1000);
 
-        Assert.fail("to be implemented;");
+//        Assert.fail("to be implemented;");
 
     }
 
