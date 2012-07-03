@@ -12,6 +12,7 @@ import clear4j.msg.Message;
  * Time: 14:33
  */
 public interface Instruction<T> {    
-    Instruction<T> to(The processor);
-    ConcurrentHashMap<String, T> waitFor();
+    void to(The processor);
+	Instruction<T> toAndWait(The processor);
+	Message<ConcurrentHashMap<String, Serializable>> get();
 }

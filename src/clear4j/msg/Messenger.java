@@ -1,5 +1,6 @@
 package clear4j.msg;
 
+import clear4j.The;
 import clear4j.msg.queue.Adapter;
 import clear4j.msg.queue.managers.QueueManager;
 
@@ -137,6 +138,23 @@ public final class Messenger {
             QueueManager.add(this);
             return null; //TODO fix interface salad or allow to specify synchronous receiver of one message with FutureTask.
         }
+        
+        @Override
+        public clear4j.msg.Message<T> toAndWait(final String queue) {
+        	this.queue = queue;
+            if (LOG.isLoggable(Level.INFO)) {
+                LOG.log(Level.INFO, String.format("sending and waiting [%s]", this));
+            }
+            	
+           	Future<clear4j.msg.Message<T>> trackedMessage = track(this.id, queue);
+           	QueueManager.add(this);
+           	try {
+				return trackedMessage.get();
+			} catch (Exception e) {
+				throw new RuntimeException(e); //TODO better handling
+			} 
+            	
+        }
 
         @Override
         public Adapter on(String host, int port) {
@@ -183,10 +201,10 @@ public final class Messenger {
     }
 
     /*
-     * implicitly creates a Receiver to receive one message from a queue
-     * primarily for testing otherwise use Messenger.register(clear4j.msg.Receiver).to(queue);
+     * implicitly creates a Receiver to receive a message from a queue
+     * initially used primarily for testing. better use Messenger.register(clear4j.msg.Receiver).to(queue);
      */
-    public static <T extends Serializable> Future<clear4j.msg.Message<T>> register(final String queue) {
+    public static <T extends Serializable> Future<clear4j.msg.Message<T>> track(final long messageId, final String queue) {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final clear4j.msg.Message<T>[] returned = new clear4j.msg.Message[1];
@@ -194,8 +212,10 @@ public final class Messenger {
         final Receiver<T> receiver = register(new clear4j.msg.Receiver<T>() {
             @Override
             public void onMessage(clear4j.msg.Message<T> message) {
-                returned[0] = message;
-                latch.countDown();
+                if(message.getId() == messageId){
+                	returned[0] = message;
+                	latch.countDown();
+                }
             }
         }).to(queue);
 
@@ -213,7 +233,6 @@ public final class Messenger {
         executor.execute(futureTask);
 
         return futureTask;
-
     }
 
     public static <T extends Serializable> void unregister(Receiver<T> receiver) {
@@ -270,6 +289,7 @@ public final class Messenger {
             this.port = port;
             return new ReceiverAdapter<T>(this);
         }
+
     }
     
     private static class ReceiverAdapter<T extends Serializable> implements clear4j.msg.queue.Adapter {

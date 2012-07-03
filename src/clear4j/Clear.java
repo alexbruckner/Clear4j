@@ -30,25 +30,33 @@ public final class Clear {
     
     private static final class Instruction implements clear4j.Instruction{
     	private final ConcurrentHashMap<String, Serializable> values = new ConcurrentHashMap<String, Serializable>();
-    	private String queue;
-    	private Message<ConcurrentHashMap<String, Serializable>> msg;
+    	private Future<clear4j.msg.Message<ConcurrentHashMap<String, Serializable>>> trackedMessage;
     	private Instruction (String key, Serializable value){
     		values.put(key, value);
     	}
 
 		@Override
-		public clear4j.Instruction to(The processor) { //TODO check this
-			this.queue = processor.name(); 
-			this.msg = Messenger.send(values);
-			msg.to(queue);
+		public void to(The processor) { //TODO check this
+			Messenger.send(values).to(processor.name());
+		}
+		
+		@Override
+		public Instruction toAndWait(The processor) { //TODO check this
+			Message msg = Messenger.send(values);
+			this.trackedMessage = Messenger.track(msg.getId(), The.FINAL_PROCESSOR.name());
+			msg.to(processor.name());
 			return this;
 		}
-
+	
 		@Override
-		public ConcurrentHashMap<String, Serializable> waitFor() {
-			Messenger.waitFor(queue, msg);
-			return msg.getPayload();
-    	}
+		public Message<ConcurrentHashMap<String, Serializable>> get() {
+			try {
+				return trackedMessage.get();
+			} catch (Exception e) {
+				throw new RuntimeException(e); //TODO better handling
+			}
+		}
+
     }
 
     private static final Logger LOG = Logger.getLogger(The.class.getName());

@@ -2,6 +2,7 @@ package clear4j.msg.queue;
 
 import java.io.Serializable;
 
+import clear4j.msg.Message;
 import clear4j.msg.Messenger;
 
 public interface Adapter<T extends Serializable> {

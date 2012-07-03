@@ -52,11 +52,11 @@ public class Clear4jTest {
         // start the workflow process
 //        Workflow workflow = Clear.instruct(The.FILE_PROCESSOR).to(Instruction.LOAD_A_FILE, TestConfig.TEST_FILE_PATH.getValue());
         //TODO Key enum for "path"
-        Instruction<String> instruction = Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).to(The.FILE_PROCESSOR);
+        Instruction<String> instruction = Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).toAndWait(The.FILE_PROCESSOR);
         
         //TODO not thread safe
-        ConcurrentHashMap<String, String> map = instruction.waitFor();
-        String text1 = map.get("text"); //TODO Key enum for "text"
+        ConcurrentHashMap<String, Serializable> map = instruction.get().getPayload();
+        String text1 = (String) map.get("text"); //TODO Key enum for "text"
 
         // load it the boring way
         String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
@@ -101,14 +101,11 @@ public class Clear4jTest {
         String remoteQueue = "remote queue";
         String remoteMessage = "remote test";
 
-        Future<Message<String>> remoteValue = Messenger.register(remoteQueue);
-        Messenger.send(remoteMessage).on("localhost", 9876).to(remoteQueue);
-        Message<String> remote = remoteValue.get();
-        Assert.assertEquals(remoteMessage, remote.getPayload());
+        //Message<String> remote = Messenger.send(remoteMessage).on("localhost", 9876).toAndWait(remoteQueue); //TODO fix this!
+        //Assert.assertEquals(remoteMessage, remote.getPayload());
+        Assert.fail("needs fixing");
 
-        Future<Message<String>> localValue = Messenger.register(localQueue);
-        Messenger.send(localMessage).to(localQueue);
-        Message<String> local = localValue.get();
+        Message<String> local = Messenger.send(localMessage).toAndWait(localQueue);
         Assert.assertEquals(localMessage, local.getPayload());
 
     }
