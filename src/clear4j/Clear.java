@@ -65,6 +65,9 @@ public final class Clear {
                     //TODO call method of processor with message keys required
                     //TODO add return value to message;
                     //TODO send to result queue.
+                	
+                	Map<String, Serializable> map = (Map<String, Serializable>) message.getPayload();
+                	
                     try {
                         Object processorObject = processor.getProcessorClass().getConstructor().newInstance();
                         for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
@@ -83,8 +86,8 @@ public final class Clear {
                                 	}
                                   }
                                   
-                                  if (key != null && ((Map)message.getPayload()).get(key)!=null){
-                                      Object result = method.invoke(processorObject, ((Map)message.getPayload()).get(key)); //TODO args
+                                  if (key != null && (map).get(key)!=null){
+                                      Serializable result = (Serializable) method.invoke(processorObject, map.get(key)); //TODO args
                                       String resultKey = annotation.value();
                                       if (LOG.isLoggable(Level.INFO)){
                                     	  LOG.log(Level.INFO, String.format("%s=%s", resultKey, result));
@@ -92,8 +95,14 @@ public final class Clear {
                                       // TODO put result into message and send on to somewhere...
                                       // if somewhere not specified, return message to ... finalProcessor.                       }
                                       // or put it into some workflow object?
-                                      ((Map)message.getPayload()).put(resultKey, result);
+                                      map.put(resultKey, result);
                                       //TODO CONTINUE HERE.
+                                      String nextProcessor = (String) map.get("next");
+                                      if (nextProcessor == null) {
+                                    	  nextProcessor = The.FINAL_PROCESSOR.name();
+                                      }
+                                      Messenger.send(message.getPayload()).to(nextProcessor);
+                                      //TODO now can wait on receiving on final processor!!!!!!
                                   }
                             }
                         }

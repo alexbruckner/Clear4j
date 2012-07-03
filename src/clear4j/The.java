@@ -7,8 +7,9 @@ package clear4j;
  */
 public enum The {      //TODO don't make this static but have a directory of defined processors (system adapaters)
 
-    FILE_PROCESSOR(clear4j.processors.FileProcessor.class); //TODO remote processor + TODO remove dependency of implementation here? also don't use enum if client wan't custom processors
-
+    FILE_PROCESSOR(clear4j.processors.FileProcessor.class), //TODO remote processor + TODO remove dependency of implementation here? also don't use enum if client wan't custom processors
+    FINAL_PROCESSOR(clear4j.processors.FinalProcessor.class);
+    
     private final Class processorClass;
     
     The(final Class processorClass) {
