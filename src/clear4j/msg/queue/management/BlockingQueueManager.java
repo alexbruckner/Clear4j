@@ -1,6 +1,7 @@
-package clear4j.msg.queue.managers;
+package clear4j.msg.queue.management;
 
-import clear4j.msg.Message;
+import clear4j.msg.queue.Message;
+import clear4j.msg.queue.QueueManagement;
 import clear4j.msg.queue.Receiver;
 
 import java.io.Serializable;

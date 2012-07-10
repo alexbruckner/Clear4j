@@ -1,6 +1,6 @@
 package clear4j.msg;
 
-import clear4j.msg.queue.Adapter;
+import clear4j.msg.queue.management.Adapter;
 
 /**
  * User: alex

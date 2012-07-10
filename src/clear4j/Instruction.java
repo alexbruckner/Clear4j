@@ -1,10 +1,9 @@
 package clear4j;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import clear4j.msg.Message;
+import clear4j.msg.queue.Message;
 
 /**
  * User: alex

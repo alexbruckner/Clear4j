@@ -1,8 +1,8 @@
 package clear4j;
 
-import clear4j.msg.Message;
 import clear4j.msg.Messenger;
-import clear4j.msg.Receiver;
+import clear4j.msg.queue.Message;
+import clear4j.msg.queue.Receiver;
 import clear4j.processors.FileUtils;
 import junit.framework.Assert;
 import org.junit.AfterClass;

@@ -1,9 +1,8 @@
-package clear4j.msg.queue.managers.remote;
+package clear4j.msg.queue.management;
 
-import clear4j.msg.Message;
 import clear4j.msg.Messenger;
-import clear4j.msg.Receiver;
-import clear4j.msg.queue.managers.QueueManager;
+import clear4j.msg.queue.Message;
+import clear4j.msg.queue.Receiver;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -1,8 +1,9 @@
 package clear4j.msg;
 
 import clear4j.The;
-import clear4j.msg.queue.Adapter;
-import clear4j.msg.queue.managers.QueueManager;
+import clear4j.msg.queue.Receiver;
+import clear4j.msg.queue.management.Adapter;
+import clear4j.msg.queue.management.QueueManager;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -63,7 +64,7 @@ public final class Messenger {
      */
     
    
-    public static <T extends Serializable> clear4j.msg.Message<T> send(T payload){
+    public static <T extends Serializable> clear4j.msg.queue.Message<T> send(T payload){
     	return new Message<T>(payload);
     }
 
@@ -79,9 +80,9 @@ public final class Messenger {
         final boolean[] received = {false};
 
         //register
-        Receiver<T> receiver = register(new clear4j.msg.Receiver<T>() {
+        Receiver<T> receiver = register(new clear4j.msg.queue.Receiver<T>() {
             @Override
-            public void onMessage(clear4j.msg.Message<T> message) {
+            public void onMessage(clear4j.msg.queue.Message<T> message) {
                 if (message.getId() == waitForMessage.getId()) {
                     received[0] = true;
                     synchronized (LOCK) {
@@ -109,7 +110,7 @@ public final class Messenger {
         unregister(receiver);
     }
 
-    private static class Message<T extends Serializable> implements clear4j.msg.Message<T> {
+    private static class Message<T extends Serializable> implements clear4j.msg.queue.Message<T> {
 		private static final long serialVersionUID = 1L;
 		private final T payload;
         private String queue;
@@ -140,13 +141,13 @@ public final class Messenger {
         }
         
         @Override
-        public clear4j.msg.Message<T> toAndWait(final String queue) {
+        public clear4j.msg.queue.Message<T> toAndWait(final String queue) {
         	this.queue = queue;
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("sending and waiting [%s]", this));
             }
             	
-           	Future<clear4j.msg.Message<T>> trackedMessage = track(this.id, queue);
+           	Future<clear4j.msg.queue.Message<T>> trackedMessage = track(this.id, queue);
            	QueueManager.add(this);
            	try {
 				return trackedMessage.get();
@@ -196,7 +197,7 @@ public final class Messenger {
         QueueManager.add(receiver);
     }
 
-    public static <T extends Serializable> Receiver<T> register(clear4j.msg.Receiver<T> callback) {
+    public static <T extends Serializable> Receiver<T> register(clear4j.msg.queue.Receiver<T> callback) {
         return new Receiver<T>(callback);
     }
 
@@ -204,14 +205,14 @@ public final class Messenger {
      * implicitly creates a Receiver to receive a message from a queue
      * initially used primarily for testing. better use Messenger.register(clear4j.msg.Receiver).to(queue);
      */
-    public static <T extends Serializable> Future<clear4j.msg.Message<T>> track(final long messageId, final String queue) {
+    public static <T extends Serializable> Future<clear4j.msg.queue.Message<T>> track(final long messageId, final String queue) {
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final clear4j.msg.Message<T>[] returned = new clear4j.msg.Message[1];
+        final clear4j.msg.queue.Message<T>[] returned = new clear4j.msg.queue.Message[1];
 
-        final Receiver<T> receiver = register(new clear4j.msg.Receiver<T>() {
+        final Receiver<T> receiver = register(new clear4j.msg.queue.Receiver<T>() {
             @Override
-            public void onMessage(clear4j.msg.Message<T> message) {
+            public void onMessage(clear4j.msg.queue.Message<T> message) {
                 if(message.getId() == messageId){
                 	returned[0] = message;
                 	latch.countDown();
@@ -219,10 +220,10 @@ public final class Messenger {
             }
         }).to(queue);
 
-        FutureTask<clear4j.msg.Message<T>> futureTask = new FutureTask<clear4j.msg.Message<T>>(
-            new Callable<clear4j.msg.Message<T>>() {
+        FutureTask<clear4j.msg.queue.Message<T>> futureTask = new FutureTask<clear4j.msg.queue.Message<T>>(
+            new Callable<clear4j.msg.queue.Message<T>>() {
                 @Override
-                public clear4j.msg.Message<T> call() throws InterruptedException {
+                public clear4j.msg.queue.Message<T> call() throws InterruptedException {
                     latch.await();
                     unregister(receiver);
                     return returned[0];
@@ -243,12 +244,12 @@ public final class Messenger {
     }
 
     public static class Receiver<T extends Serializable> implements clear4j.msg.queue.Receiver<T> {
-        private final clear4j.msg.Receiver<T> callback;
+        private final clear4j.msg.queue.Receiver<T> callback;
         private String queue;
         private String host;
         private int port;
 
-        private Receiver(clear4j.msg.Receiver<T> callback) {
+        private Receiver(clear4j.msg.queue.Receiver<T> callback) {
             this.callback = callback;
         }
 
@@ -265,7 +266,7 @@ public final class Messenger {
         }
 
         @Override
-        public void onMessage(clear4j.msg.Message<T> message) {
+        public void onMessage(clear4j.msg.queue.Message<T> message) {
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("onMessage [%s]", message));
             }
@@ -292,7 +293,7 @@ public final class Messenger {
 
     }
     
-    private static class ReceiverAdapter<T extends Serializable> implements clear4j.msg.queue.Adapter {
+    private static class ReceiverAdapter<T extends Serializable> implements clear4j.msg.queue.management.Adapter {
 
     	private final Receiver<T> receiver;
     	
@@ -315,7 +316,7 @@ public final class Messenger {
 
     }
 
-    private static class MessageAdapter<T extends Serializable> implements clear4j.msg.queue.Adapter {
+    private static class MessageAdapter<T extends Serializable> implements clear4j.msg.queue.management.Adapter {
 
         private final Message<T> message;
 

@@ -1,8 +1,8 @@
 package clear4j;
 
-import clear4j.msg.Message;
 import clear4j.msg.Messenger;
-import clear4j.msg.Receiver;
+import clear4j.msg.queue.Message;
+import clear4j.msg.queue.Receiver;
 import clear4j.processor.Key;
 
 import java.io.Serializable;
@@ -30,7 +30,7 @@ public final class Clear {
     
     private static final class Instruction implements clear4j.Instruction{
     	private final ConcurrentHashMap<String, Serializable> values = new ConcurrentHashMap<String, Serializable>();
-    	private Future<clear4j.msg.Message<ConcurrentHashMap<String, Serializable>>> trackedMessage;
+    	private Future<clear4j.msg.queue.Message<ConcurrentHashMap<String, Serializable>>> trackedMessage;
     	private Instruction (String key, Serializable value){
     		values.put(key, value);
     	}
