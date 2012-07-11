@@ -2,9 +2,6 @@ package clear4j.msg.queue;
 
 import java.io.Serializable;
 
-import clear4j.msg.QueueInfo;
-import clear4j.msg.RemoteInfo;
-
 
 /**
  * User: alexb
@@ -12,6 +9,8 @@ import clear4j.msg.RemoteInfo;
  * Time: 14:42
  */
 public interface Message<T extends Serializable> extends Serializable {
-    long getId();
+    String getId(); //should consist of origin.host-origin.port-timestamp-counter (counter=original long id)
+    Queue getTarget();
+    Host getOrigin();
     T getPayload();
 }

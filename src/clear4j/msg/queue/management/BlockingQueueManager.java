@@ -19,20 +19,20 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
 
     @Override
     public void add(Message<T> message) {
-    	getQueue(message.getQueue()).getQueue().offer(message);
+    	getQueue(message.getTarget().getName()).getQueue().offer(message);
     }
 
     @Override
     public void add(Receiver<T> receiver) {
-    	getQueue(receiver.getQueue()).getReceivers().add(receiver);
+    	getQueue(receiver.getQueue().getName()).getReceivers().add(receiver);
     }
 
     @Override
     public void remove(Receiver<T> receiver) {
-    	getQueue(receiver.getQueue()).getReceivers().remove(receiver);
+    	getQueue(receiver.getQueue().getName()).getReceivers().remove(receiver);
     }
     
-    private Queue getQueue(String name){
+    private Queue<T> getQueue(String name){
     	Queue<T> queue = store.get(name);
     	if (queue == null) {
     		queue = new Queue<T>();
@@ -60,7 +60,7 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
                         try {
                             final Message<T> message = queue.take();
                             for (final Receiver<T> receiver : receivers){
-                                notifyReceiver(receiver, message);
+                                notifyMessageListener(receiver, message);
                             }
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
@@ -68,11 +68,11 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
                     }
                 }
 
-                private void notifyReceiver(final Receiver<T> receiver, final Message<T> message) {
+                private void notifyMessageListener(final Receiver<T> receiver, final Message<T> message) {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            receiver.onMessage(message);
+                            receiver.getMessageListener().onMessage(message);
                         }
                     });
                 }

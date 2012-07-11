@@ -10,5 +10,6 @@ import java.io.Serializable;
  * Time: 16:15
  */
 public interface Receiver<T extends Serializable> {
-    void onMessage(Message<T> message);
+    MessageListener<T> getMessageListener();
+    String getQueue();
 }
