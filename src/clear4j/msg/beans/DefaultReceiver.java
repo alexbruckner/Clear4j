@@ -1,4 +1,4 @@
-package clear4j.msg;
+package clear4j.msg.beans;
 
 import clear4j.msg.queue.MessageListener;
 import clear4j.msg.queue.Receiver;
