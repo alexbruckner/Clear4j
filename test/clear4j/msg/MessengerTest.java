@@ -1,23 +1,12 @@
 package clear4j.msg;
 
-import clear4j.Clear;
-import clear4j.Instruction;
-import clear4j.TestConfig;
-import clear4j.The;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
-import clear4j.msg.queue.Receiver;
-import clear4j.processors.FileUtils;
 import junit.framework.Assert;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,7 +82,7 @@ public class MessengerTest {
             LOG.log(Level.INFO, "creating receiver");
         }
 
-        Messenger.Receiver<String> receiver = Messenger.register("test", new MessageListener<String>() {
+        Messenger.register("test", new MessageListener<String>() {
             private int count;
 
             @Override
@@ -125,13 +114,13 @@ public class MessengerTest {
             LOG.log(Level.INFO, "waiting for all messages");
         }
 
-        Messenger.waitFor("test");
+//        Messenger.waitFor("test");
 
         for (String sent : sentMessages) {
             Assert.assertTrue(String.format("%s not in received messages!", sent), receivedMessages.contains(sent));
         }
 
-        Messenger.unregister(receiver);
+//        Messenger.unregister(receiver);
     }
 
 }

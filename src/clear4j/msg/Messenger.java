@@ -31,7 +31,7 @@ public final class Messenger {
      * SENDING 
      */
 
-    public static <T extends Serializable> void send(String queue, T payload){
+    public static <T extends Serializable> void send(String queue, T payload) {
         Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
         Message<T> message = new DefaultMessage<T>(target, payload);
         QueueManager.add(message);
@@ -41,9 +41,9 @@ public final class Messenger {
      * RECEIVING
      */
 
-    public static <T extends Serializable> void register(String queue, MessageListener<T> listener) {    //TODO use Queue object with remote listening
+    public static <T extends Serializable> void register(String queue, MessageListener<T> listener) {
         Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
-        Receiver<T> receiver  = new DefaultReceiver<T>(target, listener);
+        Receiver<T> receiver = new DefaultReceiver<T>(target, listener);
         QueueManager.add(receiver);
     }
 
