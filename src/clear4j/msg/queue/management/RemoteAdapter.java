@@ -2,7 +2,7 @@ package clear4j.msg.queue.management;
 
 import clear4j.msg.Messenger;
 import clear4j.msg.queue.Message;
-import clear4j.msg.queue.Receiver;
+import clear4j.msg.queue.MessageListener;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -32,7 +32,7 @@ public class RemoteAdapter {
             //TODO
             // expected message format: (remoteHost/remotePort/remoteQueue)
             // where remoteQueue = (localHost/localPort/localQueue);
-            Messenger.register(new Receiver<String>() {
+            Messenger.register("remote-receivers", new MessageListener<String>() {
                 @Override
                 public void onMessage(Message<String> message) {
 
@@ -45,15 +45,16 @@ public class RemoteAdapter {
                     final String remoteQueue = msg.substring(index + 1, msg.length() - 1);
                     final String localQueue = remoteQueue.substring(remoteQueue.lastIndexOf("/") + 1, remoteQueue.length() - 1);
 
-                    Messenger.register(new Receiver<String>() {
+                    Messenger.register(localQueue, new MessageListener<String>() {
                         @Override
-                        public void onMessage(Message<String> message) {
-                            Message<String> msg = Messenger.send(message.getPayload());
-                            msg.on(remoteHost, remotePort).to(remoteQueue);
+                        public void onMessage (Message<String> message) {
+                            //TODO fix this
+//                            Message<String> msg = Messenger.send(message.getPayload());
+//                            msg.on(remoteHost, remotePort).to(remoteQueue);
                         }
-                    }).to(localQueue);
+                    });
                 }
-            }).to("remote-receivers");
+            });
 
             
             // create server socket to listen for messages from the beyond

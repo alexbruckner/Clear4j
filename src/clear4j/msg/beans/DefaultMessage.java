@@ -16,7 +16,7 @@ public class DefaultMessage<T extends Serializable> implements Message<T> {
 
     private final static AtomicLong instanceCount = new AtomicLong();
 
-    private DefaultMessage(Queue target, T payload) {
+    public DefaultMessage(Queue target, T payload) {
         this.target = target;
         this.payload = payload;
         this.origin = Host.LOCAL_HOST;

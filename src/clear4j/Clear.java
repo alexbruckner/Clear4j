@@ -2,7 +2,7 @@ package clear4j;
 
 import clear4j.msg.Messenger;
 import clear4j.msg.queue.Message;
-import clear4j.msg.queue.Receiver;
+import clear4j.msg.queue.MessageListener;
 import clear4j.processor.Key;
 
 import java.io.Serializable;
@@ -10,7 +10,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,14 +36,14 @@ public final class Clear {
 
 		@Override
 		public void to(The processor) { //TODO check this
-			Messenger.send(values).to(processor.name());
+			//Messenger.send(values).to(processor.name());//TODO
 		}
 		
 		@Override
 		public Instruction toAndWait(The processor) { //TODO check this
-			Message msg = Messenger.send(values);
-			this.trackedMessage = Messenger.track(msg.getId(), The.FINAL_PROCESSOR.name());
-			msg.to(processor.name());
+//			Message msg = Messenger.send(values);  //TODO
+//			this.trackedMessage = Messenger.track(msg.getId(), The.FINAL_PROCESSOR.name());
+//			msg.to(processor.name());
 			return this;
 		}
 	
@@ -66,7 +65,7 @@ public final class Clear {
         //TODO which will then call the relevant method required.
 
         for (final The processor : The.values()){
-            Messenger.register(new Receiver(){
+            Messenger.register(processor.name(), new MessageListener<String>(){
 
                 @Override
                 public void onMessage(Message message) {
@@ -109,7 +108,7 @@ public final class Clear {
                                       if (nextProcessor == null) {
                                     	  nextProcessor = The.FINAL_PROCESSOR.name();
                                       }
-                                      Messenger.send(message.getPayload()).to(nextProcessor);
+                                      Messenger.send(nextProcessor, message.getPayload());
                                       //TODO now can wait on receiving on final processor!!!!!!
                                   }
                             }
@@ -121,7 +120,7 @@ public final class Clear {
                     }
                 }
 
-            }).to(processor.name());
+            });
         }
     }
 

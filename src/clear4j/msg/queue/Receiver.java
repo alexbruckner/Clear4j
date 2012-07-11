@@ -11,5 +11,5 @@ import java.io.Serializable;
  */
 public interface Receiver<T extends Serializable> {
     MessageListener<T> getMessageListener();
-    String getQueue();
+    Queue getQueue();
 }
