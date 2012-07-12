@@ -49,7 +49,10 @@ public final class Messenger {
         return track(new DefaultMessage<T>(new DefaultQueue(queue, new HostPort(host, port)), payload));
     }
 
-
+    //todo simplify above to use this method instead
+    private static <T extends Serializable> void send(final Queue target, final T payload) {
+        send(new DefaultMessage<T>(target, payload));
+    }
 
     private static <T extends Serializable> void send(final Message<T> message) {
         if (LOG.isLoggable(Level.INFO)) {
@@ -73,7 +76,7 @@ public final class Messenger {
                         out.close();
                         socket.close();
                     } catch (IOException e) {
-                        LOG.log(Level.SEVERE, e.getMessage());
+                        LOG.log(Level.SEVERE, e.getMessage()); //TODO put on local exception queue
                     }
                 }
 
@@ -81,25 +84,45 @@ public final class Messenger {
         });
 
     }
+    
+    public static <T extends Serializable> Receiver<T> register(final String target, final MessageListener<T> listener) {
+    	return register(new DefaultQueue(target, Host.LOCAL_HOST), listener);
+    } 
 
     /*
      * RECEIVING
      */
-//todo string queue should br Queue target
-    public static <T extends Serializable> Receiver<T> register(final String queue, final MessageListener<T> listener) {    //todo remote
+    //TODO string queue should be Queue target
+    private static <T extends Serializable> Receiver<T> register(final Queue target, final MessageListener<T> listener) {
 
-        Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
         final Receiver<T> receiver = new DefaultReceiver<T>(target, listener);
 
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("registering receiver: %s", receiver));
         }
-
-        QueueManager.add(receiver);
-
+        
+        if (receiver.isLocal()){
+        	QueueManager.add(receiver);
+        } else {
+			//create local proxy queue for this receiver.
+//			String localProxyQueue = String.format("(%s/%s/%s)", receiver.host, receiver.port, queue);
+//			receiver.to(localProxyQueue);
+        	Queue localProxyQueue = new DefaultQueue(receiver.getId(), Host.LOCAL_HOST);
+			Receiver<T> localProxy = register(localProxyQueue, listener);
+			//send request to remote host, ie put a receiver message to its receivers queue
+			//this message will get picked up by the RemoteAdapter and a ('local' to the remote host) receiver created.
+			//which proxies all messages received back to the localProxyQueue.
+//			String message = String.format("(%s/%s/%s)", LOCAL_HOST, LOCAL_PORT, localProxyQueue);
+//			new Message<String>(message).on(receiver.host, receiver.port).to("remote-receivers");
+			Queue remoteReceivers = new DefaultQueue("remote-receivers", target.getHost());
+			send(remoteReceivers, localProxy); //TODO check this
+			return localProxy;
+        }
+        
         return receiver;
     }
 
+    //TODO remote
     public static <T extends Serializable> void unregister(final Receiver<T> receiver) {
 
         if (LOG.isLoggable(Level.INFO)) {
@@ -131,7 +154,7 @@ public final class Messenger {
 
         final Message<T>[] returned = new Message[1];
 
-        final Receiver<T> receiver = register(original.getTarget().getName(), new MessageListener<T>() {
+        final Receiver<T> receiver = register(original.getTarget(), new MessageListener<T>() {
             @Override
             public void onMessage(clear4j.msg.queue.Message<T> message) {
                 if (message.getId().equals(original.getId())) {
@@ -157,30 +180,5 @@ public final class Messenger {
 
         return futureTask.get();
     }
-
-//    private static class ReceiverAdapter<T extends Serializable> implements clear4j.msg.queue.management.Adapter {
-//
-//    	private final Receiver<T> receiver;
-//
-//		public ReceiverAdapter(Receiver<T> receiver) {
-//			this.receiver = receiver;
-//		}
-//
-//		@Override
-//		public Receiver<T> to(String queue) {
-//			//create local proxy queue for this receiver.
-//			String localProxyQueue = String.format("(%s/%s/%s)", receiver.host, receiver.port, queue);
-//			receiver.to(localProxyQueue);
-//			//send request to remote host, ie put a receiver message to its receivers queue
-//			//this message will get picked up by the RemoteAdapter and a ('local' to the remote host) receiver created.
-//			//which proxies all messages received back to the localProxyQueue.
-//			String message = String.format("(%s/%s/%s)", LOCAL_HOST, LOCAL_PORT, localProxyQueue);
-//			new Message<String>(message).on(receiver.host, receiver.port).to("remote-receivers");
-//			return receiver;
-//		}
-//
-//    }
-//
-
 
 }
