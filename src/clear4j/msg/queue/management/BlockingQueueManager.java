@@ -47,7 +47,7 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
         private final BlockingQueue<Message<T>> queue;
         private final List<Receiver<T>> receivers;
 
-        private static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     	public Queue(){
     		this.queue = new LinkedBlockingQueue<Message<T>>();
