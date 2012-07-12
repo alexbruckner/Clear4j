@@ -12,7 +12,7 @@ public abstract class AbstractRemoteOrigin implements RemoteOrigin {
     private final Host origin;
     private final String id;
 
-    private final static AtomicLong instanceCount = new AtomicLong();
+    private static final AtomicLong instanceCount = new AtomicLong();
 
     public AbstractRemoteOrigin(final Queue target) {
         this.target = target;

@@ -4,13 +4,10 @@ import clear4j.msg.queue.Message;
 import clear4j.msg.queue.Queue;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class DefaultMessage<T extends Serializable> extends AbstractRemoteOrigin implements Message<T> {
     private static final long serialVersionUID = 1L;
     private final T payload;
-
-    private final static AtomicLong instanceCount = new AtomicLong();
 
     public DefaultMessage(final Queue target, final T payload) {
         super(target);

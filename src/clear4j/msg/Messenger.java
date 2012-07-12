@@ -8,13 +8,7 @@ import clear4j.msg.queue.beans.HostPort;
 import clear4j.msg.queue.management.QueueManager;
 
 import java.io.Serializable;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,24 +90,23 @@ public final class Messenger {
     	});
     }
 
-    //TODO check this!!!
     public static synchronized void wait(String queue){ //todo remote
     	Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
     	Message<String> message = new DefaultMessage<String>(target, "wait");
     	try {
     		if (LOG.isLoggable(Level.INFO)) {
-                LOG.log(Level.INFO, String.format("waiting message received: %s", track(message).get()));
+                LOG.log(Level.INFO, String.format("waiting message received: %s", sendAndWait(message)));
             }
 		} catch (Exception e) {
 			throw new RuntimeException(e); //TODO
 		}
     }
 
-    /*//TODO check this!!!
+    /*
      * implicitly creates a Receiver to receive a message from a queue
      * initially used primarily for testing. better use Messenger.register(clear4j.msg.Receiver).to(queue);
      */
-    public static <T extends Serializable> Future<Message<T>> track(final Message<T> original) {
+    public static <T extends Serializable> Message<T> sendAndWait(final Message<T> original) throws ExecutionException, InterruptedException {
 
         final CountDownLatch latch = new CountDownLatch(1);
         
@@ -122,7 +115,6 @@ public final class Messenger {
         final Receiver<T> receiver = register(original.getTarget().getName(), new MessageListener<T>() {
             @Override
             public void onMessage(clear4j.msg.queue.Message<T> message) {
-                System.out.println("!!!!!!" + message + "==" + original.getId());
             	if(message.getId().equals(original.getId())){
                 	returned[0] = message;
                 	latch.countDown();
@@ -134,6 +126,7 @@ public final class Messenger {
             new Callable<Message<T>>() {
                 @Override
                 public Message<T> call() throws InterruptedException {
+                    QueueManager.add(original);
                     latch.await();
                     unregister(receiver);
                     return returned[0];
@@ -143,7 +136,7 @@ public final class Messenger {
 
         executor.execute(futureTask);
 
-        return futureTask;
+        return futureTask.get();
     }
 
  // TODO  the adapter stuff goes into the queue manager.
