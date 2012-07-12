@@ -12,4 +12,5 @@ public interface RemoteOrigin extends Serializable {
     Host getOrigin();
     Queue getTarget();
     String getId(); //should consist of origin.host-origin.port-timestamp-counter (counter=original long id)
+    boolean isLocal();
 }

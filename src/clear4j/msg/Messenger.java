@@ -7,7 +7,10 @@ import clear4j.msg.queue.*;
 import clear4j.msg.queue.beans.HostPort;
 import clear4j.msg.queue.management.QueueManager;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.Socket;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,10 +21,11 @@ import java.util.logging.Logger;
  * Time: 14:41
  */
 public final class Messenger {
-    private Messenger() {}
+    private Messenger() {
+    }
 
     private static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-    
+
     private static final Logger LOG = Logger.getLogger(Messenger.class.getName());
 
 
@@ -38,19 +42,36 @@ public final class Messenger {
     }
 
     private static <T extends Serializable> void send(final Queue target, final T payload) {
-		final Message<T> message = new DefaultMessage<T>(target, payload);
+        final Message<T> message = new DefaultMessage<T>(target, payload);
 
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("sending message: %s", message));
         }
-        
-        executor.execute(new Runnable(){
-			@Override
-			public void run() {
-		        QueueManager.add(message);
-			}
-    	});
-        
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                if (message.isLocal()) {
+                    QueueManager.add(message);
+                } else {
+                    try {
+                        Host targetHost = message.getTarget().getHost();
+                        Socket socket = new Socket(targetHost.getHost(), targetHost.getPort());
+                        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                        out.flush();
+                        out.writeObject(message);
+                        out.flush();
+                        out.close();
+                        socket.close();
+                    } catch (IOException e) {
+                        LOG.log(Level.SEVERE, e.getMessage());
+                    }
+                }
+
+            }
+        });
+
     }
 
     /*
@@ -65,14 +86,14 @@ public final class Messenger {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("registering receiver: %s", receiver));
         }
-        
-        executor.execute(new Runnable(){
-			@Override
-			public void run() {
-		        QueueManager.add(receiver);
-			}
-    	});
-        
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                QueueManager.add(receiver);
+            }
+        });
+
         return receiver;
     }
 
@@ -81,25 +102,25 @@ public final class Messenger {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("un-registering receiver: %s", receiver));
         }
-        
-        executor.execute(new Runnable(){
-			@Override
-			public void run() {
-		        QueueManager.remove(receiver);
-			}
-    	});
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                QueueManager.remove(receiver);
+            }
+        });
     }
 
-    static synchronized void wait(String queue){ //todo remote
-    	Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
-    	Message<String> message = new DefaultMessage<String>(target, "wait");
-    	try {
-    		if (LOG.isLoggable(Level.INFO)) {
+    static synchronized void wait(String queue) { //todo remote
+        Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
+        Message<String> message = new DefaultMessage<String>(target, "wait");
+        try {
+            if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("waiting message received: %s", sendAndWait(message)));
             }
-		} catch (Exception e) {
-			throw new RuntimeException(e); //TODO
-		}
+        } catch (Exception e) {
+            throw new RuntimeException(e); //TODO
+        }
     }
 
     /*
@@ -109,29 +130,29 @@ public final class Messenger {
     private static <T extends Serializable> Message<T> sendAndWait(final Message<T> original) throws ExecutionException, InterruptedException {
 
         final CountDownLatch latch = new CountDownLatch(1);
-        
+
         final Message<T>[] returned = new Message[1];
 
         final Receiver<T> receiver = register(original.getTarget().getName(), new MessageListener<T>() {
             @Override
             public void onMessage(clear4j.msg.queue.Message<T> message) {
-            	if(message.getId().equals(original.getId())){
-                	returned[0] = message;
-                	latch.countDown();
+                if (message.getId().equals(original.getId())) {
+                    returned[0] = message;
+                    latch.countDown();
                 }
             }
         });
 
         FutureTask<clear4j.msg.queue.Message<T>> futureTask = new FutureTask<Message<T>>(
-            new Callable<Message<T>>() {
-                @Override
-                public Message<T> call() throws InterruptedException {
-                    QueueManager.add(original);
-                    latch.await();
-                    unregister(receiver);
-                    return returned[0];
+                new Callable<Message<T>>() {
+                    @Override
+                    public Message<T> call() throws InterruptedException {
+                        QueueManager.add(original);
+                        latch.await();
+                        unregister(receiver);
+                        return returned[0];
+                    }
                 }
-            }
         );
 
         executor.execute(futureTask);
@@ -139,7 +160,6 @@ public final class Messenger {
         return futureTask.get();
     }
 
- // TODO  the adapter stuff goes into the queue manager.
 //    private static class ReceiverAdapter<T extends Serializable> implements clear4j.msg.queue.management.Adapter {
 //
 //    	private final Receiver<T> receiver;
@@ -163,30 +183,6 @@ public final class Messenger {
 //
 //    }
 //
-//    private static class MessageAdapter<T extends Serializable> implements clear4j.msg.queue.management.Adapter {
-//
-//        private final Message<T> message;
-//
-//        private MessageAdapter(Message<T> message) {
-//            this.message = message;
-//        }
-//
-//        public Receiver<T> to(String queue) {
-//            message.queue = queue;
-//            try {
-//                Socket socket = new Socket(message.host, message.port);
-//                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-//                out.flush();
-//                out.writeObject(message);
-//                out.flush();
-//                out.close();
-//                socket.close();
-//            } catch (IOException e) {
-//                LOG.log(Level.SEVERE, e.getMessage());
-//            }
-//            return null; //TODO fix interface salad
-//        }
-//
-//    }
+
 
 }
