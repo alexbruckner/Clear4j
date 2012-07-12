@@ -87,12 +87,7 @@ public final class Messenger {
             LOG.log(Level.INFO, String.format("registering receiver: %s", receiver));
         }
 
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                QueueManager.add(receiver);
-            }
-        });
+        QueueManager.add(receiver);
 
         return receiver;
     }
@@ -103,12 +98,7 @@ public final class Messenger {
             LOG.log(Level.INFO, String.format("un-registering receiver: %s", receiver));
         }
 
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                QueueManager.remove(receiver);
-            }
-        });
+        QueueManager.remove(receiver);
     }
 
     static synchronized void wait(String queue) { //todo remote

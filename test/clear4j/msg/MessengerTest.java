@@ -94,8 +94,6 @@ public class MessengerTest {
                 }
             }
         });
-        
-//        Messenger.unregister(receiver);
 
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "starting loop");
