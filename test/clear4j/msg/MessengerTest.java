@@ -2,6 +2,7 @@ package clear4j.msg;
 
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
+import clear4j.msg.queue.Receiver;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -82,7 +83,7 @@ public class MessengerTest {
             LOG.log(Level.INFO, "creating receiver");
         }
 
-        Messenger.register("test", new MessageListener<String>() {
+        Receiver<String> receiver = Messenger.register("test", new MessageListener<String>() {
             private int count;
 
             @Override
@@ -93,6 +94,8 @@ public class MessengerTest {
                 }
             }
         });
+        
+        Messenger.unregister(receiver);
 
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "starting loop");

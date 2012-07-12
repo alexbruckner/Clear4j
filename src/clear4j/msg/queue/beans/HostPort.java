@@ -3,14 +3,14 @@ package clear4j.msg.queue.beans;
 import clear4j.msg.queue.Host;
 import clear4j.msg.queue.utils.MessageUtils;
 
-public class LocalHost implements Host {
+public class HostPort implements Host {
 
     private final String host;
     private final int port;
 
-    public LocalHost() {
-        this.host = MessageUtils.LOCAL_HOST;
-        this.port = MessageUtils.LOCAL_PORT;
+    public HostPort(final String host, final int port) {
+        this.host = host;
+        this.port = port;
     }
 
     @Override

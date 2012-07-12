@@ -41,10 +41,11 @@ public final class Messenger {
      * RECEIVING
      */
 
-    public static <T extends Serializable> void register(String queue, MessageListener<T> listener) {
+    public static <T extends Serializable> Receiver<T> register(String queue, MessageListener<T> listener) {
         Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
         Receiver<T> receiver = new DefaultReceiver<T>(target, listener);
         QueueManager.add(receiver);
+        return receiver;
     }
 
 
