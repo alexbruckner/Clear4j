@@ -12,7 +12,7 @@ public class DefaultReceiver<T extends Serializable> extends AbstractRemoteOrigi
 
     private final static AtomicLong instanceCount = new AtomicLong();
 
-    public DefaultReceiver(Queue target, MessageListener<T> messageListener) {
+    public DefaultReceiver(final Queue target, final MessageListener<T> messageListener) {
         super(target);
         this.messageListener = messageListener;
     }

@@ -8,7 +8,7 @@ public final class DefaultQueue implements Queue {
     private final String name;
     private final Host host;
 
-    public DefaultQueue(String name, Host host) {
+    public DefaultQueue(final String name, final Host host) {
         this.name = name;
         this.host = host;
     }

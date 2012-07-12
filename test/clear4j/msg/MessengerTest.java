@@ -113,17 +113,17 @@ public class MessengerTest {
             Messenger.send("test", sent);
         }
 
-        if (LOG.isLoggable(Level.INFO)) {
-            LOG.log(Level.INFO, "waiting for all messages");
-        }
-
-//        Messenger.waitFor("test");
+//        if (LOG.isLoggable(Level.INFO)) {
+//            LOG.log(Level.INFO, "waiting for all messages");
+//        }
+//
+//        Messenger.waitFor("test"); //todo?
 
         for (String sent : sentMessages) {
             Assert.assertTrue(String.format("%s not in received messages!", sent), receivedMessages.contains(sent));
         }
 
-//        Messenger.unregister(receiver);
+        Messenger.unregister(receiver);
     }
 
 }

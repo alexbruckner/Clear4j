@@ -4,11 +4,13 @@ import clear4j.msg.beans.DefaultMessage;
 import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.beans.DefaultReceiver;
 import clear4j.msg.queue.*;
+import clear4j.msg.queue.beans.HostPort;
 import clear4j.msg.queue.management.QueueManager;
 
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -32,8 +34,21 @@ public final class Messenger {
      */
 
     public static <T extends Serializable> void send(String queue, T payload) {
-        Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
+        send(new DefaultQueue(queue, Host.LOCAL_HOST), payload);
+    }
+
+    public static <T extends Serializable> void send(String host, int port, String queue, T payload) {
+        send(new DefaultQueue(queue, new HostPort(host, port)), payload);
+    }
+
+    private static <T extends Serializable> void send(Queue target, T payload) {
+
         Message<T> message = new DefaultMessage<T>(target, payload);
+
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, String.format("sending message: %s", message));
+        }
+
         QueueManager.add(message);
     }
 
@@ -41,11 +56,26 @@ public final class Messenger {
      * RECEIVING
      */
 
-    public static <T extends Serializable> Receiver<T> register(String queue, MessageListener<T> listener) {
+    public static <T extends Serializable> Receiver<T> register(String queue, MessageListener<T> listener) {    //todo remote
+
         Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
         Receiver<T> receiver = new DefaultReceiver<T>(target, listener);
+
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, String.format("registering receiver: %s", receiver));
+        }
+
         QueueManager.add(receiver);
         return receiver;
+    }
+
+    public static <T extends Serializable> void unregister(Receiver<T> receiver) {
+
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, String.format("un-registering receiver: %s", receiver));
+        }
+
+        QueueManager.remove(receiver);
     }
 
 
@@ -82,13 +112,6 @@ public final class Messenger {
 //        executor.execute(futureTask);
 //
 //        return futureTask;
-//    }
-
-//    public static <T extends Serializable> void unregister(Receiver<T> receiver) {
-//        if (LOG.isLoggable(Level.INFO)) {
-//            LOG.log(Level.INFO, String.format("un-registering receiver: %s", receiver));
-//        }
-//        QueueManager.remove(receiver);
 //    }
 
 

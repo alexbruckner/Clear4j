@@ -12,7 +12,7 @@ public class DefaultMessage<T extends Serializable> extends AbstractRemoteOrigin
 
     private final static AtomicLong instanceCount = new AtomicLong();
 
-    public DefaultMessage(Queue target, T payload) {
+    public DefaultMessage(final Queue target, final T payload) {
         super(target);
         this.payload = payload;
     }
