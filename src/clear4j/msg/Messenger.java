@@ -34,16 +34,24 @@ public final class Messenger {
      */
 
     public static <T extends Serializable> void send(String queue, T payload) {
-        send(new DefaultQueue(queue, Host.LOCAL_HOST), payload);
+        send(new DefaultMessage<T>(new DefaultQueue(queue, Host.LOCAL_HOST), payload));
+    }
+
+    public static <T extends Serializable> Message<T> track(String queue, T payload) throws ExecutionException, InterruptedException {
+        return track(new DefaultMessage<T>(new DefaultQueue(queue, Host.LOCAL_HOST), payload));
     }
 
     public static <T extends Serializable> void send(String host, int port, String queue, T payload) {
-        send(new DefaultQueue(queue, new HostPort(host, port)), payload);
+        send(new DefaultMessage<T>(new DefaultQueue(queue, new HostPort(host, port)), payload));
     }
 
-    private static <T extends Serializable> void send(final Queue target, final T payload) {
-        final Message<T> message = new DefaultMessage<T>(target, payload);
+    public static <T extends Serializable> Message<T> track(String host, int port, String queue, T payload) throws ExecutionException, InterruptedException {
+        return track(new DefaultMessage<T>(new DefaultQueue(queue, new HostPort(host, port)), payload));
+    }
 
+
+
+    private static <T extends Serializable> void send(final Message<T> message) {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("sending message: %s", message));
         }
@@ -106,7 +114,7 @@ public final class Messenger {
         Message<String> message = new DefaultMessage<String>(target, "wait");
         try {
             if (LOG.isLoggable(Level.INFO)) {
-                LOG.log(Level.INFO, String.format("waiting message received: %s", sendAndWait(message)));
+                LOG.log(Level.INFO, String.format("waiting message received: %s", track(message)));
             }
         } catch (Exception e) {
             throw new RuntimeException(e); //TODO
@@ -117,7 +125,7 @@ public final class Messenger {
      * implicitly creates a Receiver to receive a message from a queue
      * initially used primarily for testing. better use Messenger.register(clear4j.msg.Receiver).to(queue);
      */
-    private static <T extends Serializable> Message<T> sendAndWait(final Message<T> original) throws ExecutionException, InterruptedException {
+    private static <T extends Serializable> Message<T> track(final Message<T> original) throws ExecutionException, InterruptedException {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -137,7 +145,7 @@ public final class Messenger {
                 new Callable<Message<T>>() {
                     @Override
                     public Message<T> call() throws InterruptedException {
-                        QueueManager.add(original);
+                        send(original);
                         latch.await();
                         unregister(receiver);
                         return returned[0];

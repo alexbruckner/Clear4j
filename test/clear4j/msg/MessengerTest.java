@@ -21,7 +21,7 @@ public class MessengerTest {
 
     private static final Logger LOG = Logger.getLogger(MessengerTest.class.getName());
 
-//    @Test   //TODO not thread safe
+//    @Test   //TODO fix and use a second JVM with different port to properly test this!!!
 //    public void testRemoteReceiver() throws Exception {
 //
 //    	String remoteQueue = "remote queue";
@@ -44,25 +44,24 @@ public class MessengerTest {
 //
 //        Assert.assertEquals(remoteMessage, received[0]);
 //
-//    	Messenger.unregister(receiver);  //TODO remote unregistering when it turns out it's required..
+//    	Messenger.unregister(receiver);  //TODO remote unregistering
 //    }
-//
-//    @Test
-//    public void testRemoteAdapter() throws Exception {
-//
-//        String localQueue = "local queue";
-//        String localMessage = "local test";
-//        String remoteQueue = "remote queue";
-//        String remoteMessage = "remote test";
-//
-//        //Message<String> remote = Messenger.send(remoteMessage).on("localhost", 9876).toAndWait(remoteQueue); //TODO fix this!
-//        //Assert.assertEquals(remoteMessage, remote.getPayload());
-//        Assert.fail("needs fixing");
-//
-//        Message<String> local = Messenger.send(localMessage).toAndWait(localQueue);
-//        Assert.assertEquals(localMessage, local.getPayload());
-//
-//    }
+
+    @Test
+    public void testRemoteAdapter() throws Exception {
+
+        String localQueue = "local queue";
+        String localMessage = "local test";
+        String remoteQueue = "remote queue";
+        String remoteMessage = "remote test";
+
+        Message<String> remote = Messenger.track("localhost", 9876, remoteQueue, remoteMessage);   //works because the 'remote' receiver is local.
+        Assert.assertEquals(remoteMessage, remote.getPayload());
+
+        Message<String> local = Messenger.track(localQueue, localMessage);
+        Assert.assertEquals(localMessage, local.getPayload());
+
+    }
 
 
     @Test
@@ -120,6 +119,15 @@ public class MessengerTest {
         for (String sent : sentMessages) {
             Assert.assertTrue(String.format("%s not in received messages!", sent), receivedMessages.contains(sent));
         }
+
+        boolean ordered = true;
+        for (int i = 0; i < sentMessages.size(); i++) {
+            if (!receivedMessages.get(i).equals(sentMessages.get(i))){
+                ordered = false;
+                break;
+            }
+        }
+        Assert.assertFalse("should not be ordered", ordered);
 
         Messenger.unregister(receiver);
     }
