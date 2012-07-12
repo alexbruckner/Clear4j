@@ -90,7 +90,7 @@ public final class Messenger {
     	});
     }
 
-    public static synchronized void wait(String queue){ //todo remote
+    static synchronized void wait(String queue){ //todo remote
     	Queue target = new DefaultQueue(queue, Host.LOCAL_HOST);
     	Message<String> message = new DefaultMessage<String>(target, "wait");
     	try {
@@ -106,7 +106,7 @@ public final class Messenger {
      * implicitly creates a Receiver to receive a message from a queue
      * initially used primarily for testing. better use Messenger.register(clear4j.msg.Receiver).to(queue);
      */
-    public static <T extends Serializable> Message<T> sendAndWait(final Message<T> original) throws ExecutionException, InterruptedException {
+    private static <T extends Serializable> Message<T> sendAndWait(final Message<T> original) throws ExecutionException, InterruptedException {
 
         final CountDownLatch latch = new CountDownLatch(1);
         
