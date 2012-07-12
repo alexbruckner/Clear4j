@@ -5,14 +5,15 @@ import clear4j.msg.queue.Queue;
 import clear4j.msg.queue.Receiver;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class DefaultReceiver<T extends Serializable> implements Receiver<T> {
-
-    private final Queue queue;
+public class DefaultReceiver<T extends Serializable> extends AbstractRemoteOrigin implements Receiver<T> {
     private final MessageListener<T> messageListener;
 
-    public DefaultReceiver(Queue queue, MessageListener<T> messageListener) {
-        this.queue = queue;
+    private final static AtomicLong instanceCount = new AtomicLong();
+
+    public DefaultReceiver(Queue target, MessageListener<T> messageListener) {
+        super(target);
         this.messageListener = messageListener;
     }
 
@@ -22,7 +23,7 @@ public class DefaultReceiver<T extends Serializable> implements Receiver<T> {
     }
 
     @Override
-    public Queue getQueue() {
-        return queue;
+    public String toString() {
+        return String.format("%s->DefaultReceiver{messageListener=%s}", super.toString(), messageListener);
     }
 }

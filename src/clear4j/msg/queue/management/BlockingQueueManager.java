@@ -24,12 +24,12 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
 
     @Override
     public void add(Receiver<T> receiver) {
-    	getQueue(receiver.getQueue().getName()).getReceivers().add(receiver);
+    	getQueue(receiver.getTarget().getName()).getReceivers().add(receiver);
     }
 
     @Override
     public void remove(Receiver<T> receiver) {
-    	getQueue(receiver.getQueue().getName()).getReceivers().remove(receiver);
+    	getQueue(receiver.getTarget().getName()).getReceivers().remove(receiver);
     }
     
     private Queue<T> getQueue(String name){

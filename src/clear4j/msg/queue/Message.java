@@ -8,9 +8,6 @@ import java.io.Serializable;
  * Date: 25/05/12
  * Time: 14:42
  */
-public interface Message<T extends Serializable> extends Serializable {
-    String getId(); //should consist of origin.host-origin.port-timestamp-counter (counter=original long id)
-    Queue getTarget();
-    Host getOrigin();
+public interface Message<T extends Serializable> extends RemoteOrigin {
     T getPayload();
 }

@@ -1,9 +1,8 @@
 package clear4j.msg.queue.beans;
 
 import clear4j.msg.queue.Host;
-import clear4j.msg.queue.utils.MessageUtils;
 
-public class HostPort implements Host {
+public final class HostPort implements Host {
 
     private final String host;
     private final int port;
@@ -26,5 +25,23 @@ public class HostPort implements Host {
     @Override
     public String toString() {
         return String.format("%s:%s", host, port);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        HostPort hostPort = (HostPort) o;
+
+        return port == hostPort.port && host.equals(hostPort.host);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = host.hashCode();
+        result = 31 * result + port;
+        return result;
     }
 }

@@ -9,7 +9,6 @@ import java.io.Serializable;
  * Date: 27/05/12
  * Time: 16:15
  */
-public interface Receiver<T extends Serializable> {
+public interface Receiver<T extends Serializable> extends RemoteOrigin {
     MessageListener<T> getMessageListener();
-    Queue getQueue();
 }
