@@ -37,17 +37,17 @@ public final class Messenger {
         send(new DefaultMessage<T>(new DefaultQueue(queue, Host.LOCAL_HOST), payload));
     }
 
-    public static <T extends Serializable> Message<T> track(final String queue, final T payload) throws ExecutionException, InterruptedException {
-        return track(new DefaultMessage<T>(new DefaultQueue(queue, Host.LOCAL_HOST), payload));
-    }
+//    public static <T extends Serializable> Message<T> track(final String queue, final T payload) throws ExecutionException, InterruptedException {
+//        return track(new DefaultMessage<T>(new DefaultQueue(queue, Host.LOCAL_HOST), payload));
+//    }
 
     public static <T extends Serializable> void send(final String host, final int port, final String queue, final T payload) {
         send(new DefaultMessage<T>(new DefaultQueue(queue, new HostPort(host, port)), payload));
     }
 
-    public static <T extends Serializable> Message<T> track(final String host, final int port, final String queue, final T payload) throws ExecutionException, InterruptedException {
-        return track(new DefaultMessage<T>(new DefaultQueue(queue, new HostPort(host, port)), payload));
-    }
+//    public static <T extends Serializable> Message<T> track(final String host, final int port, final String queue, final T payload) throws ExecutionException, InterruptedException {
+//        return track(new DefaultMessage<T>(new DefaultQueue(queue, new HostPort(host, port)), payload));
+//    }
 
     //todo simplify above to use this method instead
     public static <T extends Serializable> void send(final Queue target, final T payload) {
@@ -115,7 +115,7 @@ public final class Messenger {
             //this message will get picked up by the RemoteAdapter and a ('local' to the remote host) receiver created.
             //which proxies all messages received back to the localProxyQueue.
             Queue remoteReceivers = new DefaultQueue("remote-receivers", target.getHost());
-            send(new DefaultMessage<Receiver>(remoteReceivers, receiver));
+            send(new DefaultMessage<Receiver<T>>(remoteReceivers, receiver));
         }
 
         return receiver;
@@ -131,16 +131,12 @@ public final class Messenger {
         QueueManager.remove(receiver);
     }
 
-    static synchronized void wait(final String host, final int port, final String queue) {
-        wait(new DefaultQueue(queue, new HostPort(host, port)));
+    static synchronized <T extends Serializable> void wait(final String queue) {
+        wait(new DefaultMessage<String>(new DefaultQueue(queue, Host.LOCAL_HOST), "wait"));
     }
 
-    static synchronized void wait(final String queue) {
-        wait(new DefaultQueue(queue, Host.LOCAL_HOST));
-    }
+    private static synchronized <T extends Serializable> void wait(final Message<T> message) {
 
-    private static synchronized void wait(final Queue queue) {
-        Message<String> message = new DefaultMessage<String>(queue, "wait");
         try {
             if (LOG.isLoggable(Level.INFO)) {
                 LOG.log(Level.INFO, String.format("waiting message received: %s", track(message)));
@@ -150,7 +146,7 @@ public final class Messenger {
         }
     }
 
-    /*
+    /* //TODO remote tracking is broken.
      * implicitly creates a Receiver to receive a message from a queue
      * initially used primarily for testing. better use Messenger.register(clear4j.msg.Receiver).to(queue);
      */

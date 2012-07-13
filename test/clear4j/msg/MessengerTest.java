@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,24 +65,22 @@ public class MessengerTest {
 //    }
 
     @Test
-    public void testRemoteReceiver() throws InterruptedException {
+    public void testRemoteReceiver() throws InterruptedException, ExecutionException {
 
         final String[] targetQueueName = new String[1];
 
         Receiver<String> remote = Messenger.register("localhost", 9876, "test", new MessageListener<String>() {
             @Override
             public void onMessage(Message<String> message) {
-                if(!message.getPayload().equals("wait")){
-                    targetQueueName[0] = message.getTarget().getName();
-                }
+                targetQueueName[0] = message.getTarget().getName();
             }
         });
 
-        Thread.sleep(2000);   //TODO replace with propert waiting mechanism
+        Thread.sleep(2000);   //TODO replace with proper waiting mechanism
 
         Messenger.send("test", "payload");
 
-        Messenger.wait("test");
+        Thread.sleep(2000);  //TODO replace with proper waiting mechanism
 
         Assert.assertEquals("The remote receiver should have sent the message back to the local proxy queue of name = receiver.id", remote.getId(), targetQueueName[0]);
 
