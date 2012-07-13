@@ -151,6 +151,9 @@ public final class Messenger {
      * initially used primarily for testing. better use Messenger.register(clear4j.msg.Receiver).to(queue);
      */
     private static <T extends Serializable> Message<T> track(final Message<T> original) throws ExecutionException, InterruptedException {
+        if (!original.getTarget().getHost().isLocal()){
+            throw new UnsupportedOperationException("remote tracking is not yet implemented...");
+        }
 
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -165,8 +168,6 @@ public final class Messenger {
                 }
             }
         });
-
-
 
         FutureTask<clear4j.msg.queue.Message<T>> futureTask = new FutureTask<Message<T>>(
                 new Callable<Message<T>>() {
