@@ -47,20 +47,29 @@ public class MessengerTest {
 //    	Messenger.unregister(receiver);  //TODO remote unregistering
 //    }
 
+//    @Test
+//    public void testRemoteAdapter() throws Exception {
+//
+//        String localQueue = "local queue";
+//        String localMessage = "local test";
+//        String remoteQueue = "remote queue";
+//        String remoteMessage = "remote test";
+//
+//        Message<String> remote = Messenger.track("localhost", 9876, remoteQueue, remoteMessage);
+//        Assert.assertEquals(remoteMessage, remote.getPayload());
+//
+//        Message<String> local = Messenger.track(localQueue, localMessage);
+//        Assert.assertEquals(localMessage, local.getPayload());
+//
+//    }
+
     @Test
-    public void testRemoteAdapter() throws Exception {
+    public void testRemoteMessaging() {
+        // local
+        Messenger.send("test", "payload");
 
-        String localQueue = "local queue";
-        String localMessage = "local test";
-        String remoteQueue = "remote queue";
-        String remoteMessage = "remote test";
-
-        Message<String> remote = Messenger.track("localhost", 9876, remoteQueue, remoteMessage);   //works because the 'remote' receiver is local.
-        Assert.assertEquals(remoteMessage, remote.getPayload());
-
-        Message<String> local = Messenger.track(localQueue, localMessage);
-        Assert.assertEquals(localMessage, local.getPayload());
-
+        // remote
+        Messenger.send("localhost", 9876, "test2", "payload");
     }
 
 

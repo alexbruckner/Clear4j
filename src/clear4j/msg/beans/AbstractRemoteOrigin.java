@@ -37,7 +37,7 @@ public abstract class AbstractRemoteOrigin implements RemoteOrigin {
 
     @Override
     public boolean isLocal() {
-        return target.getHost().equals(Host.LOCAL_HOST);
+        return target.getHost().isLocal();
     }
 
     @Override

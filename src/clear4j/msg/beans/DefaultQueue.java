@@ -43,6 +43,6 @@ public final class DefaultQueue implements Queue {
 
     @Override
     public String toString() {
-        return String.format("DefaultQueue{name='%s', host=%s}", name, host);
+        return String.format("DefaultQueue{name='%s', host=%s, local=%s}", name, host, host.isLocal());
     }
 }

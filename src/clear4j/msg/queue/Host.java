@@ -9,4 +9,5 @@ public interface Host extends Serializable {
     public static final Host LOCAL_HOST = new HostPort(MessageUtils.LOCAL_HOST, MessageUtils.LOCAL_PORT);
     String getHost();
     int getPort();
+    boolean isLocal();
 }

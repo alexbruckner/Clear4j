@@ -23,6 +23,11 @@ public final class HostPort implements Host {
     }
 
     @Override
+    public boolean isLocal() {
+        return this.equals(Host.LOCAL_HOST);
+    }
+
+    @Override
     public String toString() {
         return String.format("%s:%s", host, port);
     }
