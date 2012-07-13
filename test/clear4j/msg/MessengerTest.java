@@ -64,14 +64,28 @@ public class MessengerTest {
 //    }
 
     @Test
-    public void testRemoteMessaging() {
-        // local
+    public void testRemoteReceiver() throws InterruptedException {
+
+        final String[] targetQueueName = new String[1];
+
+        Receiver<String> remote = Messenger.register("localhost", 9876, "test", new MessageListener<String>() {
+            @Override
+            public void onMessage(Message<String> message) {
+                if(!message.getPayload().equals("wait")){
+                    targetQueueName[0] = message.getTarget().getName();
+                }
+            }
+        });
+
+        Thread.sleep(2000);   //TODO replace with propert waiting mechanism
+
         Messenger.send("test", "payload");
 
-        // remote
-        Messenger.send("localhost", 9876, "test2", "payload");
-    }
+        Messenger.wait("test");
 
+        Assert.assertEquals("The remote receiver should have sent the message back to the local proxy queue of name = receiver.id", remote.getId(), targetQueueName[0]);
+
+    }
 
     @Test
     public void testMessaging() throws Exception {

@@ -89,6 +89,10 @@ public final class Messenger {
         return register(new DefaultQueue(target, Host.LOCAL_HOST), listener);
     }
 
+    public static <T extends Serializable> Receiver<T> register(final String host, final int port, final String target, final MessageListener<T> listener) {
+        return register(new DefaultQueue(target, new HostPort(host, port)), listener);
+    }
+
     /*
     * RECEIVING
     */
