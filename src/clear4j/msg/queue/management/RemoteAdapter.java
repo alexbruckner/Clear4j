@@ -44,11 +44,12 @@ public class RemoteAdapter {
     }
 
     private <T extends Serializable> void remoteReceiverRegistration() {
+
         Messenger.register("remote-receivers", new MessageListener<Receiver<T>>() {
             @Override
             public void onMessage(Message<Receiver<T>> message) {
 
-                final Receiver remoteReceiver = message.getPayload();
+                final Receiver<T> remoteReceiver = message.getPayload();
 
                 Messenger.register(remoteReceiver.getTarget().getName(), new MessageListener<T>() {
                     @Override
@@ -58,6 +59,18 @@ public class RemoteAdapter {
 
                     }
                 });
+            }
+
+        });
+
+        Messenger.register("unregister-receivers", new MessageListener<Receiver<T>>() {
+            @Override
+            public void onMessage(Message<Receiver<T>> message) {
+
+                final Receiver<T> remoteReceiver = message.getPayload();
+
+                QueueManager.remove(remoteReceiver);
+
             }
 
         });

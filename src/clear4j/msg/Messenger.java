@@ -3,6 +3,7 @@ package clear4j.msg;
 import clear4j.msg.beans.DefaultMessage;
 import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.beans.DefaultReceiver;
+import clear4j.msg.beans.RemoteReceiver;
 import clear4j.msg.queue.*;
 import clear4j.msg.queue.beans.HostPort;
 import clear4j.msg.queue.management.QueueManager;
@@ -11,7 +12,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -99,7 +101,7 @@ public final class Messenger {
     //TODO string queue should be Queue target
     private static <T extends Serializable> Receiver<T> register(final Queue target, final MessageListener<T> listener) {
 
-        final Receiver<T> receiver = new DefaultReceiver<T>(target, listener);
+        Receiver<T> receiver = new DefaultReceiver<T>(target, listener);
 
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("registering receiver: %s", receiver));
@@ -111,6 +113,8 @@ public final class Messenger {
             //create local proxy queue for this receiver.
             Queue localProxyQueue = new DefaultQueue(receiver.getId(), Host.LOCAL_HOST);
             Receiver<T> localProxy = register(localProxyQueue, listener);
+            // decorate receiver with local proxy
+            receiver = new RemoteReceiver<T>(receiver, localProxy);
             //send request to remote host, ie put a receiver message to its receivers queue
             //this message will get picked up by the RemoteAdapter and a ('local' to the remote host) receiver created.
             //which proxies all messages received back to the localProxyQueue.
@@ -128,7 +132,17 @@ public final class Messenger {
             LOG.log(Level.INFO, String.format("un-registering receiver: %s", receiver));
         }
 
-        QueueManager.remove(receiver);
+        if (receiver.isLocal()) {
+            QueueManager.remove(receiver);
+        } else {
+            RemoteReceiver<T> remote = (RemoteReceiver<T>) receiver;
+            //unregister remote receiver
+            Queue remoteReceivers = new DefaultQueue("unregister-receivers", receiver.getTarget().getHost());
+            send(new DefaultMessage<Receiver<T>>(remoteReceivers, receiver));
+            // unregister local proxy
+            unregister(remote.getLocalProxy());
+        }
+
     }
 
 //    static synchronized <T extends Serializable> void wait(final String queue) {

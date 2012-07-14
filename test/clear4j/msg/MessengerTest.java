@@ -84,6 +84,10 @@ public class MessengerTest {
 
         Assert.assertEquals("The remote receiver should have sent the message back to the local proxy queue of name = receiver.id", remote.getId(), targetQueueName[0]);
 
+        Messenger.unregister(remote);
+
+        Thread.sleep(2000);
+
     }
 
     @Test
