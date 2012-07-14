@@ -136,7 +136,8 @@ public class MessengerTest {
             LOG.log(Level.INFO, "waiting for all messages");
         }
 
-        Messenger.wait("test");
+//        Messenger.wait("test");
+        Thread.sleep(2000);
 
         for (String sent : sentMessages) {
             Assert.assertTrue(String.format("%s not in received messages!", sent), receivedMessages.contains(sent));

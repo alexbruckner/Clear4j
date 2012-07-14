@@ -131,59 +131,59 @@ public final class Messenger {
         QueueManager.remove(receiver);
     }
 
-    static synchronized <T extends Serializable> void wait(final String queue) {
-        wait(new DefaultMessage<String>(new DefaultQueue(queue, Host.LOCAL_HOST), "wait"));
-    }
+//    static synchronized <T extends Serializable> void wait(final String queue) {
+//        wait(new DefaultMessage<String>(new DefaultQueue(queue, Host.LOCAL_HOST), "wait"));
+//    }
 
-    private static synchronized <T extends Serializable> void wait(final Message<T> message) {
+//    private static synchronized <T extends Serializable> void wait(final Message<T> message) {
+//
+//        try {
+//            if (LOG.isLoggable(Level.INFO)) {
+//                LOG.log(Level.INFO, String.format("waiting message received: %s", track(message)));
+//            }
+//        } catch (Exception e) {
+//            throw new RuntimeException(e); //TODO
+//        }
+//    }
 
-        try {
-            if (LOG.isLoggable(Level.INFO)) {
-                LOG.log(Level.INFO, String.format("waiting message received: %s", track(message)));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e); //TODO
-        }
-    }
-
-    /* //TODO remote tracking is broken.
-     * implicitly creates a Receiver to receive a message from a queue
-     * initially used primarily for testing. better use Messenger.register(clear4j.msg.Receiver).to(queue);
-     */
-    private static <T extends Serializable> Message<T> track(final Message<T> original) throws ExecutionException, InterruptedException {
-        if (!original.getTarget().getHost().isLocal()){
-            throw new UnsupportedOperationException("remote tracking is not yet implemented...");
-        }
-
-        final CountDownLatch latch = new CountDownLatch(1);
-
-        final Message<T>[] returned = new Message[1];
-
-        final Receiver<T> receiver = register(original.getTarget(), new MessageListener<T>() {
-            @Override
-            public void onMessage(clear4j.msg.queue.Message<T> message) {
-                if (message.getId().equals(original.getId())) {
-                    returned[0] = message;
-                    latch.countDown();
-                }
-            }
-        });
-
-        FutureTask<clear4j.msg.queue.Message<T>> futureTask = new FutureTask<Message<T>>(
-                new Callable<Message<T>>() {
-                    @Override
-                    public Message<T> call() throws InterruptedException {
-                        send(original);
-                        latch.await();
-                        unregister(receiver);
-                        return returned[0];
-                    }
-                }
-        );
-
-        executor.execute(futureTask);
-
-        return futureTask.get();
-    }
+//    /* //TODO remote tracking is broken.
+//     * implicitly creates a Receiver to receive a message from a queue
+//     * initially used primarily for testing. better use Messenger.register(clear4j.msg.Receiver).to(queue);
+//     */
+//    private static <T extends Serializable> Message<T> track(final Message<T> original) throws ExecutionException, InterruptedException {
+//        if (!original.getTarget().getHost().isLocal()){
+//            throw new UnsupportedOperationException("remote tracking is not yet implemented...");
+//        }
+//
+//        final CountDownLatch latch = new CountDownLatch(1);
+//
+//        final Message<T>[] returned = new Message[1];
+//
+//        final Receiver<T> receiver = register(original.getTarget(), new MessageListener<T>() {
+//            @Override
+//            public void onMessage(clear4j.msg.queue.Message<T> message) {
+//                if (message.getId().equals(original.getId())) {
+//                    returned[0] = message;
+//                    latch.countDown();
+//                }
+//            }
+//        });
+//
+//        FutureTask<clear4j.msg.queue.Message<T>> futureTask = new FutureTask<Message<T>>(
+//                new Callable<Message<T>>() {
+//                    @Override
+//                    public Message<T> call() throws InterruptedException {
+//                        send(original);
+//                        latch.await();
+//                        unregister(receiver);
+//                        return returned[0];
+//                    }
+//                }
+//        );
+//
+//        executor.execute(futureTask);
+//
+//        return futureTask.get();
+//    }
 
 }
