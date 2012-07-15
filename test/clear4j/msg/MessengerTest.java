@@ -81,7 +81,7 @@ public class MessengerTest {
 
         final String[] targetQueueName = new String[1];
 
-        Receiver<String> remote = Messenger.register("localhost", 9876, "test", new MessageListener<String>() {
+        Receiver<String> remote = Messenger.register("localhost", 9876, "test-remote", new MessageListener<String>() {
             @Override
             public void onMessage(Message<String> message) {
                 targetQueueName[0] = message.getTarget().getName();
@@ -90,7 +90,7 @@ public class MessengerTest {
 
         Thread.sleep(2000);   //TODO replace with proper waiting mechanism
 
-        Messenger.send("test", "payload");
+        Messenger.send("test-remote", "payload");
 
         Thread.sleep(2000);  //TODO replace with proper waiting mechanism
 
@@ -169,6 +169,8 @@ public class MessengerTest {
         Assert.assertFalse("should not be ordered", ordered);
 
         Messenger.unregister(receiver);
+        
+        Thread.sleep(5000);
     }
 
 }
