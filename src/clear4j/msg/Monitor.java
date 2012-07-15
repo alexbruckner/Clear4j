@@ -8,12 +8,17 @@ import java.io.Serializable;
 import java.util.Set;
 
 public class Monitor implements Runnable {
-    private static final int frequency = 5000; //milliseconds
+    private final int frequency; //milliseconds
     private boolean running = true;
     private Thread monitorThread;
     private Callback callback;
 
-    public Monitor(Callback callback) {
+    public Monitor(final Callback callback) {
+        this(5000, callback);
+    }
+
+    public Monitor(final int frequency, final Callback callback) {
+        this.frequency = 5000;
         this.callback = callback;
     }
 

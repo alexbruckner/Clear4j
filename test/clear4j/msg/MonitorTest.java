@@ -13,7 +13,7 @@ public class MonitorTest {
 
     @Test
     public void testMonitor() throws InterruptedException {
-        new MonitorFrame();
+        new MonitorFrame(5000);
         Thread.sleep(12000);
     }
 

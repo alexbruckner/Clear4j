@@ -26,12 +26,12 @@ public class MessengerTest {
 
     @BeforeClass
     public static void init(){
-        Messenger.monitor(true);
+        Messenger.monitorOn(1);
     }
 
     @AfterClass
     public static void cleanUp(){
-        Messenger.monitor(false);
+        Messenger.monitorOff();
     }
 
 //    @Test   //TODO fix and use a second JVM with different port to properly test this!!!

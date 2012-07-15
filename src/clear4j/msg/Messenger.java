@@ -37,10 +37,13 @@ public final class Messenger {
      * MONITORING
      */
 
-    public static void monitor(boolean on) {
-        if (on) {
-            monitorFrame = new MonitorFrame();
-        } else if (monitorFrame != null) {
+    public static void monitorOn(int frequencyInSeconds) {
+        monitorOff();
+        monitorFrame = new MonitorFrame(frequencyInSeconds * 1000);
+    }
+
+    public static void monitorOff(){
+        if (monitorFrame != null) {
             monitorFrame.dispose();
         }
     }
