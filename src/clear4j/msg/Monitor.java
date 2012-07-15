@@ -17,7 +17,7 @@ public class Monitor implements Runnable {
     private <T extends Serializable> void monitor(){
         Set<QueueStatus<T>> status = QueueManager.status();
         for (QueueStatus<T> queueStatus : status){
-            System.out.printf("%s(%d)%n", queueStatus.getQueue(), queueStatus.getSize());
+            System.out.printf("%s(%d)%n", queueStatus.getQueue(), queueStatus.getReceivers().size());
         }
 
     }
@@ -54,9 +54,5 @@ public class Monitor implements Runnable {
 
     public static void main(String[] args) throws InterruptedException {
         new Monitor().start();
-        for (int i = 0; i < 100000; i++){
-            Messenger.send("test", "vbfvojfbvofbov");
-            Thread.sleep(100);
-        }
     }
 }

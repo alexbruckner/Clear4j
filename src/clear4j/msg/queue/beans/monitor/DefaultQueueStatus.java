@@ -10,12 +10,10 @@ import java.util.List;
 public class DefaultQueueStatus<T extends Serializable> implements QueueStatus<T> {
 
     private final String queue;
-    private final int size;
     private final List<Receiver<T>> receivers;
 
-    public DefaultQueueStatus(final String queue, int size, final List<Receiver<T>> receivers) {
+    public DefaultQueueStatus(final String queue, final List<Receiver<T>> receivers) {
         this.queue = queue;
-        this.size = size;
         this.receivers = Collections.unmodifiableList(receivers);
     }
 
@@ -25,17 +23,12 @@ public class DefaultQueueStatus<T extends Serializable> implements QueueStatus<T
     }
 
     @Override
-    public int getSize() {
-        return size;
-    }
-
-    @Override
     public List<Receiver<T>> getReceivers() {
         return receivers;
     }
 
     @Override
     public String toString() {
-        return String.format("DefaultQueueStatus{queue='%s', size=%d, receivers=%s}", queue, size, receivers);
+        return String.format("DefaultQueueStatus{queue='%s', receivers=%s}", queue, receivers);
     }
 }

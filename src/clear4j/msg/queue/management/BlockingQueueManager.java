@@ -42,9 +42,8 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
         for (Map.Entry<String, Queue<T>> entry : store.entrySet()){
             String name = entry.getKey();
             Queue<T> queue = entry.getValue();
-            int size = queue.getQueue().size();
             List<Receiver<T>> receivers = queue.getReceivers();
-            status.add(new DefaultQueueStatus<T>(name, size, receivers));
+            status.add(new DefaultQueueStatus<T>(name, receivers));
         }
         return status;
     }
