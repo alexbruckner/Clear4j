@@ -1,8 +1,8 @@
 package clear4j.msg.beans.monitor;
 
 import clear4j.msg.Monitor;
+import clear4j.msg.beans.ExtendedQueueStatus;
 import clear4j.msg.queue.monitor.Callback;
-import clear4j.msg.queue.monitor.QueueStatus;
 
 import javax.swing.*;
 import java.util.Set;
@@ -19,12 +19,15 @@ public class MonitorFrame extends JFrame {
         this.getContentPane().add(area);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setVisible(true);
-        monitor = new Monitor(frequency, new Callback() {
+        monitor = new Monitor(frequency, new Callback<ExtendedQueueStatus>() {
             @Override
-            public void call(Set<QueueStatus> status) {
+            public void call(Set<ExtendedQueueStatus> status) {
                 StringBuilder sb = new StringBuilder();
-                for (QueueStatus queueStatus : status){
-                    sb.append(queueStatus.getQueue()).append("(").append(queueStatus.getReceivers().size()).append(")").append("\n");
+                for (ExtendedQueueStatus queueStatus : status){
+                    sb.append(queueStatus.getQueue())
+                    	.append("(").append(queueStatus.getReceivers().size()).append(")")
+                    	.append("(").append(queueStatus.getMessageCount()).append(")")
+                    	.append("\n");
                 }
                 area.setText(sb.toString());
             }

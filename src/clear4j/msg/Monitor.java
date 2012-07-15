@@ -1,17 +1,19 @@
 package clear4j.msg;
 
+import clear4j.msg.beans.ExtendedQueueStatus;
 import clear4j.msg.queue.management.QueueManager;
 import clear4j.msg.queue.monitor.Callback;
 import clear4j.msg.queue.monitor.QueueStatus;
 
-import java.io.Serializable;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Monitor implements Runnable {
     private final int frequency; //milliseconds
     private boolean running = true;
     private Thread monitorThread;
-    private Callback callback;
+    private Callback<ExtendedQueueStatus> callback;
+    
 
     public Monitor(final Callback callback) {
         this(5000, callback);
@@ -26,9 +28,14 @@ public class Monitor implements Runnable {
     * Monitor method
     */
 
-    private <T extends Serializable> void monitor(){
+    private void monitor(){
         Set<QueueStatus> status = QueueManager.status();
-        callback.call(status);
+        //now decorate the queue status with message count, etc... from local receivers
+        Set<ExtendedQueueStatus> msgStatus = new TreeSet<ExtendedQueueStatus>();
+        for (QueueStatus queueStatus : status){
+        	msgStatus.add(new ExtendedQueueStatus(queueStatus, 123));
+        }
+        callback.call(msgStatus);
     }
 
     /*
