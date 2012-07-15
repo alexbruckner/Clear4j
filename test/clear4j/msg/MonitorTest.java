@@ -1,5 +1,6 @@
 package clear4j.msg;
 
+import clear4j.msg.beans.monitor.MonitorFrame;
 import org.junit.Test;
 
 /**
@@ -12,11 +13,8 @@ public class MonitorTest {
 
     @Test
     public void testMonitor() throws InterruptedException {
-        Monitor monitor = new Monitor();
-        monitor.start();
-        Messenger.register("test", null);
-        Thread.sleep(10000);
-        monitor.stop();
+        new MonitorFrame();
+        Thread.sleep(12000);
     }
 
 }

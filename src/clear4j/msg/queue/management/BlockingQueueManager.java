@@ -7,10 +7,10 @@ import clear4j.msg.queue.beans.monitor.DefaultQueueStatus;
 import clear4j.msg.queue.monitor.QueueStatus;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.*;
 
 public final class BlockingQueueManager<T extends Serializable> implements QueueManagement<T> {
@@ -37,8 +37,8 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
     }
 
     @Override
-    public Set<QueueStatus<T>> status() {
-        Set<QueueStatus<T>> status = new HashSet<QueueStatus<T>>();
+    public Set<QueueStatus> status() {
+        Set<QueueStatus> status = new TreeSet<QueueStatus>();
         for (Map.Entry<String, Queue<T>> entry : store.entrySet()){
             String name = entry.getKey();
             Queue<T> queue = entry.getValue();

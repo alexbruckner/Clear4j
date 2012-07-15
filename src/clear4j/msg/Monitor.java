@@ -1,6 +1,7 @@
 package clear4j.msg;
 
 import clear4j.msg.queue.management.QueueManager;
+import clear4j.msg.queue.monitor.Callback;
 import clear4j.msg.queue.monitor.QueueStatus;
 
 import java.io.Serializable;
@@ -10,16 +11,19 @@ public class Monitor implements Runnable {
     private static final int frequency = 5000; //milliseconds
     private boolean running = true;
     private Thread monitorThread;
+    private Callback callback;
+
+    public Monitor(Callback callback) {
+        this.callback = callback;
+    }
+
     /*
-     * Monitor method
-     */
+    * Monitor method
+    */
 
     private <T extends Serializable> void monitor(){
-        Set<QueueStatus<T>> status = QueueManager.status();
-        for (QueueStatus<T> queueStatus : status){
-            System.out.printf("%s(%d)%n", queueStatus.getQueue(), queueStatus.getReceivers().size());
-        }
-
+        Set<QueueStatus> status = QueueManager.status();
+        callback.call(status);
     }
 
     /*
@@ -52,7 +56,4 @@ public class Monitor implements Runnable {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        new Monitor().start();
-    }
 }

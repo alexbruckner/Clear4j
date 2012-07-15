@@ -10,5 +10,5 @@ public interface QueueManagement<T extends Serializable> {
     void add(Message<T> message);
     void add(Receiver<T> receiver);
     void remove(Receiver<T> receiver);
-    Set<QueueStatus<T>> status();
+    Set<QueueStatus> status();
 }

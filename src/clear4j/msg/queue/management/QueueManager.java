@@ -64,7 +64,7 @@ public final class QueueManager {
     /*
      * MONITORING
      */
-    public static <T extends Serializable> Set<QueueStatus<T>> status(){
+    public static <T extends Serializable> Set<QueueStatus> status(){
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "Returning status of all queues...");
         }

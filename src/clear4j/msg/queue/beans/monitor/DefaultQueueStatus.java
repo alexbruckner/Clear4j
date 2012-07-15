@@ -31,4 +31,9 @@ public class DefaultQueueStatus<T extends Serializable> implements QueueStatus<T
     public String toString() {
         return String.format("DefaultQueueStatus{queue='%s', receivers=%s}", queue, receivers);
     }
+
+    @Override
+    public int compareTo(QueueStatus<T> o) {
+        return this.getQueue().compareTo(o.getQueue());
+    }
 }
