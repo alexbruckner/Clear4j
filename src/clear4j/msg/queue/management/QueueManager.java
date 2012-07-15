@@ -4,8 +4,10 @@ package clear4j.msg.queue.management;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.QueueManagement;
 import clear4j.msg.queue.Receiver;
+import clear4j.msg.queue.monitor.QueueStatus;
 
 import java.io.Serializable;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,6 +59,16 @@ public final class QueueManager {
             LOG.log(Level.INFO, String.format("Removing receiver [%s]", receiver));
         }
         QUEUE_MANAGER.remove(receiver);
+    }
+
+    /*
+     * MONITORING
+     */
+    public static <T extends Serializable> Set<QueueStatus<T>> status(){
+        if (LOG.isLoggable(Level.INFO)) {
+            LOG.log(Level.INFO, "Returning status of all queues...");
+        }
+        return QUEUE_MANAGER.status();
     }
 
 }

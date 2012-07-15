@@ -3,10 +3,14 @@ package clear4j.msg.queue.management;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.QueueManagement;
 import clear4j.msg.queue.Receiver;
+import clear4j.msg.queue.beans.monitor.DefaultQueueStatus;
+import clear4j.msg.queue.monitor.QueueStatus;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.*;
 
 public final class BlockingQueueManager<T extends Serializable> implements QueueManagement<T> {
@@ -31,7 +35,20 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
     public void remove(Receiver<T> receiver) {
     	getQueue(receiver.getTarget().getName()).getReceivers().remove(receiver);
     }
-    
+
+    @Override
+    public Set<QueueStatus<T>> status() {
+        Set<QueueStatus<T>> status = new HashSet<QueueStatus<T>>();
+        for (Map.Entry<String, Queue<T>> entry : store.entrySet()){
+            String name = entry.getKey();
+            Queue<T> queue = entry.getValue();
+            int size = queue.getQueue().size();
+            List<Receiver<T>> receivers = queue.getReceivers();
+            status.add(new DefaultQueueStatus<T>(name, size, receivers));
+        }
+        return status;
+    }
+
     private Queue<T> getQueue(String name){
     	Queue<T> queue = store.get(name);
     	if (queue == null) {
