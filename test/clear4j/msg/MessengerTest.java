@@ -4,6 +4,8 @@ import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
 import clear4j.msg.queue.Receiver;
 import junit.framework.Assert;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -21,6 +23,16 @@ import java.util.logging.Logger;
 public class MessengerTest {
 
     private static final Logger LOG = Logger.getLogger(MessengerTest.class.getName());
+
+    @BeforeClass
+    public static void init(){
+        Messenger.monitor(true);
+    }
+
+    @AfterClass
+    public static void cleanUp(){
+        Messenger.monitor(false);
+    }
 
 //    @Test   //TODO fix and use a second JVM with different port to properly test this!!!
 //    public void testRemoteReceiver() throws Exception {

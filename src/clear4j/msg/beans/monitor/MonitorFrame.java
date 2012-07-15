@@ -32,4 +32,9 @@ public class MonitorFrame extends JFrame {
         monitor.start();
     }
 
+    public void dispose(){
+        monitor.stop();
+        super.dispose();
+    }
+
 }

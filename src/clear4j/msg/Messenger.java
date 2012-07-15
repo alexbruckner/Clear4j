@@ -4,6 +4,7 @@ import clear4j.msg.beans.DefaultMessage;
 import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.beans.DefaultReceiver;
 import clear4j.msg.beans.RemoteReceiver;
+import clear4j.msg.beans.monitor.MonitorFrame;
 import clear4j.msg.queue.*;
 import clear4j.msg.queue.beans.HostPort;
 import clear4j.msg.queue.management.QueueManager;
@@ -30,10 +31,24 @@ public final class Messenger {
 
     private static final Logger LOG = Logger.getLogger(Messenger.class.getName());
 
+    private static MonitorFrame monitorFrame;
 
     /*
-     * SENDING 
+     * MONITORING
      */
+
+    public static void monitor(boolean on) {
+        if (on) {
+            monitorFrame = new MonitorFrame();
+        } else if (monitorFrame != null) {
+            monitorFrame.dispose();
+        }
+    }
+
+
+    /*
+    * SENDING
+    */
 
     public static <T extends Serializable> void send(final String queue, final T payload) {
         send(new DefaultMessage<T>(new DefaultQueue(queue, Host.LOCAL_HOST), payload));
