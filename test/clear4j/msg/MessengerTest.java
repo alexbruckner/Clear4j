@@ -26,7 +26,7 @@ public class MessengerTest {
 
     @BeforeClass
     public static void init(){
-        Messenger.monitorOn(1);
+        Messenger.monitorOn(1, "test", "test-remote");
     }
 
     @AfterClass

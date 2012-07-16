@@ -37,9 +37,9 @@ public final class Messenger {
      * MONITORING
      */
 
-    public static void monitorOn(int frequencyInSeconds) {
+    public static void monitorOn(int frequencyInSeconds, String... queues) {
         monitorOff();
-        monitorFrame = new MonitorFrame(frequencyInSeconds * 1000);
+        monitorFrame = new MonitorFrame(frequencyInSeconds * 1000, queues);
     }
 
     public static void monitorOff(){

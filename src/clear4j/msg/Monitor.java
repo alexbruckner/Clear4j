@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Monitor implements Runnable {
-    private final int frequency; //milliseconds
+    private int frequency; //milliseconds
     private boolean running = true;
     private Thread monitorThread;
     private Callback<ExtendedQueueStatus<Serializable>> callback;
@@ -23,12 +23,18 @@ public class Monitor implements Runnable {
     
 
     public Monitor(final Callback callback) {
-        this(5000, callback);
+        this(5000, null, callback);
     }
 
-    public Monitor(final int frequency, final Callback callback) {
+    public Monitor(final int frequency, String[] queues, final Callback callback) {
         this.frequency = 5000;
         this.callback = callback;
+        //prime queues
+        if (queues != null){
+            for (String queue : queues){
+                getMessageCount(queue);
+            }
+        }
     }
 
     /*
