@@ -19,9 +19,9 @@ public class MonitorFrame extends JFrame {
         this.getContentPane().add(area);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setVisible(true);
-        monitor = new Monitor(frequency, new Callback<ExtendedQueueStatus>() {
+        monitor = new Monitor(frequency, new Callback<ExtendedQueueStatus<?>>() {
             @Override
-            public void call(Set<ExtendedQueueStatus> status) {
+            public void call(Set<ExtendedQueueStatus<?>> status) {
                 StringBuilder sb = new StringBuilder();
                 for (ExtendedQueueStatus queueStatus : status){
                     sb.append(queueStatus.getQueue())

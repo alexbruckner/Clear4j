@@ -8,21 +8,18 @@ import clear4j.msg.queue.monitor.Callback;
 import clear4j.msg.queue.monitor.QueueStatus;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class Monitor implements Runnable {
     private final int frequency; //milliseconds
     private boolean running = true;
     private Thread monitorThread;
-    private Callback<ExtendedQueueStatus> callback;
-    private final Map<String, MessageCounter> counters = new ConcurrentHashMap<String, MessageCounter>();
+    private Callback<ExtendedQueueStatus<Serializable>> callback;
+    private final Map<String, MessageCounter<Serializable>> counters = new ConcurrentHashMap<String, MessageCounter<Serializable>>();
     
 
     public Monitor(final Callback callback) {
@@ -46,12 +43,12 @@ public class Monitor implements Runnable {
         	int msgCount = getMessageCount(queueStatus.getQueue());
         	msgStatus.add(new ExtendedQueueStatus(queueStatus, msgCount));
         }
-        callback.call(msgStatus);
+        callback.call((Set)msgStatus);
     }
 
     private int getMessageCount(String queue) {
     	if (!counters.containsKey(queue)){
-    		counters.put(queue, new MessageCounter(queue));
+    		counters.put(queue, new MessageCounter<Serializable>(queue));
     		return 0;
     	}
     	return counters.get(queue).getCount();
