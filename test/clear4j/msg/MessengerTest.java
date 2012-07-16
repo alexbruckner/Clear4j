@@ -34,48 +34,6 @@ public class MessengerTest {
         Messenger.monitorOff();
     }
 
-//    @Test   //TODO fix and use a second JVM with different port to properly test this!!!
-//    public void testRemoteReceiver() throws Exception {
-//
-//    	String remoteQueue = "remote queue";
-//        String remoteMessage = "remote test";
-//
-//        final String[] received = new String[1];
-//
-//        Messenger.Receiver<String> receiver = Messenger.register(new Receiver<String>(){
-//            @Override
-//            public void onMessage(Message<String> message) {
-//                received[0] = message.getPayload();
-//            }
-//        }).on("localhost", 9876).to(remoteQueue);
-//
-//        Thread.sleep(3000);   //have to wait for registration //todo
-//
-//    	Messenger.send(remoteMessage).on("localhost", 9876).to(remoteQueue);
-//
-//    	Messenger.waitFor(receiver.getQueue(), remoteMessage);
-//
-//        Assert.assertEquals(remoteMessage, received[0]);
-//
-//    	Messenger.unregister(receiver);  //TODO remote unregistering
-//    }
-
-//    @Test
-//    public void testRemoteAdapter() throws Exception {
-//
-//        String localQueue = "local queue";
-//        String localMessage = "local test";
-//        String remoteQueue = "remote queue";
-//        String remoteMessage = "remote test";
-//
-//        Message<String> remote = Messenger.track("localhost", 9876, remoteQueue, remoteMessage);
-//        Assert.assertEquals(remoteMessage, remote.getPayload());
-//
-//        Message<String> local = Messenger.track(localQueue, localMessage);
-//        Assert.assertEquals(localMessage, local.getPayload());
-//
-//    }
-
     @Test
     public void testRemoteReceiver() throws InterruptedException, ExecutionException {
 
@@ -152,7 +110,6 @@ public class MessengerTest {
             LOG.log(Level.INFO, "waiting for all messages");
         }
 
-//        Messenger.wait("test");
         Thread.sleep(2000);
 
         for (String sent : sentMessages) {
