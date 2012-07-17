@@ -54,14 +54,13 @@ public final class Messenger {
     */
 
     public static <T extends Serializable> void send(final String queue, final T payload) {
-        send(new DefaultMessage<T>(new DefaultQueue(queue, Host.LOCAL_HOST), payload));
+        send(new DefaultQueue(queue, Host.LOCAL_HOST), payload);
     }
 
     public static <T extends Serializable> void send(final String host, final int port, final String queue, final T payload) {
-        send(new DefaultMessage<T>(new DefaultQueue(queue, new HostPort(host, port)), payload));
+        send(new DefaultQueue(queue, new HostPort(host, port)), payload);
     }
 
-    //todo simplify above to use this method instead
     public static <T extends Serializable> void send(final Queue target, final T payload) {
         send(new DefaultMessage<T>(target, payload));
     }
@@ -108,7 +107,6 @@ public final class Messenger {
     /*
     * RECEIVING
     */
-    //TODO string queue should be Queue target
     private static <T extends Serializable> Receiver<T> register(final Queue target, final MessageListener<T> listener) {
 
         Receiver<T> receiver = new DefaultReceiver<T>(target, listener);

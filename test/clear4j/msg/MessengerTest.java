@@ -46,11 +46,11 @@ public class MessengerTest {
             }
         });
 
-        Thread.sleep(2000);   //TODO replace with proper waiting mechanism
+        Thread.sleep(2000);
 
         Messenger.send("test-remote", "payload");
 
-        Thread.sleep(2000);  //TODO replace with proper waiting mechanism
+        Thread.sleep(2000);
 
         Assert.assertEquals("The remote receiver should have sent the message back to the local proxy queue of name = receiver.id", remote.getId(), targetQueueName[0]);
 
