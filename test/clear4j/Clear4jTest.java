@@ -6,9 +6,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
@@ -38,22 +35,25 @@ public class Clear4jTest {
         // instruct(Enum 'The' -> selection: FileProcessor) returns a processor.FileProcessor
         // with certain methods that create instruction messages to be put on the file processor queue.
         // this queue can be local to the jvm or distributed.
-        File aFile = new File(TestConfig.TEST_FILE_PATH.getValue());
 
         // start the workflow process
-//        Workflow workflow = Clear.instruct(The.FILE_PROCESSOR).to(Instruction.LOAD_A_FILE, TestConfig.TEST_FILE_PATH.getValue());
         //TODO Value enum for "path"
-        Instruction<String> instruction = Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).toAndWait(The.FILE_PROCESSOR);
-        
+//        Instruction<String> instruction =
+        Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).to(The.FILE_PROCESSOR);
+
+        Thread.sleep(5000);
+
         //TODO not thread safe
-        ConcurrentHashMap<String, Serializable> map = instruction.get().getPayload();
-        String text1 = (String) map.get("text"); //TODO Value enum for "text"
+//        ConcurrentHashMap<String, Serializable> map = instruction.get().getPayload();
+//        String text1 = (String) map.get("text"); //TODO Value enum for "text"
 
         // load it the boring way
-        String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
+//        String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
 
         // assert same content
-        Assert.assertEquals(text2, text1);
+//        Assert.assertEquals(text2, text1);
+
+        Assert.fail("TODO!!!");
 
     }
 
