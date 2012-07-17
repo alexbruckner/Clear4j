@@ -3,7 +3,8 @@ package clear4j;
 import clear4j.msg.Messenger;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
-import clear4j.processor.Key;
+import clear4j.processor.Return;
+import clear4j.processor.Value;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -78,7 +79,7 @@ public final class Clear {
                     try {
                         Object processorObject = processor.getProcessorClass().getConstructor().newInstance();
                         for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
-                            clear4j.processor.Process annotation = method.getAnnotation(clear4j.processor.Process.class);
+                            Return annotation = method.getAnnotation(Return.class);
                             if (annotation != null){
                                   if (LOG.isLoggable(Level.INFO)){
                                 	  LOG.log(Level.INFO, String.format("payload=%s", message.getPayload()));
@@ -87,8 +88,8 @@ public final class Clear {
                                   String key = null;
                                   for (Annotation[] paramAnnotations : method.getParameterAnnotations()){
                                 	for (Annotation paramAnnotation : paramAnnotations) {
-                                		if (paramAnnotation instanceof Key){
-                                			key = ((Key) paramAnnotation).value();
+                                		if (paramAnnotation instanceof Value){
+                                			key = ((Value) paramAnnotation).value();
                                 		}
                                 	}
                                   }

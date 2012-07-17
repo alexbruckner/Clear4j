@@ -42,12 +42,12 @@ public class Clear4jTest {
 
         // start the workflow process
 //        Workflow workflow = Clear.instruct(The.FILE_PROCESSOR).to(Instruction.LOAD_A_FILE, TestConfig.TEST_FILE_PATH.getValue());
-        //TODO Key enum for "path"
+        //TODO Value enum for "path"
         Instruction<String> instruction = Clear.send("path", TestConfig.TEST_FILE_PATH.getValue()).toAndWait(The.FILE_PROCESSOR);
         
         //TODO not thread safe
         ConcurrentHashMap<String, Serializable> map = instruction.get().getPayload();
-        String text1 = (String) map.get("text"); //TODO Key enum for "text"
+        String text1 = (String) map.get("text"); //TODO Value enum for "text"
 
         // load it the boring way
         String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
