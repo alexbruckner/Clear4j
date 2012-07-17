@@ -44,7 +44,7 @@ public class Clear4jTest {
     	//TODO want to get message[''] being populated with the 
     	//TODO return value of the @Process method of the file propcessor 
     	//TODO that expects param @Value('path') String path
-    	Clear.process(The.FILE_PROCESSOR, "path", TestConfig.TEST_FILE_PATH.getValue());
+    	Clear.process(The.FILE_PROCESSOR, "loadText", "path", TestConfig.TEST_FILE_PATH.getValue());
        
         
         //TODO not thread safe
