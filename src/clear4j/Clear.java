@@ -3,7 +3,7 @@ package clear4j;
 import clear4j.msg.Messenger;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
-import clear4j.processor.Return;
+import clear4j.processor.Process;
 import clear4j.processor.Value;
 
 import java.io.Serializable;
@@ -79,7 +79,7 @@ public final class Clear {
                     try {
                         Object processorObject = processor.getProcessorClass().getConstructor().newInstance();
                         for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
-                            Return annotation = method.getAnnotation(Return.class);
+                            Process annotation = method.getAnnotation(Process.class);
                             if (annotation != null){
                                   if (LOG.isLoggable(Level.INFO)){
                                 	  LOG.log(Level.INFO, String.format("payload=%s", message.getPayload()));
@@ -96,7 +96,7 @@ public final class Clear {
                                   
                                   if (key != null && (map).get(key)!=null){
                                       Serializable result = (Serializable) method.invoke(processorObject, map.get(key)); //TODO args
-                                      String resultKey = annotation.value();
+                                      String resultKey = processor.getProcessorClass().getName(); 
                                       if (LOG.isLoggable(Level.INFO)){
                                     	  LOG.log(Level.INFO, String.format("%s=%s", resultKey, result));
                                       }
