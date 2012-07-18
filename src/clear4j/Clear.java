@@ -10,8 +10,6 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,41 +21,6 @@ import java.util.logging.Logger;
 public final class Clear {
 
 	private Clear(){}
-
-    public static clear4j.Instruction send(final String key, final Serializable value) {    //TODO interface here
-    	return new Instruction(key, value); //TODO on(remote).to()
-    }
-    
-    private static final class Instruction implements clear4j.Instruction{
-    	private final ConcurrentHashMap<String, Serializable> values = new ConcurrentHashMap<String, Serializable>();
-    	private Future<clear4j.msg.queue.Message<ConcurrentHashMap<String, Serializable>>> trackedMessage;
-    	private Instruction (String key, Serializable value){
-    		values.put(key, value);
-    	}
-
-		@Override
-		public void to(The processor) { //TODO check this
-			//Messenger.send(values).to(processor.name());//TODO
-		}
-		
-		@Override
-		public Instruction toAndWait(The processor) { //TODO check this
-//			Message msg = Messenger.send(values);  //TODO
-//			this.trackedMessage = Messenger.track(msg.getId(), The.FINAL_PROCESSOR.name());
-//			msg.to(processor.name());
-			return this;
-		}
-	
-		@Override
-		public Message<ConcurrentHashMap<String, Serializable>> get() {
-			try {
-				return trackedMessage.get();
-			} catch (Exception e) {
-				throw new RuntimeException(e); //TODO better handling
-			}
-		}
-
-    }
 
     private static final Logger LOG = Logger.getLogger(The.class.getName());
 

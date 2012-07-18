@@ -1,14 +1,10 @@
 package clear4j;
 
 import clear4j.processors.FileUtils;
-import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
@@ -44,7 +40,7 @@ public class Clear4jTest {
     	//TODO want to get message[''] being populated with the 
     	//TODO return value of the @Process method of the file propcessor 
     	//TODO that expects param @Value('path') String path
-    	Clear.process(The.FILE_PROCESSOR, "loadText", "path", TestConfig.TEST_FILE_PATH.getValue());
+    	//Clear.instruct(The.FILE_PROCESSOR, "loadText", "path", TestConfig.TEST_FILE_PATH.getValue());
        
         
         //TODO not thread safe
