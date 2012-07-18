@@ -31,10 +31,10 @@ public final class Clear {
 
     static {
         for (final The processor : The.values()){
-            Messenger.register(new DefaultQueue(processor.name(), processor.getHost()), new MessageListener<String>(){
+            Messenger.register(new DefaultQueue(processor.name(), processor.getHost()), new MessageListener<Instruction>(){
 
                 @Override
-                public void onMessage(Message message) {
+                public void onMessage(Message<Instruction> message) {
                     //TODO call method of processor with message keys required
                     //TODO add return value to message;
                     //TODO send to result queue.
