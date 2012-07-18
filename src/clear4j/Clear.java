@@ -10,6 +10,8 @@ import clear4j.processor.Value;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,62 +33,55 @@ public final class Clear {
 
     static {
         for (final The processor : The.values()){
-            Messenger.register(new DefaultQueue(processor.name(), processor.getHost()), new MessageListener<Instruction>(){
-
-                @Override
-                public void onMessage(Message<Instruction> message) {
-                    //TODO call method of processor with message keys required
-                    //TODO add return value to message;
-                    //TODO send to result queue.
-                	
-                	Map<String, Serializable> map = (Map<String, Serializable>) message.getPayload();
-                	
-                    try {
-                        Object processorObject = processor.getProcessorClass().getConstructor().newInstance();
-                        for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
-                            Process annotation = method.getAnnotation(Process.class);
-                            if (annotation != null){
-                                  if (LOG.isLoggable(Level.INFO)){
-                                	  LOG.log(Level.INFO, String.format("payload=%s", message.getPayload()));
-                                  }
-                                  //TODO redesign to allow for multiple annotations
-                                  String key = null;
-                                  for (Annotation[] paramAnnotations : method.getParameterAnnotations()){
-                                	for (Annotation paramAnnotation : paramAnnotations) {
-                                		if (paramAnnotation instanceof Value){
-                                			key = ((Value) paramAnnotation).value();
-                                		}
-                                	}
-                                  }
-                                  
-                                  if (key != null && (map).get(key)!=null){
-                                      Serializable result = (Serializable) method.invoke(processorObject, map.get(key)); //TODO args
-                                      String resultKey = processor.getProcessorClass().getName(); 
-                                      if (LOG.isLoggable(Level.INFO)){
-                                    	  LOG.log(Level.INFO, String.format("%s=%s", resultKey, result));
-                                      }
-                                      // TODO put result into message and send on to somewhere...
-                                      // if somewhere not specified, return message to ... finalProcessor.                       }
-                                      // or put it into some workflow object?
-                                      map.put(resultKey, result);
-                                      //TODO CONTINUE HERE.
-                                      String nextProcessor = (String) map.get("next");
-                                      if (nextProcessor == null) {
-                                    	  nextProcessor = The.FINAL_PROCESSOR.name();
-                                      }
-                                      Messenger.send(nextProcessor, message.getPayload());
-                                      //TODO now can wait on receiving on final processor!!!!!!
-                                  }
-                            }
-                        }
-
-                    } catch (Exception e) {
-                        LOG.log(Level.SEVERE, e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                }
-
-            });
+        	
+        	//TODO check this - only register local processors
+        	if (processor.getHost().isLocal()){
+        	
+	            Messenger.register(new DefaultQueue(processor.name(), processor.getHost()), new MessageListener<Instruction>(){
+	
+	                @Override
+	                public void onMessage(Message<Instruction> message) {
+	                	
+	                	Instruction instr = message.getPayload();
+	                	
+	                	String operation = instr.getOperation();
+	
+	                    try {
+	                    	
+	                    	Class<?> processorClass = processor.getProcessorClass();
+	                    	//TODO new instance?
+	                        Object processorObject = processorClass.getConstructor().newInstance();
+	                        
+	                        for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
+	                            
+	                        	Process annotation = method.getAnnotation(Process.class);
+	                            if (annotation != null && method.getName().equals(operation)){
+	                                  
+	                                List<Object> args = new ArrayList<Object>();
+	                                  
+	                                for (Annotation[] paramAnnotations : method.getParameterAnnotations()){
+	                                	for (Annotation paramAnnotation : paramAnnotations) {
+	                                		if (paramAnnotation instanceof Value){
+	                                			args.add(instr.getValue(((Value) paramAnnotation).value()));
+	                                		}
+	                                	}
+	                                }
+	                                
+	                                instr.setValue(String.format("%s.%s", processor.name(), operation), (Serializable) method.invoke(processorObject, args.toArray()));
+	                                
+	                                System.out.println(instr);
+	                                
+	                            }
+	                        }
+	
+	                    } catch (Exception e) {
+	                        LOG.log(Level.SEVERE, e.getMessage());
+	                        throw new RuntimeException(e);
+	                    }
+	                }
+	            });
+	            
+        	}
         }
     }
 
