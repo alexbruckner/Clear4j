@@ -107,7 +107,7 @@ public final class Messenger {
     /*
     * RECEIVING
     */
-    private static <T extends Serializable> Receiver<T> register(final Queue target, final MessageListener<T> listener) {
+    public static <T extends Serializable> Receiver<T> register(final Queue target, final MessageListener<T> listener) {
 
         Receiver<T> receiver = new DefaultReceiver<T>(target, listener);
 

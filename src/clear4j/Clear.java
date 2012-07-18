@@ -1,6 +1,7 @@
 package clear4j;
 
 import clear4j.msg.Messenger;
+import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
 import clear4j.processor.Process;
@@ -24,12 +25,13 @@ public final class Clear {
 
     private static final Logger LOG = Logger.getLogger(The.class.getName());
 
-    static {
-        //TODO create (local only) listeners to in-queues for all defined processors
-        //TODO which will then call the relevant method required.
+    public static void run(Instruction instruction, The processor) {
+        Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), instruction);
+    }
 
+    static {
         for (final The processor : The.values()){
-            Messenger.register(processor.name(), new MessageListener<String>(){
+            Messenger.register(new DefaultQueue(processor.name(), processor.getHost()), new MessageListener<String>(){
 
                 @Override
                 public void onMessage(Message message) {
