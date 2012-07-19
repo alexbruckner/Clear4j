@@ -18,63 +18,75 @@ import java.util.logging.Logger;
  */
 public final class Clear {
 
-	private Clear(){}
+    private Clear() {
+    }
 
     private static final Logger LOG = Logger.getLogger(The.class.getName());
 
     public static void run(Workflow workflow) {
-        The processor = workflow.getNextInstruction().getFunction().getProcessor();
-        Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), workflow);
+        Instruction instr = workflow.getNextInstruction();
+        if (instr != null) {
+            The processor = instr.getFunction().getProcessor();
+            Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), workflow);
+        }
     }
 
+    private static void run(Workflow workflow, Serializable returnValue) {
+        Instruction instr = workflow.getNextInstruction(returnValue);
+        if (instr != null) {
+            The processor = instr.getFunction().getProcessor();
+            Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), workflow);
+        }
+    }
+
+
     static {
-        for (final The processor : The.values()){
+        for (final The processor : The.values()) {
 
-        	//TODO check this - only register local processors
-        	if (processor.getHost().isLocal()){
+            //TODO check this - only register local processors
+            if (processor.getHost().isLocal()) {
 
-	            Messenger.register(new DefaultQueue(processor.name(), processor.getHost()), new MessageListener<Workflow>(){
+                Messenger.register(new DefaultQueue(processor.name(), processor.getHost()), new MessageListener<Workflow>() {
 
-	                @Override
-	                public void onMessage(Message<Workflow> message) {
+                    @Override
+                    public void onMessage(Message<Workflow> message) {
 
                         Workflow workflow = message.getPayload();
 
-                        System.out.println(workflow);
+                        Instruction instr = workflow.getCurrentInstruction();
 
-	                	Instruction instr = workflow.getCurrentInstruction();
+                        String operation = instr.getFunction().getOperation();
 
-	                	String operation = instr.getFunction().getOperation();
+                        try {
 
-	                    try {
+                            Class<?> processorClass = processor.getProcessorClass();
+                            //TODO new instance?
+                            Object processorObject = processorClass.getConstructor().newInstance();
 
-	                    	Class<?> processorClass = processor.getProcessorClass();
-	                    	//TODO new instance?
-	                        Object processorObject = processorClass.getConstructor().newInstance();
+                            for (final Method method : processor.getProcessorClass().getDeclaredMethods()) {
 
-	                        for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
+                                Process annotation = method.getAnnotation(Process.class);
+                                if (annotation != null && method.getName().equals(operation)) {
 
-	                        	Process annotation = method.getAnnotation(Process.class);
-	                            if (annotation != null && method.getName().equals(operation)){
-
-                                    Serializable returnValue =  (Serializable) method.invoke(processorObject, instr.getValue());
+                                    Serializable returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
                                     //this just stores the values for debugging
-	                                workflow.setValue(String.format("%s.%s(%s)", processor.name(), operation, instr.getValue()), returnValue);
+                                    workflow.setValue(String.format("%s.%s(%s)", processor.name(), operation, instr.getValue()), returnValue);
 
-	                                System.out.println(workflow);
-	                                
-	                            }
-	                        }
-	
-	                    } catch (Exception e) {
-	                        LOG.log(Level.SEVERE, e.getMessage());
-	                        throw new RuntimeException(e);
-	                    }
-	                }
-	            });
-	            
-        	}
+                                    run(workflow, returnValue);
+
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            LOG.log(Level.SEVERE, e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+            }
         }
     }
+
 
 }

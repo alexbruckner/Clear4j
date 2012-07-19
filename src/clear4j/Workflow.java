@@ -24,7 +24,21 @@ public class Workflow implements Serializable {
     }
 
     public Instruction getNextInstruction() {
-        return currentInstruction = iterator.next();
+        if (iterator.hasNext()){
+            return currentInstruction = iterator.next();
+        } else {
+            return null;
+        }
+    }
+
+    public <T extends Serializable> Instruction getNextInstruction(T value) {
+        if (iterator.hasNext()){
+            Instruction instr = currentInstruction = iterator.next();
+            currentInstruction = new Instruction<T>(instr.getFunction(), value);
+            return currentInstruction;
+        } else {
+            return null;
+        }
     }
 
     public Instruction getCurrentInstruction() {
@@ -32,7 +46,9 @@ public class Workflow implements Serializable {
     }
 
     public <T extends Serializable> void setValue(String key, T value){
-        values.put(key, value);
+        if (key != null && value != null) {
+            values.put(key, value);
+        }
     }
 
     public Map<String, Serializable> getValues() {
