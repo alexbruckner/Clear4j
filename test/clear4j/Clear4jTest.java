@@ -36,11 +36,10 @@ public class Clear4jTest {
         // this queue can be local to the jvm or distributed.
 
         // start the workflow process
-        //TODO Key enum for "path"
-    	//TODO want to get message[''] being populated with the 
-    	//TODO return value of the @Process method of the file propcessor 
-    	//TODO that expects param @Value('path') String path
-    	Clear.run(new Instruction("loadText", new Param("path", TestConfig.TEST_FILE_PATH.getValue())), The.FILE_PROCESSOR);    //TODO convinience methods
+        // TODO convinience methods
+        // TODO have proc.func function object + args object. create a print processor for FileProcessor.loadText('file')->PrintProcessor.print [actual language would have to be loadText(file)->print]
+
+        Clear.run(new Instruction(new Function(The.FILE_PROCESSOR, "loadText"), new Param("path", TestConfig.TEST_FILE_PATH.getValue())));
        
         
         //TODO not thread safe

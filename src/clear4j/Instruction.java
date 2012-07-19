@@ -7,19 +7,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Instruction  implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	final String operation;
+	final Function function;
     final Map<String, Serializable> args;
 
-    public Instruction(final String operation, final Param... params){
-        this.operation = operation;
-        this.args = new ConcurrentHashMap<String, Serializable>(params.length);
-        for (Param param : params){
+    public Instruction(Function operation, final Param... values){
+        this.function = operation;
+        this.args = new ConcurrentHashMap<String, Serializable>(values.length);
+        for (Param param : values){
         	args.put(param.getKey(), param.getValue());
         }
     }
 
-    public String getOperation() {
-        return operation;
+    public Function getFunction() {
+        return function;
     }
 
     public <T extends Serializable> T getValue(String key) {
@@ -29,9 +29,9 @@ public class Instruction  implements Serializable {
     public <T extends Serializable> void setValue(String key, T value){
     	args.put(key, value);
     }
-    
+
     @Override
-    public String toString(){
-    	return String.format("Instruction[op:%s,params:%s]", operation, args);
+    public String toString() {
+        return String.format("Instruction{function=%s, values=%s}", function, args);
     }
 }

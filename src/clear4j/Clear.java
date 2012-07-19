@@ -12,7 +12,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +26,8 @@ public final class Clear {
 
     private static final Logger LOG = Logger.getLogger(The.class.getName());
 
-    public static void run(Instruction instruction, The processor) {
+    public static void run(Instruction instruction) {
+        The processor = instruction.getFunction().getProcessor();
         Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), instruction);
     }
 
@@ -44,7 +44,7 @@ public final class Clear {
 	                	
 	                	Instruction instr = message.getPayload();
 	                	
-	                	String operation = instr.getOperation();
+	                	String operation = instr.getFunction().getOperation();
 	
 	                    try {
 	                    	
