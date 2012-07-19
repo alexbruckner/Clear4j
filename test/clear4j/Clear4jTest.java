@@ -39,7 +39,7 @@ public class Clear4jTest {
         // TODO convinience methods
         // TODO have proc.func function object + args object. create a print processor for FileProcessor.loadText('file')->PrintProcessor.print [actual language would have to be loadText(file)->print]
 
-        Clear.run(new Instruction(new Function(The.FILE_PROCESSOR, "loadText"), new Param("path", TestConfig.TEST_FILE_PATH.getValue())));
+        Clear.run(new Workflow(new Instruction<String>(new Function(The.FILE_PROCESSOR, "loadText"), TestConfig.TEST_FILE_PATH.getValue())));
        
         
         //TODO not thread safe

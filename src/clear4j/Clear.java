@@ -5,13 +5,9 @@ import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
 import clear4j.processor.Process;
-import clear4j.processor.Value;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,50 +22,46 @@ public final class Clear {
 
     private static final Logger LOG = Logger.getLogger(The.class.getName());
 
-    public static void run(Instruction instruction) {
-        The processor = instruction.getFunction().getProcessor();
-        Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), instruction);
+    public static void run(Workflow workflow) {
+        The processor = workflow.getNextInstruction().getFunction().getProcessor();
+        Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), workflow);
     }
 
     static {
         for (final The processor : The.values()){
-        	
+
         	//TODO check this - only register local processors
         	if (processor.getHost().isLocal()){
-        	
-	            Messenger.register(new DefaultQueue(processor.name(), processor.getHost()), new MessageListener<Instruction>(){
-	
+
+	            Messenger.register(new DefaultQueue(processor.name(), processor.getHost()), new MessageListener<Workflow>(){
+
 	                @Override
-	                public void onMessage(Message<Instruction> message) {
-	                	
-	                	Instruction instr = message.getPayload();
-	                	
+	                public void onMessage(Message<Workflow> message) {
+
+                        Workflow workflow = message.getPayload();
+
+                        System.out.println(workflow);
+
+	                	Instruction instr = workflow.getCurrentInstruction();
+
 	                	String operation = instr.getFunction().getOperation();
-	
+
 	                    try {
-	                    	
+
 	                    	Class<?> processorClass = processor.getProcessorClass();
 	                    	//TODO new instance?
 	                        Object processorObject = processorClass.getConstructor().newInstance();
-	                        
+
 	                        for (final Method method : processor.getProcessorClass().getDeclaredMethods()){
-	                            
+
 	                        	Process annotation = method.getAnnotation(Process.class);
 	                            if (annotation != null && method.getName().equals(operation)){
-	                                  
-	                                List<Object> args = new ArrayList<Object>();
-	                                  
-	                                for (Annotation[] paramAnnotations : method.getParameterAnnotations()){
-	                                	for (Annotation paramAnnotation : paramAnnotations) {
-	                                		if (paramAnnotation instanceof Value){
-	                                			args.add(instr.getValue(((Value) paramAnnotation).value()));
-	                                		}
-	                                	}
-	                                }
-	                                
-	                                instr.setValue(String.format("%s.%s", processor.name(), operation), (Serializable) method.invoke(processorObject, args.toArray()));
-	                                
-	                                System.out.println(instr);
+
+                                    Serializable returnValue =  (Serializable) method.invoke(processorObject, instr.getValue());
+                                    //this just stores the values for debugging
+	                                workflow.setValue(String.format("%s.%s(%s)", processor.name(), operation, instr.getValue()), returnValue);
+
+	                                System.out.println(workflow);
 	                                
 	                            }
 	                        }

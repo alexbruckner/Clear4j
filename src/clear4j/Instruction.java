@@ -1,37 +1,28 @@
 package clear4j;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class Instruction  implements Serializable {
+public class Instruction<T extends Serializable>  implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	final Function function;
-    final Map<String, Serializable> args;
+    final T value;
 
-    public Instruction(Function operation, final Param... values){
+    public Instruction(Function operation, final T value){
         this.function = operation;
-        this.args = new ConcurrentHashMap<String, Serializable>(values.length);
-        for (Param param : values){
-        	args.put(param.getKey(), param.getValue());
-        }
+        this.value = value;
     }
 
     public Function getFunction() {
         return function;
     }
 
-    public <T extends Serializable> T getValue(String key) {
-        return (T) args.get(key);
-    }
-    
-    public <T extends Serializable> void setValue(String key, T value){
-    	args.put(key, value);
+    public T getValue() {
+        return value;
     }
 
     @Override
     public String toString() {
-        return String.format("Instruction{function=%s, values=%s}", function, args);
+        return String.format("Instruction{function=%s, value=%s}", function, value);
     }
 }
