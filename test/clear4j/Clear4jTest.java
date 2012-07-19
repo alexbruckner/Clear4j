@@ -39,11 +39,10 @@ public class Clear4jTest {
         // TODO convinience methods
         // TODO have proc.func function object + args object. create a print processor for FileProcessor.loadText('file')->PrintProcessor.print [actual language would have to be loadText(file)->print]
 
-        Instruction<String> loadText = new Instruction<String>(new Function(The.FILE_PROCESSOR, "loadText"), TestConfig.TEST_FILE_PATH.getValue());
-        Instruction<String> print = new Instruction<String>(new Function(The.PRINT_PROCESSOR, "println"), null);   //TODO tidy this up
+        Instruction<String> loadText = Instruction.to(The.FILE_PROCESSOR, "loadText", TestConfig.TEST_FILE_PATH.getValue());
+        Instruction print = Instruction.to(The.PRINT_PROCESSOR, "println");
         Clear.run(new Workflow(loadText, print));
-       
-        
+
         //TODO not thread safe
         //ConcurrentHashMap<String, Serializable> map = instruction.get().getPayload();
         //String text1 = (String) map.get("text"); //TODO Key enum for "text"

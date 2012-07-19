@@ -13,6 +13,14 @@ public class Instruction<T extends Serializable>  implements Serializable {
         this.value = value;
     }
 
+    public static <T extends Serializable> Instruction<T> to(final The processor, final String operation, final T value){
+        return new Instruction<T>(new Function(processor, operation), value);
+    }
+
+    public static <T extends Serializable> Instruction to(final The processor, final String operation){
+        return new Instruction<T>(new Function(processor, operation), null);
+    }
+
     public Function getFunction() {
         return function;
     }
@@ -25,4 +33,6 @@ public class Instruction<T extends Serializable>  implements Serializable {
     public String toString() {
         return String.format("Instruction{function=%s, value=%s}", function, value);
     }
+
+
 }
