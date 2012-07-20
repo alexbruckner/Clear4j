@@ -3,6 +3,7 @@ package clear4j;
 import clear4j.processor.instruction.Instruction;
 import clear4j.processor.instruction.PipedInstruction;
 import clear4j.processors.FileUtils;
+import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,12 +45,14 @@ public class Clear4jTest {
 //        String text1 = workflow.waitFor();
 
         // load it the boring way
-        String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
+        //String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
 
         // assert same content
 //        Assert.assertEquals(text2, text1);
     	
     	Thread.sleep(5000);
+
+        Assert.fail("implement some waitfor method that checks data in the final processor.");
 
     }
 
