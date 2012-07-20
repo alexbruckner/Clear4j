@@ -10,27 +10,24 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Workflow implements Serializable {
 
-    private final List<Instruction> instructions;
+	private static final long serialVersionUID = 1L;
+	private final List<Instruction<?>> instructions;
     private final Map<String, Serializable> values; //only used to record all goings on within a workflow, value passing is done in clear directly
-    private Iterator<Instruction> iterator;
-    private Instruction currentInstruction;
+    private Iterator<Instruction<?>> iterator;
+    private Instruction<?> currentInstruction;
 
     private static final AtomicLong instanceCount = new AtomicLong();
 
     private final String id;
 
-    public Workflow(final Instruction start, final PipedInstruction... pipedInstructions){
-        this.instructions = new CopyOnWriteArrayList<Instruction>();
+    public Workflow(final Instruction<?> start, final PipedInstruction<?>... pipedInstructions){
+        this.instructions = new CopyOnWriteArrayList<Instruction<?>>();
         this.instructions.add(start);
         this.values = new ConcurrentHashMap<String, Serializable>();
         Collections.addAll(this.instructions, pipedInstructions);
@@ -47,7 +44,7 @@ public class Workflow implements Serializable {
         return id;
     }
 
-    public Instruction getNextInstruction() {
+    public Instruction<?> getNextInstruction() {
         if (iterator.hasNext()){
             return currentInstruction = iterator.next();
         } else {
@@ -55,9 +52,9 @@ public class Workflow implements Serializable {
         }
     }
 
-    public <T extends Serializable> Instruction getNextInstruction(T value) {
+    public <T extends Serializable> Instruction<?> getNextInstruction(T value) {
         if (iterator.hasNext()){
-            Instruction instr = currentInstruction = iterator.next();
+            Instruction<?> instr = currentInstruction = iterator.next();
             currentInstruction = new Instruction<T>(instr.getFunction(), value);
             return currentInstruction;
         } else {
@@ -65,7 +62,7 @@ public class Workflow implements Serializable {
         }
     }
 
-    public Instruction getCurrentInstruction() {
+    public Instruction<?> getCurrentInstruction() {
         return currentInstruction;
     }
 
