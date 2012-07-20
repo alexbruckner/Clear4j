@@ -6,8 +6,9 @@ import clear4j.processor.Process;
 public class PrintProcessor {
 	
 	@Process
-	public void println(String str){
-        System.out.println(String.format("PRINTING: %s",str));
+	public Object println(Object value){
+        System.out.println(String.format("PRINTING: %s", value));
+        return value;
 	}
 	
 }

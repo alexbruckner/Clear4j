@@ -31,29 +31,23 @@ public class Clear4jTest {
     @Test
     public void testSimpleWorkFlow() throws Exception {
 
-        // under the bonnet: we send an instruction message "load" to the file processor
-        // with payload Payload.FILE_PATH = "/tmp/test.txt"
-        // instruct(Enum 'The' -> selection: FileProcessor) returns a processor.FileProcessor
-        // with certain methods that create instruction messages to be put on the file processor queue.
-        // this queue can be local to the jvm or distributed.
-
         // start the workflow process
         // TODO convinience methods
         // TODO have proc.func function object + args object. create a print processor for FileProcessor.loadText('file')->PrintProcessor.print [actual language would have to be loadText(file)->print]
 
         Instruction<String> loadText = Instruction.to(The.FILE_PROCESSOR, "loadText", TestConfig.TEST_FILE_PATH.getValue());
         PipedInstruction<String> print = Instruction.to(The.PRINT_PROCESSOR, "println");
-        Clear.run(Workflow.create(loadText).pipe(print));
+        Workflow workflow = new Workflow(loadText, print);
+        Clear.run(workflow);
 
-        //TODO not thread safe
-        //ConcurrentHashMap<String, Serializable> map = instruction.get().getPayload();
-        //String text1 = (String) map.get("text"); //TODO Key enum for "text"
+        // wait for the result
+//        String text1 = workflow.waitFor();
 
         // load it the boring way
-        //String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
+        String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
 
         // assert same content
-        //Assert.assertEquals(text2, text1);
+//        Assert.assertEquals(text2, text1);
     	
     	Thread.sleep(5000);
 

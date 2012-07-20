@@ -17,21 +17,19 @@ public class Workflow implements Serializable {
     private final Map<String, Serializable> values; //only used to record all goings on within a workflow, value passing is done in clear directly
     private Iterator<Instruction> iterator;
     private Instruction currentInstruction;
+    private Instruction finalInstruction;
 
-    private Workflow(final Instruction start){
+    public Workflow(final Instruction start, final PipedInstruction... pipedInstructions){
         this.instructions = new CopyOnWriteArrayList<Instruction>();
         this.instructions.add(start);
         this.values = new ConcurrentHashMap<String, Serializable>();
-    }
+        Collections.addAll(this.instructions, pipedInstructions);
 
-    public static Workflow create(final Instruction start){
-        return new Workflow(start);
-    }
+        finalInstruction = Instruction.to(The.FINAL_PROCESSOR, "finalProcess");
+        this.instructions.add(finalInstruction);
 
-    public Workflow pipe(final PipedInstruction... instructions){
-        Collections.addAll(this.instructions, instructions);
         iterator = this.instructions.iterator();
-        return this;
+
     }
 
     public Instruction getNextInstruction() {
@@ -70,4 +68,6 @@ public class Workflow implements Serializable {
     public String toString() {
         return String.format("Workflow{instructions=%s, values=%s}", instructions, values);
     }
+
+
 }

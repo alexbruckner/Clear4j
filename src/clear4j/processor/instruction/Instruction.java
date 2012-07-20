@@ -15,11 +15,11 @@ public class Instruction<T extends Serializable> implements Serializable {
         this.value = value;
     }
 
-    public static <T extends Serializable> Instruction<T> to(final The processor, final String operation, final T value){
+    public static <T extends Serializable> Instruction<T> to(final The processor, final String operation, final T value) {
         return new Instruction<T>(new Function(processor, operation), value);
     }
 
-    public static <T extends Serializable> PipedInstruction<T> to(final The processor, final String operation){
+    public static <T extends Serializable> PipedInstruction<T> to(final The processor, final String operation) {
         return new PipedInstruction<T>(processor, operation);
     }
 
