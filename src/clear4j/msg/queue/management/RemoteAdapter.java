@@ -86,7 +86,8 @@ public class RemoteAdapter {
                     try {
                         final Socket socket = serverSocket.accept();
                         executor.submit(new Runnable() {
-                            @Override
+                            @SuppressWarnings("unchecked")
+							@Override
                             public void run() {
                                 try {
                                     ObjectInputStream in = new ObjectInputStream(socket.getInputStream());

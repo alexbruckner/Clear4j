@@ -36,6 +36,7 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
     	getQueue(receiver.getTarget().getName()).getReceivers().remove(receiver);
     }
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
     public Set<QueueStatus> status() {
         Set<QueueStatus> status = new TreeSet<QueueStatus>();

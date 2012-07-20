@@ -20,7 +20,8 @@ public final class QueueManager {
     private QueueManager() {}
 
     private static final Logger LOG = Logger.getLogger(QueueManager.class.getName());
-    private static final QueueManagement QUEUE_MANAGER = new BlockingQueueManager();
+    @SuppressWarnings("rawtypes")
+	private static final QueueManagement QUEUE_MANAGER = new BlockingQueueManager();
 
     static {
         //start remote adapter
@@ -31,7 +32,8 @@ public final class QueueManager {
      * SENDING
      */
 
-    public static <T extends Serializable> void add(Message<T> message) {
+    @SuppressWarnings("unchecked")
+	public static <T extends Serializable> void add(Message<T> message) {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Adding message [%s]", message));
         }
@@ -47,14 +49,16 @@ public final class QueueManager {
      * RECEIVING
      */
 
-    public static <T extends Serializable> void add(Receiver<T> receiver) {
+    @SuppressWarnings("unchecked")
+	public static <T extends Serializable> void add(Receiver<T> receiver) {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Adding receiver [%s]", receiver));
         }
         QUEUE_MANAGER.add(receiver);
     }
 
-    public static <T extends Serializable> void remove(Receiver<T> receiver) {
+    @SuppressWarnings("unchecked")
+	public static <T extends Serializable> void remove(Receiver<T> receiver) {
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, String.format("Removing receiver [%s]", receiver));
         }
@@ -64,7 +68,8 @@ public final class QueueManager {
     /*
      * MONITORING
      */
-    public static <T extends Serializable> Set<QueueStatus> status(){
+    @SuppressWarnings("unchecked")
+	public static <T extends Serializable> Set<QueueStatus> status(){
         if (LOG.isLoggable(Level.INFO)) {
             LOG.log(Level.INFO, "Returning status of all queues...");
         }

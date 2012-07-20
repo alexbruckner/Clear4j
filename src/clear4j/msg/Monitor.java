@@ -41,15 +41,16 @@ public class Monitor<T extends QueueStatus> implements Runnable {
     * Monitor method
     */
 
-    private void monitor(){
+    @SuppressWarnings("unchecked")
+	private void monitor(){
         Set<QueueStatus> status = QueueManager.status();
         //now decorate the queue status with message count, etc... from local receivers
-        Set<ExtendedQueueStatus> msgStatus = new TreeSet<ExtendedQueueStatus>();
+        Set<T> msgStatus = new TreeSet<T>();
         for (QueueStatus queueStatus : status){
         	int msgCount = getMessageCount(queueStatus.getQueue());
-        	msgStatus.add(new ExtendedQueueStatus(queueStatus, msgCount));
+        	msgStatus.add((T) new ExtendedQueueStatus(queueStatus, msgCount));
         }
-        callback.call((Set<T>) msgStatus); //TODO
+        callback.call(msgStatus);
     }
 
     private int getMessageCount(String queue) {
@@ -110,7 +111,7 @@ public class Monitor<T extends QueueStatus> implements Runnable {
 		
 		@Override
 		public boolean equals (Object o){
-			MessageCounter<T> other = (MessageCounter<T>) o; //TOD
+			MessageCounter<?> other = (MessageCounter<?>) o;
 			return queue.equals(other.queue);
 		}
 		
