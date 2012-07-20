@@ -12,9 +12,9 @@ import clear4j.processors.PrintProcessor;
  */
 public enum The {      //TODO don't make this static but have a directory of defined processors (system adapaters)
 
-    FILE_PROCESSOR(FileProcessor.class, Host.LOCAL_HOST), //TODO remote processor + TODO remove dependency of implementation here? also don't use enum if client wan't custom processors
+    FILE_PROCESSOR(FileProcessor.class, Host.LOCAL_HOST), //TODO remove dependency of implementation here? also don't use enum if client wan't custom processors
     PRINT_PROCESSOR(PrintProcessor.class, Host.LOCAL_HOST),
-    FINAL_PROCESSOR(FinalProcessor.class, Host.LOCAL_HOST);
+    FINAL_PROCESSOR(FinalProcessor.class, Host.LOCAL_HOST); //TODO this has always to be local? 
 
     private final Class<?> processorClass;
     private final Host host;

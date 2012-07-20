@@ -3,14 +3,19 @@ package clear4j;
 import clear4j.msg.queue.Host;
 import clear4j.processor.instruction.Instruction;
 import clear4j.processor.instruction.PipedInstruction;
+import clear4j.processors.FinalProcessor;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Workflow implements Serializable {
@@ -93,4 +98,15 @@ public class Workflow implements Serializable {
     public int hashCode() {
         return id.hashCode();
     }
+
+	public synchronized <T extends Serializable> T waitFor() {
+		while(FinalProcessor.getWorkflow(id) == null){
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		return (T) this.getCurrentInstruction().getValue();
+	}
 }
