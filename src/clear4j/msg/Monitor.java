@@ -14,19 +14,19 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Monitor implements Runnable {
+public class Monitor<T extends QueueStatus> implements Runnable {
     private int frequency; //milliseconds
     private boolean running = true;
     private Thread monitorThread;
-    private Callback<ExtendedQueueStatus<Serializable>> callback;
+    private Callback<T> callback;
     private final Map<String, MessageCounter<Serializable>> counters = new ConcurrentHashMap<String, MessageCounter<Serializable>>();
     
 
-    public Monitor(final Callback callback) {
+    public Monitor(final Callback<T> callback) {
         this(5000, null, callback);
     }
 
-    public Monitor(final int frequency, String[] queues, final Callback callback) {
+    public Monitor(final int frequency, String[] queues, final Callback<T> callback) {
         this.frequency = 5000;
         this.callback = callback;
         //prime queues
@@ -49,7 +49,7 @@ public class Monitor implements Runnable {
         	int msgCount = getMessageCount(queueStatus.getQueue());
         	msgStatus.add(new ExtendedQueueStatus(queueStatus, msgCount));
         }
-        callback.call((Set)msgStatus);
+        callback.call((Set<T>) msgStatus); //TODO
     }
 
     private int getMessageCount(String queue) {
@@ -110,7 +110,7 @@ public class Monitor implements Runnable {
 		
 		@Override
 		public boolean equals (Object o){
-			MessageCounter<T> other = (MessageCounter<T>) o;
+			MessageCounter<T> other = (MessageCounter<T>) o; //TOD
 			return queue.equals(other.queue);
 		}
 		

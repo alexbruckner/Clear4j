@@ -7,7 +7,10 @@ import clear4j.msg.queue.Receiver;
 import java.io.Serializable;
 
 public class DefaultReceiver<T extends Serializable> extends AbstractRemoteOrigin implements Receiver<T> {
-    private transient final MessageListener<T> messageListener;
+
+	private static final long serialVersionUID = 1L;
+	
+	private transient final MessageListener<T> messageListener;
 
     public DefaultReceiver(final Queue target, final MessageListener<T> messageListener) {
         super(target);

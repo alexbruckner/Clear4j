@@ -4,7 +4,9 @@ import clear4j.msg.queue.Host;
 
 public final class HostPort implements Host {
 
-    private final String host;
+	private static final long serialVersionUID = 1L;
+
+	private final String host;
     private final int port;
 
     public HostPort(final String host, final int port) {

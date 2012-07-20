@@ -6,7 +6,9 @@ import java.io.Serializable;
 
 public class Function implements Serializable {
 
-    final The processor;
+	private static final long serialVersionUID = 1L;
+	
+	final The processor;
     final String operation;
 
     public Function(final The processor, final String operation){

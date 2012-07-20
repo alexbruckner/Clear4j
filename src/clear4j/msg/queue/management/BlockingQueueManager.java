@@ -36,14 +36,14 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
     	getQueue(receiver.getTarget().getName()).getReceivers().remove(receiver);
     }
 
-    @Override
+	@Override
     public Set<QueueStatus> status() {
         Set<QueueStatus> status = new TreeSet<QueueStatus>();
         for (Map.Entry<String, Queue<T>> entry : store.entrySet()){
             String name = entry.getKey();
             Queue<T> queue = entry.getValue();
-            List<Receiver<T>> receivers = queue.getReceivers();
-            status.add(new DefaultQueueStatus<T>(name, receivers));
+            List receivers = queue.getReceivers();
+            status.add(new DefaultQueueStatus(name, receivers));
         }
         return status;
     }

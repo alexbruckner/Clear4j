@@ -5,7 +5,9 @@ import clear4j.msg.queue.Queue;
 
 public final class DefaultQueue implements Queue {
 
-    private final String name;
+	private static final long serialVersionUID = 1L;
+	
+	private final String name;
     private final Host host;
 
     public DefaultQueue(final String name, final Host host) {

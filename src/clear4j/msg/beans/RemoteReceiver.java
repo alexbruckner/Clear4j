@@ -6,7 +6,9 @@ import java.io.Serializable;
 
 public class RemoteReceiver<T extends Serializable> extends DefaultReceiver<T> {
 
-    private final Receiver<T> localProxy;
+	private static final long serialVersionUID = 1L;
+	
+	private final Receiver<T> localProxy;
     private final String id;
 
     public RemoteReceiver(Receiver<T> receiver, Receiver<T> localProxy) {

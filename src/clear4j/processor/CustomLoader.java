@@ -18,7 +18,7 @@ public class CustomLoader{
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 */
-	public static Class[] getClasses(String packageName)
+	public static Class<?>[] getClasses(String packageName)
 	        throws ClassNotFoundException, IOException {
 	    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 	    assert classLoader != null;
@@ -29,7 +29,7 @@ public class CustomLoader{
 	        URL resource = resources.nextElement();
 	        dirs.add(new File(resource.getFile()));
 	    }
-	    ArrayList<Class> classes = new ArrayList<Class>();
+	    ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
 	    for (File directory : dirs) {
 	        classes.addAll(findClasses(directory, packageName));
 	    }
@@ -44,8 +44,8 @@ public class CustomLoader{
 	 * @return The classes
 	 * @throws ClassNotFoundException
 	 */
-	private static List<Class> findClasses(File directory, String packageName) throws ClassNotFoundException {
-	    List<Class> classes = new ArrayList<Class>();
+	private static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
+	    List<Class<?>> classes = new ArrayList<Class<?>>();
 	    if (!directory.exists()) {
 	        return classes;
 	    }

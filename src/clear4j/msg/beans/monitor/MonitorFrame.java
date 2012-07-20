@@ -9,8 +9,10 @@ import java.util.Set;
 
 public class MonitorFrame extends JFrame {
 
-    private JTextArea area;
-    private final Monitor monitor;
+	private static final long serialVersionUID = 1L;
+	
+	private JTextArea area;
+    private final Monitor<ExtendedQueueStatus> monitor;
 
     public MonitorFrame(int frequency, final String... queues){
         setTitle("Clear4j Queue Monitor");
@@ -19,9 +21,9 @@ public class MonitorFrame extends JFrame {
         this.getContentPane().add(area);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setVisible(true);
-        monitor = new Monitor(frequency, queues, new Callback<ExtendedQueueStatus<?>>() {
+        monitor = new Monitor<ExtendedQueueStatus>(frequency, queues, new Callback<ExtendedQueueStatus>() {
             @Override
-            public void call(Set<ExtendedQueueStatus<?>> status) {
+            public void call(Set<ExtendedQueueStatus> status) {
                 StringBuilder sb = new StringBuilder();
                 for (ExtendedQueueStatus queueStatus : status){
                     sb.append(queueStatus.getQueue())

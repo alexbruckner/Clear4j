@@ -10,7 +10,7 @@ public class ProcessorLoaderTest {
 
 	@Test
 	public void testCustomLoader() throws Exception {
-		Class[] classes = CustomLoader.getClasses(ProcessorLoader.DEFAULT_PROCESSOR_PACKAGE);
+		Class<?>[] classes = CustomLoader.getClasses(ProcessorLoader.DEFAULT_PROCESSOR_PACKAGE);
 		Assert.assertTrue(Arrays.asList(classes).contains(The.class));
 	}
 	

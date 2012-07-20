@@ -8,7 +8,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.logging.Logger;
 
 /**
  * User: alexb
@@ -16,8 +15,6 @@ import java.util.logging.Logger;
  * Time: 09:23
  */
 public class Clear4jTest {
-
-    private static final Logger LOG = Logger.getLogger(Clear4jTest.class.getName());
 
     @BeforeClass
     public static void setup(){

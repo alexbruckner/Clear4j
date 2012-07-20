@@ -96,6 +96,7 @@ public class Workflow implements Serializable {
         return id.hashCode();
     }
 
+	@SuppressWarnings("unchecked")
 	public synchronized <T extends Serializable> T waitFor() {
 		while(FinalProcessor.getWorkflow(id) == null){
 			try {
