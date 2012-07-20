@@ -25,21 +25,19 @@ public final class Clear {
     private static final Logger LOG = Logger.getLogger(The.class.getName());
 
     public static void run(Workflow workflow) {
-        Instruction instr = workflow.getNextInstruction();
-        if (instr != null) {
-            The processor = instr.getFunction().getProcessor();
-            Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), workflow);
-        }
+        run(workflow, workflow.getNextInstruction());
     }
 
     private static void run(Workflow workflow, Serializable returnValue) {
-        Instruction instr = workflow.getNextInstruction(returnValue);
-        if (instr != null) {
+        run(workflow, workflow.getNextInstruction(returnValue)); //TODO
+    }
+
+    private static void run(Workflow workflow, Instruction<?> instr){
+    	if (instr != null) {
             The processor = instr.getFunction().getProcessor();
             Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), workflow);
         }
     }
-
 
     static {
         for (final The processor : The.values()) {
@@ -54,7 +52,7 @@ public final class Clear {
 
                         Workflow workflow = message.getPayload();
 
-                        Instruction instr = workflow.getCurrentInstruction();
+                        Instruction<?> instr = workflow.getCurrentInstruction();
 
                         String operation = instr.getFunction().getOperation();
 
@@ -69,11 +67,16 @@ public final class Clear {
                                 Process annotation = method.getAnnotation(Process.class);
                                 if (annotation != null && method.getName().equals(operation)) {
 
-                                    Serializable returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
-                                    //this just stores the values for debugging
-                                    workflow.setValue(String.format("%s.%s(%s)", processor.name(), operation, instr.getValue()), returnValue);
-
-                                    run(workflow, returnValue);
+                                	if (processor != The.FINAL_PROCESSOR) {
+	                                    Serializable returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
+	                                    //this just stores the values for debugging
+	                                    workflow.setValue(String.format("%s.%s(%s)", processor.name(), operation, instr.getValue()), returnValue);
+	
+	                                    run(workflow, returnValue);
+	                                    
+                                	} else {
+                                		method.invoke(processorObject, workflow);
+                                	}
 
                                 }
                             }
