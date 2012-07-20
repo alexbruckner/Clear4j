@@ -3,6 +3,8 @@ package clear4j.processors;
 import clear4j.processor.Process;
 import clear4j.processor.Processor;
 
+import java.util.Map;
+
 
 @Processor
 public class FinalProcessor {

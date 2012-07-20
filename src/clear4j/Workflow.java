@@ -1,5 +1,6 @@
 package clear4j;
 
+import clear4j.msg.queue.Host;
 import clear4j.processor.instruction.Instruction;
 import clear4j.processor.instruction.PipedInstruction;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Workflow implements Serializable {
 
@@ -17,7 +19,10 @@ public class Workflow implements Serializable {
     private final Map<String, Serializable> values; //only used to record all goings on within a workflow, value passing is done in clear directly
     private Iterator<Instruction> iterator;
     private Instruction currentInstruction;
-    private Instruction finalInstruction;
+
+    private static final AtomicLong instanceCount = new AtomicLong();
+
+    private final String id;
 
     public Workflow(final Instruction start, final PipedInstruction... pipedInstructions){
         this.instructions = new CopyOnWriteArrayList<Instruction>();
@@ -25,11 +30,16 @@ public class Workflow implements Serializable {
         this.values = new ConcurrentHashMap<String, Serializable>();
         Collections.addAll(this.instructions, pipedInstructions);
 
-        finalInstruction = Instruction.to(The.FINAL_PROCESSOR, "finalProcess");
-        this.instructions.add(finalInstruction);
+        this.instructions.add(Instruction.to(The.FINAL_PROCESSOR, "finalProcess"));
 
         iterator = this.instructions.iterator();
 
+        this.id = String.format("%s-%s-%s", Host.LOCAL_HOST, System.currentTimeMillis(), instanceCount.addAndGet(1));
+
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Instruction getNextInstruction() {
@@ -69,5 +79,18 @@ public class Workflow implements Serializable {
         return String.format("Workflow{instructions=%s, values=%s}", instructions, values);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Workflow workflow = (Workflow) o;
+
+        return id.equals(workflow.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
