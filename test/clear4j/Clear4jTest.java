@@ -1,5 +1,7 @@
 package clear4j;
 
+import clear4j.processor.instruction.Instruction;
+import clear4j.processor.instruction.PipedInstruction;
 import clear4j.processors.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -40,8 +42,8 @@ public class Clear4jTest {
         // TODO have proc.func function object + args object. create a print processor for FileProcessor.loadText('file')->PrintProcessor.print [actual language would have to be loadText(file)->print]
 
         Instruction<String> loadText = Instruction.to(The.FILE_PROCESSOR, "loadText", TestConfig.TEST_FILE_PATH.getValue());
-        Instruction print = Instruction.to(The.PRINT_PROCESSOR, "println");
-        Clear.run(new Workflow(loadText, print));
+        PipedInstruction<String> print = Instruction.to(The.PRINT_PROCESSOR, "println");
+        Clear.run(Workflow.create(loadText).pipe(print));
 
         //TODO not thread safe
         //ConcurrentHashMap<String, Serializable> map = instruction.get().getPayload();

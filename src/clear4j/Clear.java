@@ -1,5 +1,6 @@
 package clear4j;
 
+import clear4j.processor.instruction.Instruction;
 import clear4j.msg.Messenger;
 import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Message;

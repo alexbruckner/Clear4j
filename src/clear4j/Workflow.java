@@ -1,5 +1,8 @@
 package clear4j;
 
+import clear4j.processor.instruction.Instruction;
+import clear4j.processor.instruction.PipedInstruction;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
@@ -12,15 +15,23 @@ public class Workflow implements Serializable {
 
     private final List<Instruction> instructions;
     private final Map<String, Serializable> values; //only used to record all goings on within a workflow, value passing is done in clear directly
-    private final Iterator<Instruction> iterator;
+    private Iterator<Instruction> iterator;
     private Instruction currentInstruction;
 
-    public Workflow(final Instruction start, final Instruction... instructions){
+    private Workflow(final Instruction start){
         this.instructions = new CopyOnWriteArrayList<Instruction>();
         this.instructions.add(start);
-        Collections.addAll(this.instructions, instructions);
         this.values = new ConcurrentHashMap<String, Serializable>();
+    }
+
+    public static Workflow create(final Instruction start){
+        return new Workflow(start);
+    }
+
+    public Workflow pipe(final PipedInstruction... instructions){
+        Collections.addAll(this.instructions, instructions);
         iterator = this.instructions.iterator();
+        return this;
     }
 
     public Instruction getNextInstruction() {
