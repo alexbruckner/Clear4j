@@ -1,7 +1,5 @@
 package clear4j;
 
-import clear4j.processor.instruction.Instruction;
-import clear4j.processor.instruction.PipedInstruction;
 import clear4j.processors.FileUtils;
 import junit.framework.Assert;
 import org.junit.AfterClass;
@@ -29,10 +27,9 @@ public class Clear4jTest {
     @Test
     public void testSimpleWorkFlow() throws Exception {
 
-        // start the workflow process //TODO merge Instruction and function definition or need this for custom functions?
-        Instruction<String> loadText = Instruction.define(Functions.loadText(), TestConfig.TEST_FILE_PATH.getValue());
-        PipedInstruction<String> print = Instruction.define(Functions.println());
-        Workflow workflow = new Workflow(loadText, print);
+        // start the workflow process
+        String filePath = TestConfig.TEST_FILE_PATH.getValue();
+        Workflow workflow = new Workflow(filePath, Functions.loadText(), Functions.println());
         Clear.run(workflow);
 
         // wait for the result

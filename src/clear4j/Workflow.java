@@ -2,11 +2,9 @@ package clear4j;
 
 import clear4j.msg.queue.Host;
 import clear4j.processor.instruction.Instruction;
-import clear4j.processor.instruction.PipedInstruction;
 import clear4j.processors.FinalProcessor;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +24,14 @@ public class Workflow implements Serializable {
 
     private final String id;
 
-    public Workflow(final Instruction<?> start, final PipedInstruction<?>... pipedInstructions){
+    public Workflow(final Serializable initialValue, FunctionDefinition firstFunction, FunctionDefinition... moreFunctions){
         this.instructions = new CopyOnWriteArrayList<Instruction<?>>();
-        this.instructions.add(start);
+        this.instructions.add(Instruction.define(firstFunction, initialValue));
         this.values = new ConcurrentHashMap<String, Serializable>();
-        Collections.addAll(this.instructions, pipedInstructions);
+        
+        for (FunctionDefinition function : moreFunctions){
+        	this.instructions.add(Instruction.define(function));
+        }
 
         this.instructions.add(Instruction.define(Functions.finalProcess())); //TODO lose one or the other?
 
