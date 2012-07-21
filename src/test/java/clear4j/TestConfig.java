@@ -1,7 +1,5 @@
 package clear4j;
 
-import clear4j.msg.queue.Host;
-import clear4j.processors.PrintProcessor;
 
 /**
  * User: alexb

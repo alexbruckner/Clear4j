@@ -1,8 +1,6 @@
 package clear4j;
 
-import clear4j.msg.queue.Host;
 import clear4j.processors.FileUtils;
-import clear4j.processors.PrintProcessor;
 import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
