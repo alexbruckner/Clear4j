@@ -8,15 +8,15 @@ import clear4j.processors.PrintProcessor;
 @Config
 public class Functions {
 	
-	public static FunctionDefinition loadText(){
-		return new FunctionDefinition(FileProcessor.class, Host.LOCAL_HOST, "loadText");
+	public static Function loadText(){
+		return new Function(FileProcessor.class, Host.LOCAL_HOST, "loadText");
 	}
 	
-	public static FunctionDefinition println(){
-		return new FunctionDefinition(PrintProcessor.class, Host.LOCAL_HOST, "println");
+	public static Function println(){
+		return new Function(PrintProcessor.class, Host.LOCAL_HOST, "println");
 	}
 	
-	public static FunctionDefinition finalProcess(){
-		return new FunctionDefinition(FinalProcessor.class, Host.LOCAL_HOST, "finalProcess");
+	public static Function finalProcess(){
+		return new Function(FinalProcessor.class, Host.LOCAL_HOST, "finalProcess");
 	}
 }

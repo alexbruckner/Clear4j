@@ -24,12 +24,12 @@ public class Workflow implements Serializable {
 
     private final String id;
 
-    public Workflow(final Serializable initialValue, FunctionDefinition firstFunction, FunctionDefinition... moreFunctions){
+    public Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
         this.instructions = new CopyOnWriteArrayList<Instruction<?>>();
         this.instructions.add(Instruction.define(firstFunction, initialValue));
         this.values = new ConcurrentHashMap<String, Serializable>();
         
-        for (FunctionDefinition function : moreFunctions){
+        for (Function function : moreFunctions){
         	this.instructions.add(Instruction.define(function));
         }
 

@@ -2,13 +2,13 @@ package clear4j;
 
 import clear4j.msg.queue.Host;
 
-public class FunctionDefinition {
+public class Function {
 
 	private final Class<?> processorClass;
     private final Host host;
     private final String operation;
     
-    public FunctionDefinition(Class<?> processorClass, Host host, String operation) {
+    public Function(Class<?> processorClass, Host host, String operation) {
         this.processorClass = processorClass;
         this.host = host;
         this.operation = operation;

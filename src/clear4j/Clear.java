@@ -35,7 +35,7 @@ public final class Clear {
 
     private static void run(Workflow workflow, Instruction<?> instr){
     	if (instr != null) {
-            FunctionDefinition function = instr.getFunction();
+            Function function = instr.getFunction();
             Messenger.send(new DefaultQueue(function.getProcessorClass().getName(), function.getHost()), workflow);
         }
     }
@@ -51,8 +51,8 @@ public final class Clear {
 				if (loaded.getAnnotation(Config.class) != null){
 					for (Method method : loaded.getDeclaredMethods()){
 						System.out.println(method);
-						if (FunctionDefinition.class == method.getReturnType()){
-							FunctionDefinition function = (FunctionDefinition) method.invoke(null,(Object[]) null);
+						if (Function.class == method.getReturnType()){
+							Function function = (Function) method.invoke(null,(Object[]) null);
 							setup(function);
 						}
 					}
@@ -64,7 +64,7 @@ public final class Clear {
 		} 
     }
 
-	private static void setup(FunctionDefinition function) {
+	private static void setup(Function function) {
         //TODO check this - only register local processors
         if (function.getHost().isLocal()) {
 
