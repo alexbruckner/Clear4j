@@ -56,8 +56,6 @@ public class MessengerTest {
 
         Messenger.unregister(remote);
 
-        Thread.sleep(2000);
-
     }
 
     @Test
@@ -127,7 +125,6 @@ public class MessengerTest {
 
         Messenger.unregister(receiver);
         
-        Thread.sleep(5000);
     }
 
 }
