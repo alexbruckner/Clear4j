@@ -1,0 +1,9 @@
+* config override using -Dclear4j.config=<config class> for integration testing
+* maven support (run & integration test)
+* maven support (spring mvc controller + jetty for monitoring)
+* more example processors
+* fork-join support in workflow
+* graphical workflow definition and execution tool
+* scripting language for workflow definition and execution
+* hot deploying remote processors on remote machines from local
+
