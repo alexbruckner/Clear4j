@@ -4,7 +4,6 @@ import clear4j.processor.Process;
 import clear4j.processor.Processor;
 
 
-@Processor
 public class FileProcessor {
 	
 	@Process // returns result of process(message['path']) into message['FILE_PROCESSER.loadText'] (depending on instruction).

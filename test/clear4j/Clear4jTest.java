@@ -29,14 +29,9 @@ public class Clear4jTest {
     @Test
     public void testSimpleWorkFlow() throws Exception {
 
-        // start the workflow process
-        // TODO convenience methods
-        // TODO have proc.func function object + args object. create a print processor for FileProcessor.loadText('file')->PrintProcessor.print [actual language would have to be loadText(file)->print]
-
-    	//can either use an instruction with 'define' using a function definition //TODO?
-        Instruction<String> loadText = Instruction.define(Def.LOAD_TEXT, TestConfig.TEST_FILE_PATH.getValue());
-        //or dynamically assume a processor has a function with 'to'
-        PipedInstruction<String> print = Instruction.to(The.PRINT_PROCESSOR, "println");
+        // start the workflow process //TODO merge Instruction and function definition or need this for custom functions?
+        Instruction<String> loadText = Instruction.define(Functions.loadText(), TestConfig.TEST_FILE_PATH.getValue());
+        PipedInstruction<String> print = Instruction.define(Functions.println());
         Workflow workflow = new Workflow(loadText, print);
         Clear.run(workflow);
 

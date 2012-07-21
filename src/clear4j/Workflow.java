@@ -32,7 +32,7 @@ public class Workflow implements Serializable {
         this.values = new ConcurrentHashMap<String, Serializable>();
         Collections.addAll(this.instructions, pipedInstructions);
 
-        this.instructions.add(Instruction.to(The.FINAL_PROCESSOR, "finalProcess"));
+        this.instructions.add(Instruction.define(Functions.finalProcess())); //TODO lose one or the other?
 
         iterator = this.instructions.iterator();
 

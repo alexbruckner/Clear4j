@@ -1,6 +1,6 @@
 package clear4j.processor.instruction;
 
-import clear4j.ProcessorDefinition;
+import clear4j.FunctionDefinition;
 
 import java.io.Serializable;
 
@@ -8,8 +8,8 @@ public class PipedInstruction<T extends Serializable> extends Instruction<T> {
     
 	private static final long serialVersionUID = 1L;
 
-	public PipedInstruction(final ProcessorDefinition processor, final String operation) {
-        super(new Function(processor, operation), null);
+	public PipedInstruction(final FunctionDefinition function) {
+        super(function, null);
     }
     
     @Override
