@@ -18,6 +18,7 @@ public final class MessageUtils {
         try {
             return java.net.InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
+        	e.printStackTrace();
             LOG.log(Level.SEVERE, e.getMessage());
         }
         return "localhost";
@@ -29,6 +30,7 @@ public final class MessageUtils {
             try{
                 return Integer.parseInt(property);
             } catch (NumberFormatException e){
+            	e.printStackTrace();
                 LOG.log(Level.WARNING, e.getMessage());
                 return DEFAULT_PORT;
             }

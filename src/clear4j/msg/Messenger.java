@@ -87,6 +87,7 @@ public final class Messenger {
                         out.close();
                         socket.close();
                     } catch (IOException e) {
+                    	e.printStackTrace();
                         LOG.log(Level.SEVERE, e.getMessage()); //TODO put on local exception queue
                     }
                 }

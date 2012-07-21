@@ -1,9 +1,13 @@
 package clear4j;
 
+import java.io.Serializable;
+
 import clear4j.msg.queue.Host;
 
-public class Function {
+public class Function implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private final Class<?> processorClass;
     private final Host host;
     private final String operation;

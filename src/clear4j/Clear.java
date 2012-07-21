@@ -50,7 +50,6 @@ public final class Clear {
 			for(Class<?> loaded : CustomLoader.getClasses("clear4j")){ //TODO default config package
 				if (loaded.getAnnotation(Config.class) != null){
 					for (Method method : loaded.getDeclaredMethods()){
-						System.out.println(method);
 						if (Function.class == method.getReturnType()){
 							Function function = (Function) method.invoke(null,(Object[]) null);
 							setup(function);

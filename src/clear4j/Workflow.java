@@ -5,11 +5,11 @@ import clear4j.processor.instruction.Instruction;
 import clear4j.processors.FinalProcessor;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Workflow implements Serializable {
@@ -17,9 +17,10 @@ public class Workflow implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final List<Instruction<?>> instructions;
     private final Map<String, Serializable> values; //only used to record all goings on within a workflow, value passing is done in clear directly
-    private Iterator<Instruction<?>> iterator;
     private Instruction<?> currentInstruction;
 
+    private static final AtomicInteger currentInstructionPosition = new AtomicInteger();
+    
     private static final AtomicLong instanceCount = new AtomicLong();
 
     private final String id;
@@ -35,8 +36,6 @@ public class Workflow implements Serializable {
 
         this.instructions.add(Instruction.define(Functions.finalProcess())); //TODO lose one or the other?
 
-        iterator = this.instructions.iterator();
-
         this.id = String.format("%s-%s-%s", Host.LOCAL_HOST, System.currentTimeMillis(), instanceCount.addAndGet(1));
 
     }
@@ -46,16 +45,16 @@ public class Workflow implements Serializable {
     }
 
     public Instruction<?> getNextInstruction() {
-        if (iterator.hasNext()){
-            return currentInstruction = iterator.next();
+        if (currentInstructionPosition.intValue() < instructions.size()){
+            return currentInstruction = instructions.get(currentInstructionPosition.getAndIncrement());
         } else {
             return null;
         }
     }
 
     public <T extends Serializable> Instruction<?> getNextInstruction(T value) {
-        if (iterator.hasNext()){
-            Instruction<?> instr = currentInstruction = iterator.next();
+    	if (currentInstructionPosition.intValue() < instructions.size()){
+            Instruction<?> instr = currentInstruction = instructions.get(currentInstructionPosition.getAndIncrement());
             currentInstruction = new Instruction<T>(instr.getFunction(), value);
             return currentInstruction;
         } else {

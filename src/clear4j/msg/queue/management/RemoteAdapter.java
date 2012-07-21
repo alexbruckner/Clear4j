@@ -38,6 +38,7 @@ public class RemoteAdapter {
             remoteMessageRegistration();
 
         } catch (IOException e) {
+        	e.printStackTrace();
             LOG.log(Level.SEVERE, e.getMessage());
         }
 
@@ -94,11 +95,13 @@ public class RemoteAdapter {
                                     Message<T> received = (Message<T>) in.readObject();
                                     QueueManager.add(received);
                                 } catch (Exception e) {
+                                	e.printStackTrace();
                                     LOG.log(Level.SEVERE, e.getMessage());
                                 }
                             }
                         });
                     } catch (IOException e) {
+                    	e.printStackTrace();
                         LOG.log(Level.SEVERE, e.getMessage());
                     }
                 }
