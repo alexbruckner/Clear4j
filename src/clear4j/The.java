@@ -10,7 +10,8 @@ import clear4j.processors.PrintProcessor;
  * Date: 24/05/12
  * Time: 16:45
  */
-public enum The {      //TODO don't make this static but have a directory of defined processors (system adapaters)
+@Config
+public enum The implements ProcessorDefinition {      //TODO don't make this static but have a directory of defined processors (system adapaters)
 
     FILE_PROCESSOR(FileProcessor.class, Host.LOCAL_HOST), //TODO remove dependency of implementation here? also don't use enum if client wan't custom processors
     PRINT_PROCESSOR(PrintProcessor.class, Host.LOCAL_HOST),
@@ -24,11 +25,18 @@ public enum The {      //TODO don't make this static but have a directory of def
         this.host = host;
     }
 
+    @Override
     public Class<?> getProcessorClass() {
         return processorClass;
     }
 
+    @Override
     public Host getHost() {
         return host;
     }
+
+	@Override
+	public String getName() {
+		return name();
+	}
 }

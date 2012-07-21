@@ -1,6 +1,6 @@
 package clear4j.processor.instruction;
 
-import clear4j.The;
+import clear4j.ProcessorDefinition;
 
 import java.io.Serializable;
 
@@ -8,15 +8,15 @@ public class Function implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	final The processor;
+	final ProcessorDefinition processor;
     final String operation;
 
-    public Function(final The processor, final String operation){
+    public Function(final ProcessorDefinition processor, final String operation){
         this.processor = processor;
         this.operation = operation;
     }
 
-    public The getProcessor() {
+    public ProcessorDefinition getProcessor() {
         return processor;
     }
 

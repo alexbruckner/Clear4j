@@ -34,8 +34,8 @@ public final class Clear {
 
     private static void run(Workflow workflow, Instruction<?> instr){
     	if (instr != null) {
-            The processor = instr.getFunction().getProcessor();
-            Messenger.send(new DefaultQueue(processor.name(), processor.getHost()), workflow);
+            ProcessorDefinition processor = instr.getFunction().getProcessor();
+            Messenger.send(new DefaultQueue(processor.getName(), processor.getHost()), workflow);
         }
     }
 
