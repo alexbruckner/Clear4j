@@ -1,5 +1,8 @@
 package clear4j;
 
+import clear4j.msg.queue.Host;
+import clear4j.processors.PrintProcessor;
+
 /**
  * User: alexb
  * Date: 24/05/12
@@ -11,7 +14,7 @@ public enum TestConfig {
 
     private String value;
     private TestConfig(String value) {
-        this.value = value;
+        this.value = value;	
     }
 
     public String getValue() {

@@ -1,6 +1,7 @@
 package clear4j;
 
 import clear4j.msg.queue.Host;
+import clear4j.msg.queue.beans.HostPort;
 import clear4j.processors.FileProcessor;
 import clear4j.processors.FinalProcessor;
 import clear4j.processors.PrintProcessor;
@@ -12,8 +13,8 @@ public class Functions {
 		return new Function(FileProcessor.class, Host.LOCAL_HOST, "loadText");
 	}
 	
-	public static Function println(){
-		return new Function(PrintProcessor.class, Host.LOCAL_HOST, "println");
+	public static Function println(){ //TODO
+		return new Function(PrintProcessor.class, new HostPort(Host.LOCAL_HOST.getHost(), 7777), "println");
 	}
 	
 	public static Function finalProcess(){

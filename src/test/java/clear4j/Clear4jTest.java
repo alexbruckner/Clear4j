@@ -1,6 +1,8 @@
 package clear4j;
 
+import clear4j.msg.queue.Host;
 import clear4j.processors.FileUtils;
+import clear4j.processors.PrintProcessor;
 import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -12,6 +14,7 @@ import org.junit.Test;
  * Date: 24/05/12
  * Time: 09:23
  */
+@Config
 public class Clear4jTest {
 
     @BeforeClass
@@ -42,7 +45,5 @@ public class Clear4jTest {
         Assert.assertEquals(text2, text1);
     	
     }
-    
-    //TODO remote processors in 2 jvms with one final processor somewhere.
-
+  
 }
