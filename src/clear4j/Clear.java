@@ -116,7 +116,9 @@ public final class Clear {
         
 	}
     
-    
+	public static void main(String[] args) throws InterruptedException {
+		Thread.currentThread().join();
+	}
 
 
 }

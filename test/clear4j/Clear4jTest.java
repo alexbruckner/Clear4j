@@ -42,5 +42,7 @@ public class Clear4jTest {
         Assert.assertEquals(text2, text1);
     	
     }
+    
+    //TODO remote processors in 2 jvms with one final processor somewhere.
 
 }
