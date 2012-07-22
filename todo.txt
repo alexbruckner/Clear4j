@@ -1,4 +1,5 @@
-* maven support (integration test)
+* create web.xml and war support
+* maven support (integration test, remote processor via jetty:run)
 * exception handling (exception queue?)
 * fork-join support in workflow
 * maven support (spring mvc controller + jetty for monitoring)

@@ -148,8 +148,17 @@ public final class Clear {
 		}
 	}
     
-	public static void main(String[] args) throws InterruptedException {
-		Thread.currentThread().join();
+	public static void main(String[] args) {
+		Clear.start();
+	}
+
+	public static void start() {
+		try {
+			Thread.currentThread().join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}		
 	}
 
 
