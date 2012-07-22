@@ -54,17 +54,26 @@ public final class Clear {
     	//load all function definitions
     	try {
     		
-    		String additionalConfigClassName = System.getProperty("clear4j.config"); 
+    		String additionalConfigClassName = System.getProperty("clear4j.config.class"); 
     		if (additionalConfigClassName != null) {
     			Class<?> additionalConfigClass = Class.forName(additionalConfigClassName);
     			setupConfigClass(additionalConfigClass);
     		}
     		
-			for(Class<?> loaded : CustomLoader.getClasses("clear4j")){ //TODO default config package
+			for(Class<?> loaded : CustomLoader.getClasses("clear4j")){ 
 				if (loaded.getAnnotation(Config.class) != null){
 					setupConfigClass(loaded);
 				}
 			}
+			
+			String customConfigPackage = System.getProperty("clear4j.config.package"); 
+    		if (customConfigPackage != null) {
+    			for(Class<?> loaded : CustomLoader.getClasses(customConfigPackage)){ 
+    				if (loaded.getAnnotation(Config.class) != null){
+    					setupConfigClass(loaded);
+    				}
+    			}
+    		}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
