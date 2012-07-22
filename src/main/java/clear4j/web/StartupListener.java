@@ -13,7 +13,11 @@ public class StartupListener implements javax.servlet.ServletContextListener  {
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
-		Clear.start();
+		new Thread(new Runnable(){
+			@Override
+			public void run() {
+				Clear.start();
+			}
+		}).start();
 	}
-	
 }
