@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Workflow implements Serializable {
@@ -19,7 +18,7 @@ public class Workflow implements Serializable {
     private final Map<String, Serializable> values; //only used to record all goings on within a workflow, value passing is done in clear directly
     private Instruction<?> currentInstruction;
 
-    private static final AtomicInteger currentInstructionPosition = new AtomicInteger();
+    private int currentInstructionPosition = 0;
     
     private static final AtomicLong instanceCount = new AtomicLong();
 
@@ -44,17 +43,17 @@ public class Workflow implements Serializable {
         return id;
     }
 
-    public Instruction<?> getNextInstruction() {
-        if (currentInstructionPosition.intValue() < instructions.size()){
-            return currentInstruction = instructions.get(currentInstructionPosition.getAndIncrement());
+    public synchronized Instruction<?> getNextInstruction() {
+        if (currentInstructionPosition < instructions.size()){
+            return currentInstruction = instructions.get(currentInstructionPosition++);
         } else {
             return null;
         }
     }
 
-    public <T extends Serializable> Instruction<?> getNextInstruction(T value) {
-    	if (currentInstructionPosition.intValue() < instructions.size()){
-            Instruction<?> instr = currentInstruction = instructions.get(currentInstructionPosition.getAndIncrement());
+    public synchronized <T extends Serializable> Instruction<?> getNextInstruction(T value) {
+    	if (currentInstructionPosition < instructions.size()){
+            Instruction<?> instr = currentInstruction = instructions.get(currentInstructionPosition++);
             currentInstruction = new Instruction<T>(instr.getFunction(), value);
             return currentInstruction;
         } else {
@@ -62,7 +61,7 @@ public class Workflow implements Serializable {
         }
     }
 
-    public Instruction<?> getCurrentInstruction() {
+    public synchronized Instruction<?> getCurrentInstruction() {
         return currentInstruction;
     }
 
@@ -78,7 +77,7 @@ public class Workflow implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Workflow{instructions=%s, values=%s}", instructions, values);
+        return String.format("Workflow{id=%s, instructions=%s, values=%s}", id, instructions, values);
     }
 
     @Override
@@ -97,14 +96,10 @@ public class Workflow implements Serializable {
     }
 
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends Serializable> T waitFor() {
-		while(FinalProcessor.getWorkflow(id) == null){
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
-		}
+	public <T extends Serializable> T waitFor() {
+		FinalProcessor.waitFor(id);
 		return (T) this.getCurrentInstruction().getValue();
 	}
+	
+	
 }

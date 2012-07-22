@@ -11,17 +11,29 @@ import java.util.concurrent.ConcurrentHashMap;
 @Processor
 public class FinalProcessor {
 
-	private static final Map<String, Workflow> WORK_DONE = new ConcurrentHashMap<String, Workflow>();
+	private static final Map<String, Object> LOCKS = new ConcurrentHashMap<String, Object>();
 	
 	@Process
 	public void finalProcess(Workflow workflow){
-		synchronized(workflow){
-			WORK_DONE.put(workflow.getId(), workflow);
-			workflow.notifyAll();
+		Object lock = LOCKS.get(workflow.getId());
+		if (lock != null){
+			synchronized (lock) {
+				lock.notifyAll();
+			}
 		}
 	}
 	
-	public static Workflow getWorkflow(String id){
-		return WORK_DONE.get(id);
+	public static void waitFor(String id){
+		//create LOCK object for id
+		Object lock = new Object();
+		LOCKS.put(id, lock);
+		synchronized(lock){
+			try {
+				lock.wait();
+				LOCKS.remove(id);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
 	}
 }
