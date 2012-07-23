@@ -12,7 +12,6 @@ import org.junit.Test;
  * Date: 24/05/12
  * Time: 09:23
  */
-@Config
 public class Clear4jTest {
 
     @BeforeClass
