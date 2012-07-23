@@ -98,7 +98,6 @@
                             <includes>
                                 <include>**/*IntegrationTest.class</include>
                             </includes>
-                            <argLine>-Dclear4j.config.class=clear4j.config.TestFunctions</argLine>
                         </configuration>
                     </execution>
                 </executions>
