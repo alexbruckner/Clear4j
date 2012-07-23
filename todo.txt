@@ -1,4 +1,3 @@
-* maven support (testcase for remote processor via jetty:run)
 * clear framework for creating workflow object, like Workflow.create(function).with(initialValue).pipeTo(anotherFunction).pipeTo(anotherFunction).run();
 * exception handling (exception queue?)
 * fork-join support in workflow

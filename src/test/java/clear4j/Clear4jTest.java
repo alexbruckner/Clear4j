@@ -23,13 +23,17 @@ public class Clear4jTest {
     public static void tearDown(){
         FileUtils.removeFile(TestConfig.TEST_FILE_PATH.getValue());
     }
+    
+    protected Function[] functions = new Function[]{
+    		Functions.loadText(), Functions.println()
+    };
 
     @Test
     public void testSimpleWorkFlow() throws Exception {
 
         // start the workflow process
         String filePath = TestConfig.TEST_FILE_PATH.getValue();
-        Workflow workflow = new Workflow(filePath, Functions.loadText(), Functions.println());
+        Workflow workflow = new Workflow(filePath, functions);
         Clear.run(workflow);
 
         // wait for the result

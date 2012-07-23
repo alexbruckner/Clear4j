@@ -5,6 +5,7 @@ import clear4j.processor.instruction.Instruction;
 import clear4j.processors.FinalProcessor;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +25,10 @@ public class Workflow implements Serializable {
 
     private final String id;
 
+    public Workflow(final Serializable initialValue, Function[] functions){
+    	this(initialValue, functions[0], Arrays.copyOfRange(functions, 1, functions.length - 1));
+    }
+    
     public Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
         this.instructions = new CopyOnWriteArrayList<Instruction<?>>();
         this.instructions.add(Instruction.define(firstFunction, initialValue));
