@@ -26,7 +26,7 @@ public class Workflow implements Serializable {
     private final String id;
 
     public Workflow(final Serializable initialValue, Function[] functions){
-    	this(initialValue, functions[0], Arrays.copyOfRange(functions, 1, functions.length - 1));
+    	this(initialValue, functions[0], Arrays.copyOfRange(functions, 1, functions.length));
     }
     
     public Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){

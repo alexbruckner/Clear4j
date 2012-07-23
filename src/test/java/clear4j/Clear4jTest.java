@@ -6,6 +6,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 
 /**
  * User: alexb
@@ -23,17 +25,19 @@ public class Clear4jTest {
     public static void tearDown(){
         FileUtils.removeFile(TestConfig.TEST_FILE_PATH.getValue());
     }
-    
-    protected Function[] functions = new Function[]{
+
+    protected Function[] getFunctions(){
+        return new Function[]{
     		Functions.loadText(), Functions.println()
-    };
+        };
+    }
 
     @Test
     public void testSimpleWorkFlow() throws Exception {
-
+        System.out.println(Arrays.toString(getFunctions()));
         // start the workflow process
         String filePath = TestConfig.TEST_FILE_PATH.getValue();
-        Workflow workflow = new Workflow(filePath, functions);
+        Workflow workflow = new Workflow(filePath, getFunctions());
         Clear.run(workflow);
 
         // wait for the result

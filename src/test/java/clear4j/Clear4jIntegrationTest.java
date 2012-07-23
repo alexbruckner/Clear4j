@@ -4,8 +4,11 @@ import clear4j.config.TestFunctions;
 
 public class Clear4jIntegrationTest extends Clear4jTest {
 
-	protected Function[] functions = new Function[]{
-    		Functions.loadText(), TestFunctions.println()
-    };
-    
+    @Override
+    protected Function[] getFunctions(){
+        return new Function[]{
+                Functions.loadText(), TestFunctions.println()
+        };
+    }
+
 }
