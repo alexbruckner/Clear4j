@@ -96,6 +96,10 @@ public final class Clear {
 		if (!definedOperations.contains(function.getOperation())) {
 			
 			definedOperations.add(function.getOperation());
+
+            if (LOG.isLoggable(Level.INFO)){
+                LOG.info(String.format("Adding function [%s]", function));
+            }
 			
 	        if (function.getHost().isLocal()) {
 	

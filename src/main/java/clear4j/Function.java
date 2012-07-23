@@ -1,8 +1,8 @@
 package clear4j;
 
-import java.io.Serializable;
-
 import clear4j.msg.queue.Host;
+
+import java.io.Serializable;
 
 public class Function implements Serializable {
 
@@ -30,4 +30,8 @@ public class Function implements Serializable {
 		return operation;
 	}
 
+    @Override
+    public String toString() {
+        return String.format("Function{processorClass=%s, host=%s, operation='%s'}", processorClass, host, operation);
+    }
 }

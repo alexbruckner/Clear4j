@@ -12,7 +12,7 @@ public class Functions {
 		return new Function(FileProcessor.class, Host.LOCAL_HOST, "loadText");
 	}
 	
-	public static Function println(){ //TODO
+	public static Function println(){
 		return new Function(PrintProcessor.class, Host.LOCAL_HOST, "println");
 	}
 	
