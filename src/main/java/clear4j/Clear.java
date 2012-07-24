@@ -6,7 +6,6 @@ import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
 import clear4j.processor.CustomLoader;
-import clear4j.processor.Process;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -124,7 +123,7 @@ public final class Clear {
 	
 	                        for (final Method method : processorClass.getDeclaredMethods()) {
 	
-	                            Process annotation = method.getAnnotation(Process.class);
+	                        	clear4j.processor.Function annotation = method.getAnnotation(clear4j.processor.Function.class);
 	                            if (annotation != null && method.getName().equals(operation)) {
 	
 	                            	if (processorClass != Functions.finalProcess().getProcessorClass()) {

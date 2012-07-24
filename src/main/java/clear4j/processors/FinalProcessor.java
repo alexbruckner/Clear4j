@@ -1,7 +1,7 @@
 package clear4j.processors;
 
 import clear4j.Workflow;
-import clear4j.processor.Process;
+import clear4j.processor.Function;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +11,7 @@ public class FinalProcessor {
 
 	private static final Map<String, Object> LOCKS = new ConcurrentHashMap<String, Object>();
 	
-	@Process
+	@Function
 	public void finalProcess(Workflow workflow){
 		Object lock = LOCKS.get(workflow.getId());
 		if (lock != null){
