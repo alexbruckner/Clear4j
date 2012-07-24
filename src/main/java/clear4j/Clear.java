@@ -5,11 +5,13 @@ import clear4j.msg.Messenger;
 import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
+import clear4j.processor.Arg;
 import clear4j.processor.CustomLoader;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -83,7 +85,7 @@ public final class Clear {
 	private static void setupConfigClass(Class<?> loaded) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		for (Method method : loaded.getDeclaredMethods()){
 			if (Function.class == method.getReturnType()){
-				Function function = (Function) method.invoke(null,(Object[]) null);
+				Function function = (Function) method.invoke(null);
 				setup(function);
 			}
 		}
@@ -127,9 +129,16 @@ public final class Clear {
 	                            if (annotation != null && method.getName().equals(operation)) {
 	
 	                            	if (processorClass != Functions.finalProcess().getProcessorClass()) {
-	                                    Serializable returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
-	                                    //this just stores the values for debugging
-	                                    workflow.setValue(String.format("%s.%s(%s)", processorClass.getName(), operation, instr.getValue()), returnValue);
+	                            		
+	                            		Arg<?>[] args = instr.getFunction().getArgs();
+	                                    Serializable returnValue;
+	                            		if(args.length > 0){
+	                                    	returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
+	                                    } else {
+	                  	                   	returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
+	                                    }
+	                                    //this just stores the values for debugging //TODO remove?
+	                                    workflow.setValue(String.format("%s.%s(%s|%s)", processorClass.getName(), operation, instr.getValue(), Arrays.toString(instr.getFunction().getArgs())), returnValue);
 	
 	                                    run(workflow, returnValue);
 	                                    

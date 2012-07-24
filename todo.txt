@@ -1,3 +1,4 @@
+* extra parameter(s) per function -> extend Function with ArgFunction.
 * exception handling (exception queue?)
 * fork-join support in workflow
 * workflow progress monitor (spring mvc?)
