@@ -1,10 +1,9 @@
-* extra parameter(s) per function -> extend Function with ArgFunction.
 * exception handling (exception queue?)
 * fork-join support in workflow
-* workflow progress monitor (spring mvc?)
+* workflow progress monitor (spring mvc controller + jetty for monitoring)
+* extra parameter(s) per function needs cleaning up
 * clear framework for creating workflow object, like Workflow.create(function).with(initialValue).pipeTo(anotherFunction).pipeTo(anotherFunction).run();
 * load balancing of functions
-* maven support (spring mvc controller + jetty for monitoring)
 * more example processors
 * graphical workflow definition and execution tool
 * scripting language for workflow definition and execution
