@@ -1,12 +1,12 @@
 package clear4j;
 
-import clear4j.processor.instruction.Instruction;
 import clear4j.msg.Messenger;
 import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
 import clear4j.processor.Arg;
 import clear4j.processor.CustomLoader;
+import clear4j.processor.instruction.Instruction;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -120,7 +120,6 @@ public final class Clear {
 
 	                    try {
 	
-	                        
 	                        //TODO new instance?
 	                        Object processorObject = processorClass.getConstructor().newInstance();
 	
@@ -133,15 +132,21 @@ public final class Clear {
 	
 	                            	if (processorClass != Functions.finalProcess().getProcessorClass()) {
 
+                                        if (LOG.isLoggable(Level.INFO)){
+                                            LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and args [%s]", method.getName(), processorObject, instr.getValue(), Arrays.toString(args)));
+                                        }
+
 	                                    Serializable returnValue;
 	                            		if(args.length > 0){
 	                                    	returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
 	                                    } else {
 	                  	                   	returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
 	                                    }
-	                                    //this just stores the values for debugging //TODO remove?
-	                                    workflow.setValue(String.format("%s.%s(%s|%s)", processorClass.getName(), operation, instr.getValue(), Arrays.toString(instr.getFunction().getArgs())), returnValue);
-	
+
+                                        if (LOG.isLoggable(Level.INFO)){
+                                            LOG.info(String.format("Returned value: [%s]", returnValue));
+                                        }
+
 	                                    run(workflow, returnValue);
 	                                    
 	                            	} else {

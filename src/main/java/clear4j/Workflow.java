@@ -7,8 +7,6 @@ import clear4j.processors.FinalProcessor;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -16,7 +14,6 @@ public class Workflow implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private final List<Instruction<?>> instructions;
-    private final Map<String, Serializable> values; //only used to record all goings on within a workflow, value passing is done in clear directly
     private Instruction<?> currentInstruction;
 
     private int currentInstructionPosition = 0;
@@ -32,8 +29,7 @@ public class Workflow implements Serializable {
     public Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
         this.instructions = new CopyOnWriteArrayList<Instruction<?>>();
         this.instructions.add(Instruction.define(firstFunction, initialValue));
-        this.values = new ConcurrentHashMap<String, Serializable>();
-        
+
         for (Function function : moreFunctions){
         	this.instructions.add(Instruction.define(function));
         }
@@ -70,19 +66,9 @@ public class Workflow implements Serializable {
         return currentInstruction;
     }
 
-    public <T extends Serializable> void setValue(String key, T value){
-        if (key != null && value != null) {
-            values.put(key, value);
-        }
-    }
-
-    public Map<String, Serializable> getValues() {
-        return values;
-    }
-
     @Override
     public String toString() {
-        return String.format("Workflow{id=%s, instructions=%s, values=%s}", id, instructions, values);
+        return String.format("Workflow{id=%s, instructions=%s}", id, instructions);
     }
 
     @Override
