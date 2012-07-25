@@ -16,10 +16,6 @@ public class Functions {
 		return new Function(PrintProcessor.class, Host.LOCAL_HOST, "println");
 	}
 	
-	public static Function printlnWithArgs(){
-		return new Function(PrintProcessor.class, Host.LOCAL_HOST, "printlnWithArgs");
-	}
-	
 	public static Function finalProcess(){
 		return new Function(FinalProcessor.class, Host.LOCAL_HOST, "finalProcess");
 	}

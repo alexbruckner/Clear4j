@@ -116,7 +116,8 @@ public final class Clear {
 	                    Instruction<?> instr = workflow.getCurrentInstruction();
 	
 	                    String operation = instr.getFunction().getOperation();
-	
+                        Arg<?>[] args = instr.getFunction().getArgs();
+
 	                    try {
 	
 	                        
@@ -124,13 +125,14 @@ public final class Clear {
 	                        Object processorObject = processorClass.getConstructor().newInstance();
 	
 	                        for (final Method method : processorClass.getDeclaredMethods()) {
-	
+	                            if (args.length > 0 && !(method.getParameterTypes().length > 1)){
+                                    continue;   // only look for matching methods
+                                }
 	                        	clear4j.processor.Function annotation = method.getAnnotation(clear4j.processor.Function.class);
 	                            if (annotation != null && method.getName().equals(operation)) {
 	
 	                            	if (processorClass != Functions.finalProcess().getProcessorClass()) {
-	                            		
-	                            		Arg<?>[] args = instr.getFunction().getArgs();
+
 	                                    Serializable returnValue;
 	                            		if(args.length > 0){
 	                                    	returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
