@@ -1,6 +1,5 @@
 package clear4j;
 
-import clear4j.processor.Arg;
 import clear4j.processors.FileUtils;
 import junit.framework.Assert;
 import org.junit.AfterClass;
@@ -29,7 +28,7 @@ public class Clear4jTest {
 
     protected Function[] getFunctions(){
         return new Function[]{ 
-    		Functions.loadText(), Function.withArgs(Functions.println(), new Arg<String>("test-key", "test-value"))
+    		Functions.loadText(), Function.withArg(Functions.println(), "test-key", "test-value")
         };
     }
 

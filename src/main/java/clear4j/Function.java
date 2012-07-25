@@ -25,6 +25,10 @@ public class Function implements Serializable {
     	return new Function(function.getProcessorClass(), function.getHost(), function.getOperation(), args);
     }
 
+    public static <T extends Serializable> Function withArg(final Function function, String key, T value){
+        return new Function(function.getProcessorClass(), function.getHost(), function.getOperation(), new Arg<T>(key, value));
+    }
+
 	public Class<?> getProcessorClass() {
 		return processorClass;
 	}
