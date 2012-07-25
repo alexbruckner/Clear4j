@@ -89,7 +89,11 @@ public final class BlockingQueueManager<T extends Serializable> implements Queue
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            receiver.getMessageListener().onMessage(message);
+                        	try {
+                        		receiver.getMessageListener().onMessage(message);
+                        	} catch (Throwable e) {
+                        		e.printStackTrace(System.err);
+                        	}
                         }
                     });
                 }

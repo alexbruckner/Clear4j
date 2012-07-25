@@ -33,6 +33,18 @@ public class MessengerTest {
     public static void cleanUp(){
         Messenger.monitorOff();
     }
+    
+    @Test
+    public void testExceptionInReceiver() throws InterruptedException {
+    	Messenger.register("test", new MessageListener<String>() {
+            @Override
+            public void onMessage(Message<String> message) {
+                System.out.println("message received");
+            	throw new RuntimeException("test exception thrown in receiver");
+            }
+        });
+    	Messenger.send("test", "payload");
+    }
 
     @Test
     public void testRemoteReceiver() throws InterruptedException, ExecutionException {
