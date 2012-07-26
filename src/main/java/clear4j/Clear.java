@@ -25,14 +25,16 @@ import java.util.logging.Logger;
 public final class Clear {
 	
 	private static final Set<String> definedOperations;
+	private static final Set<Class<?>> definedProcessors;
 
     private Clear() {
     }
 
     private static final Logger LOG = Logger.getLogger(Clear.class.getName());
 
-    public static void run(Workflow workflow) {
+    public static Workflow run(Workflow workflow) {
         run(workflow, workflow.getNextInstruction());
+        return workflow;
     }
 
     private static void run(Workflow workflow, Serializable returnValue) {
@@ -48,6 +50,7 @@ public final class Clear {
 
     static {
     	definedOperations = new HashSet<String>();
+    	definedProcessors = new HashSet<Class<?>>();
     	init();
     }
     
@@ -101,10 +104,12 @@ public final class Clear {
             if (LOG.isLoggable(Level.INFO)){
                 LOG.info(String.format("Adding function [%s]", function));
             }
-			
-	        if (function.getHost().isLocal()) {
+            
+			final Class<?> processorClass = function.getProcessorClass();
+	        	
+	        if (function.getHost().isLocal() && !definedProcessors.contains(processorClass)) {
 	
-	        	final Class<?> processorClass = function.getProcessorClass();
+	        	definedProcessors.add(processorClass);
 	        	
 	            Messenger.register(new DefaultQueue(processorClass.getName(), function.getHost()), new MessageListener<Workflow>() {
 	
@@ -124,23 +129,30 @@ public final class Clear {
 	                        Object processorObject = processorClass.getConstructor().newInstance();
 	
 	                        for (final Method method : processorClass.getDeclaredMethods()) {
-	                            if (args.length > 0 && !(method.getParameterTypes().length > 1)){
-                                    continue;   // only look for matching methods
-                                }
+	                            
 	                        	clear4j.processor.Function annotation = method.getAnnotation(clear4j.processor.Function.class);
 	                            if (annotation != null && method.getName().equals(operation)) {
 	
 	                            	if (processorClass != Functions.finalProcess().getProcessorClass()) {
 
+	                            		System.out.println(method.getName() + ", args.length: " + args.length + ", param length: " +  method.getParameterTypes().length);
+	                            		
+	                            		if (args.length == 0 && method.getParameterTypes().length > 1){
+	                            			continue; // match args with method params
+	                            		}
+	                            		
                                         if (LOG.isLoggable(Level.INFO)){
                                             LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and args [%s]", method.getName(), processorObject, instr.getValue(), Arrays.toString(args)));
                                         }
-
-	                                    Serializable returnValue;
-	                            		if(args.length > 0){
+                                        
+                                        Serializable returnValue;
+	                            		if(args.length > 0 && method.getParameterTypes().length == 2){
 	                                    	returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
-	                                    } else {
+	                                    } 
+	                            		else if (method.getParameterTypes().length == 1) {
 	                  	                   	returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
+	                                    } else {
+	                                       	returnValue = (Serializable) method.invoke(processorObject);
 	                                    }
 
                                         if (LOG.isLoggable(Level.INFO)){

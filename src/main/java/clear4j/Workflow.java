@@ -21,9 +21,13 @@ public class Workflow implements Serializable {
     private static final AtomicLong instanceCount = new AtomicLong();
 
     private final String id;
-
+    
     public Workflow(final Serializable initialValue, Function[] functions){
     	this(initialValue, functions[0], Arrays.copyOfRange(functions, 1, functions.length));
+    }
+    
+    public Workflow(Function firstFunction, Function... moreFunctions){
+    	this(null, firstFunction, moreFunctions);
     }
     
     public Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
@@ -91,6 +95,5 @@ public class Workflow implements Serializable {
 		FinalProcessor.waitFor(id);
 		return (T) this.getCurrentInstruction().getValue();
 	}
-	
 	
 }

@@ -10,7 +10,7 @@ public class PrintProcessor {
 	
 	@Function
 	public Object println(Object value){
-        System.out.println(String.format("PRINTING: %s", value));
+        System.out.println(value);
         return value;
 	}
 	

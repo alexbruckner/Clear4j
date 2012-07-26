@@ -31,6 +31,21 @@ public class Clear4jTest {
     		Functions.loadText(), Function.withArg(Functions.println(), "test-key", "test-value")
         };
     }
+    
+    @Test
+    public void testCheckedException() {
+    	Clear.run(new Workflow(Functions.throwCheckedException())).waitFor();
+    }
+    
+    @Test
+    public void testRuntimeException() {
+    	Clear.run(new Workflow(Functions.throwRuntimeException())).waitFor();
+    }
+    
+    @Test
+    public void testPrintlnNull() {
+    	Assert.assertNull(Clear.run(new Workflow(Functions.println())).waitFor());
+    }
 
     @Test
     public void testSimpleWorkFlow() throws Exception {
