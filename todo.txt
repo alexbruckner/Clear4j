@@ -1,6 +1,7 @@
-* exception handling (exception queue?)
-* fork-join support in workflow
 * workflow progress monitor (spring mvc controller + jetty for monitoring)
+* fork-join support in workflow
+* cleaning up on how functions are defined. hot deploy?
+* more on exception handling (exception queue?)
 * extra parameter(s) per function needs cleaning up
 * clear framework for creating workflow object, like Workflow.create(function).with(initialValue).pipeTo(anotherFunction).pipeTo(anotherFunction).run();
 * load balancing of functions
