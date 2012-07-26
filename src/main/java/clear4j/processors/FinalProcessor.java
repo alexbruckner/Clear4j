@@ -13,6 +13,7 @@ public class FinalProcessor {
 	
 	@Function
 	public void finalProcess(Workflow workflow){
+		
 		Object lock = LOCKS.get(workflow.getId());
 		if (lock != null){
 			synchronized (lock) {

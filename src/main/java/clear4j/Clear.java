@@ -38,7 +38,7 @@ public final class Clear {
     }
 
     private static void run(Workflow workflow, Serializable returnValue) {
-        run(workflow, workflow.getNextInstruction(returnValue)); //TODO
+        run(workflow, workflow.getNextInstruction(returnValue)); 
     }
 
     private static void run(Workflow workflow, Instruction<?> instr){
@@ -46,6 +46,10 @@ public final class Clear {
             Function function = instr.getFunction();
             Messenger.send(new DefaultQueue(function.getProcessorClass().getName(), function.getHost()), workflow);
         }
+    }
+    
+    private static void runFinalProcess(Workflow workflow){
+    	run(workflow, workflow.getLastInstruction());
     }
 
     static {
@@ -144,22 +148,28 @@ public final class Clear {
                                         if (LOG.isLoggable(Level.INFO)){
                                             LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and args [%s]", method.getName(), processorObject, instr.getValue(), Arrays.toString(args)));
                                         }
-                                        
-                                        Serializable returnValue;
-	                            		if(args.length > 0 && method.getParameterTypes().length == 2){
-	                                    	returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
-	                                    } 
-	                            		else if (method.getParameterTypes().length == 1) {
-	                  	                   	returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
-	                                    } else {
-	                                       	returnValue = (Serializable) method.invoke(processorObject);
-	                                    }
-
-                                        if (LOG.isLoggable(Level.INFO)){
-                                            LOG.info(String.format("Returned value: [%s]", returnValue));
-                                        }
-
-	                                    run(workflow, returnValue);
+                                        try{
+	                                        Serializable returnValue;
+		                            		if(args.length > 0 && method.getParameterTypes().length == 2){
+		                                    	returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
+		                                    } 
+		                            		else if (method.getParameterTypes().length == 1) {
+		                  	                   	returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
+		                                    } else {
+		                                       	returnValue = (Serializable) method.invoke(processorObject);
+		                                    }
+		                            		if (LOG.isLoggable(Level.INFO)){
+		                            			LOG.info(String.format("Returned value: [%s]", returnValue));
+		                            		}
+		                            		
+		                            		//run next instruction in the workflow piping in the return value returned from this call
+		                            		instr.setDone(true);
+		                            		run(workflow, returnValue);
+		                            		
+	                            		} catch (Exception e) {
+	                            			runFinalProcess(workflow);
+	                            			throw new RuntimeException(String.format("Exception in workflow [%s] at instruction [%s]", workflow, instr), e);
+	                            		}
 	                                    
 	                            	} else {
 	                            		method.invoke(processorObject, workflow);
@@ -169,8 +179,7 @@ public final class Clear {
 	                        }
 	
 	                    } catch (Exception e) {
-	                        LOG.log(Level.SEVERE, e.getMessage());
-	                        e.printStackTrace();
+	                    	LOG.log(Level.SEVERE, e.getMessage(), e);
 	                    }
 	                }
 	            });

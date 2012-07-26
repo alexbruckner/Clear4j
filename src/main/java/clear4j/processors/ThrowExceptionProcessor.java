@@ -7,7 +7,7 @@ import clear4j.processor.Function;
 public class ThrowExceptionProcessor {
 
 	@Function
-	public void throwRuntimeException(Object value){
+	public void throwRuntimeException(){
 		throw new RuntimeException("RuntimeException thrown in ThrowExceptionProcessor");
 	}
 	

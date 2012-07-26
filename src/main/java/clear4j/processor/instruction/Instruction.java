@@ -7,8 +7,9 @@ import java.io.Serializable;
 public class Instruction<T extends Serializable> implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    final Function function;
-    final T value;
+    protected final Function function;
+    private final T value;
+    private volatile boolean done;
 
     public Instruction(Function operation, final T value) {
         this.function = operation;
@@ -36,5 +37,13 @@ public class Instruction<T extends Serializable> implements Serializable {
     public String toString() {
         return String.format("Instruction{function=%s, value=%s}", function, value);
     }
+    
+    public boolean isDone(){
+    	return done;
+    }
+
+	public void setDone(boolean done) {
+		this.done = done;
+	}
 
 }

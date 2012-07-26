@@ -70,6 +70,10 @@ public class Workflow implements Serializable {
         return currentInstruction;
     }
 
+    public Instruction<?> getLastInstruction() {
+    	return currentInstruction = instructions.get(instructions.size() - 1);
+    }
+    
     @Override
     public String toString() {
         return String.format("Workflow{id=%s, instructions=%s}", id, instructions);
