@@ -12,10 +12,6 @@ public class WorkflowProcessor {
 	private static final Map<String, Object> LOCKS = new ConcurrentHashMap<String, Object>();
 	
 	@Function
-	public void initialProcess(Workflow workflow){
-	}
-	
-	@Function
 	public void finalProcess(Workflow workflow){
 		
 		Object lock = LOCKS.get(workflow.getId());
@@ -24,6 +20,10 @@ public class WorkflowProcessor {
 				lock.notifyAll();
 			}
 		}
+	}
+	
+	public static void init(Workflow workflow){
+		System.out.println("Initialising workflow: " + workflow.getId()); //TODO
 	}
 	
 	public static void waitFor(String id){

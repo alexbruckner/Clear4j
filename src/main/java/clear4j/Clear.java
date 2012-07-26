@@ -7,6 +7,7 @@ import clear4j.msg.queue.MessageListener;
 import clear4j.processor.Arg;
 import clear4j.processor.CustomLoader;
 import clear4j.processor.instruction.Instruction;
+import clear4j.processors.WorkflowProcessor;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +34,7 @@ public final class Clear {
     private static final Logger LOG = Logger.getLogger(Clear.class.getName());
 
     public static Workflow run(Workflow workflow) {
+    	WorkflowProcessor.init(workflow);
         run(workflow, workflow.getNextInstruction());
         return workflow;
     }
