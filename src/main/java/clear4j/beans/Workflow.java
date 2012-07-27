@@ -100,8 +100,7 @@ public class Workflow implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public <T extends Serializable> T waitFor() {
-		WorkflowProcessor.waitFor(id);
-		return (T) this.getCurrentInstruction().getValue();
+		return (T) WorkflowProcessor.waitFor(id);  //if workflow is remote we want to get the value from the workflow returned.
 	}
 	
 }

@@ -3,6 +3,7 @@ package clear4j.processors;
 import clear4j.beans.Workflow;
 import clear4j.processor.Function;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -15,6 +16,7 @@ public class WorkflowProcessor {
 
 
     private static final Map<String, Object> LOCKS = new ConcurrentHashMap<String, Object>();
+    private static final Map<String, Workflow> RECEIVED = new ConcurrentHashMap<String, Workflow>();
 
     @Function
     public void initialProcess(Workflow workflow){
@@ -25,8 +27,12 @@ public class WorkflowProcessor {
 
     @Function
 	public void finalProcess(Workflow workflow){
+
         if (LOG.isLoggable(Level.INFO)){
             LOG.info(String.format("Finishing workflow [%s]", workflow.getId()));
+        }
+        if (LOCKS.containsKey(workflow.getId())){
+            RECEIVED.put(workflow.getId(), workflow);
         }
 		Object lock = LOCKS.get(workflow.getId());
 		if (lock != null){
@@ -42,7 +48,7 @@ public class WorkflowProcessor {
         return "test result";
     }
 
-	public static void waitFor(String id){
+	public static Serializable waitFor(String id){
 		//create LOCK object for id
 		Object lock = new Object();
 		LOCKS.put(id, lock);
@@ -54,5 +60,7 @@ public class WorkflowProcessor {
 				Thread.currentThread().interrupt();
 			}
 		}
+        Workflow workflow = RECEIVED.remove(id);
+        return workflow.getCurrentInstruction().getValue();
 	}
 }
