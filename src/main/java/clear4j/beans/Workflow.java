@@ -31,6 +31,10 @@ public class Workflow implements Serializable {
     	this(null, firstFunction, moreFunctions);
     }
     
+    public Workflow(final Serializable initialValue, Function function){
+    	this(null, function, null); //TODO
+    }
+    
     private Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
         this.instructions = new CopyOnWriteArrayList<Instruction<?>>();
 
@@ -38,8 +42,10 @@ public class Workflow implements Serializable {
 
         this.instructions.add(Instruction.define(firstFunction, initialValue));
 
-        for (Function function : moreFunctions){
-        	this.instructions.add(Instruction.define(function));
+        if (moreFunctions != null){
+	        for (Function function : moreFunctions){
+	        	this.instructions.add(Instruction.define(function));
+	        }
         }
 
         this.instructions.add(Instruction.define(Functions.finalProcess()));

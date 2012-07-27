@@ -5,6 +5,7 @@ import clear4j.beans.Function;
 import clear4j.beans.Workflow;
 import clear4j.msg.Messenger;
 import clear4j.msg.beans.DefaultQueue;
+import clear4j.msg.queue.Host;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
 import clear4j.processor.Arg;
@@ -56,6 +57,7 @@ public final class Clear {
     }
 
     static {
+    	System.out.println(String.format("running on port [%s]", Host.LOCAL_HOST.getPort()));
         definedOperations = new HashSet<String>();
         definedProcessors = new HashSet<Class<?>>();
         init();
