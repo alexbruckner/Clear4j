@@ -3,12 +3,16 @@ package clear4j.processors;
 import clear4j.Workflow;
 import clear4j.processor.Function;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class WorkflowProcessor {
 
+	//TODO
+	private static final List<Workflow> ACTIVE_WORKFLOWS = new CopyOnWriteArrayList(); 
 	private static final Map<String, Object> LOCKS = new ConcurrentHashMap<String, Object>();
 	
 	@Function
@@ -20,10 +24,12 @@ public class WorkflowProcessor {
 				lock.notifyAll();
 			}
 		}
+		
+		ACTIVE_WORKFLOWS.remove(workflow);
 	}
 	
 	public static void init(Workflow workflow){
-		System.out.println("Initialising workflow: " + workflow.getId()); //TODO
+		ACTIVE_WORKFLOWS.add(workflow);
 	}
 	
 	public static void waitFor(String id){
