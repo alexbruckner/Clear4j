@@ -3,6 +3,7 @@ package clear4j;
 import clear4j.beans.Function;
 import clear4j.beans.Workflow;
 import clear4j.config.Functions;
+import clear4j.config.Workflows;
 import clear4j.processors.FileUtils;
 import junit.framework.Assert;
 import org.junit.AfterClass;
@@ -31,6 +32,11 @@ public class Clear4jTest {
         return new Function[]{ 
     		Functions.loadText(), Function.withArg(Functions.println(), "test-key", "test-value")
         };
+    }
+
+    @Test
+    public void testMonitorFunction(){
+        Clear.run(Workflows.getMonitorWorkflow("localhost", 9876)).waitFor();
     }
     
     @Test

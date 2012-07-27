@@ -35,4 +35,12 @@ public class Functions {
         return new Function(WorkflowProcessor.class, Host.LOCAL_HOST, "finalProcess");
     }
 
+    /*
+     * MORE SPECIALS
+     */
+
+    public static Function monitor() {
+        return new Function(WorkflowProcessor.class, Host.LOCAL_HOST, "monitor");
+    }
+
 }

@@ -31,7 +31,7 @@ public class Workflow implements Serializable {
     	this(null, firstFunction, moreFunctions);
     }
     
-    public Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
+    private Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
         this.instructions = new CopyOnWriteArrayList<Instruction<?>>();
 
         this.instructions.add(Instruction.define(Functions.initialProcess()));

@@ -37,6 +37,11 @@ public class WorkflowProcessor {
 		
 	}
 
+    @Function    //TODO return monitor object
+    public String monitor(){
+        return "test result";
+    }
+
 	public static void waitFor(String id){
 		//create LOCK object for id
 		Object lock = new Object();
