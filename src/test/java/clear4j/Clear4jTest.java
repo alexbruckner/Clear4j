@@ -1,5 +1,8 @@
 package clear4j;
 
+import clear4j.beans.Function;
+import clear4j.beans.Workflow;
+import clear4j.config.Functions;
 import clear4j.processors.FileUtils;
 import junit.framework.Assert;
 import org.junit.AfterClass;

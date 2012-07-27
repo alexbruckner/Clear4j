@@ -1,5 +1,8 @@
 package clear4j;
 
+import clear4j.config.Config;
+import clear4j.beans.Function;
+import clear4j.beans.Workflow;
 import clear4j.msg.Messenger;
 import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Message;
@@ -68,7 +71,7 @@ public final class Clear {
                 setupConfigClass(additionalConfigClass);
             }
 
-            for (Class<?> loaded : CustomLoader.getClasses("clear4j")) {
+            for (Class<?> loaded : CustomLoader.getClasses("clear4j.config")) {
                 if (loaded.getAnnotation(Config.class) != null) {
                     setupConfigClass(loaded);
                 }

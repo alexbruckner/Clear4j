@@ -1,4 +1,4 @@
-package clear4j;
+package clear4j.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

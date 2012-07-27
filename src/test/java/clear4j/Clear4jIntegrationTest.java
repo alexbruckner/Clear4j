@@ -1,5 +1,7 @@
 package clear4j;
 
+import clear4j.beans.Function;
+import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
 import clear4j.processor.Arg;
 

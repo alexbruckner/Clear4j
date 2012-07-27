@@ -1,5 +1,6 @@
-package clear4j;
+package clear4j.beans;
 
+import clear4j.config.Functions;
 import clear4j.msg.queue.Host;
 import clear4j.processor.instruction.Instruction;
 import clear4j.processors.WorkflowProcessor;

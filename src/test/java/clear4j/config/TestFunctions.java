@@ -1,6 +1,6 @@
 package clear4j.config;
 
-import clear4j.Function;
+import clear4j.beans.Function;
 import clear4j.msg.queue.Host;
 import clear4j.msg.queue.beans.HostPort;
 import clear4j.processors.PrintProcessor;

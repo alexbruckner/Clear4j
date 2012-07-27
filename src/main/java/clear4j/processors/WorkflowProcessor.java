@@ -1,6 +1,6 @@
 package clear4j.processors;
 
-import clear4j.Workflow;
+import clear4j.beans.Workflow;
 import clear4j.processor.Function;
 
 import java.util.Map;

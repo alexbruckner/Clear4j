@@ -1,6 +1,6 @@
 package clear4j.processor.instruction;
 
-import clear4j.Function;
+import clear4j.beans.Function;
 
 import java.io.Serializable;
 

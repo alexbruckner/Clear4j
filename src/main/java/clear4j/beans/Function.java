@@ -1,4 +1,4 @@
-package clear4j;
+package clear4j.beans;
 
 import clear4j.msg.queue.Host;
 import clear4j.processor.Arg;
