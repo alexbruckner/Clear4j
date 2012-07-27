@@ -10,7 +10,7 @@ public class Workflows {
 
 
     public static Workflow getMonitorWorkflow(String host, int port){
-        return new Workflow(new Function(WorkflowProcessor.class, new HostPort(host, port), "monitor"));
+        return new Workflow(new Function(WorkflowProcessor.class, new HostPort(host, port), "monitor"), Functions.println());
     }
 
 

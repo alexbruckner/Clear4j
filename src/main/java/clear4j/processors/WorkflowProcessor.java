@@ -4,8 +4,10 @@ import clear4j.beans.Workflow;
 import clear4j.processor.Function;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,15 +16,19 @@ public class WorkflowProcessor {
 
     private static final Logger LOG = Logger.getLogger(WorkflowProcessor.class.getName());
 
-
+    // LOCKS for waitFor method
     private static final Map<String, Object> LOCKS = new ConcurrentHashMap<String, Object>();
+    // Workflows returned that have been waited for
     private static final Map<String, Workflow> RECEIVED = new ConcurrentHashMap<String, Workflow>();
+    // Active workflows
+    private static final List<Workflow> ACTIVE_WORKFLOWS = new CopyOnWriteArrayList<Workflow>();
 
     @Function
     public void initialProcess(Workflow workflow){
         if (LOG.isLoggable(Level.INFO)){
             LOG.info(String.format("Running new workflow [%s]", workflow.getId()));
         }
+        ACTIVE_WORKFLOWS.add(workflow);
     }
 
     @Function
@@ -40,12 +46,14 @@ public class WorkflowProcessor {
 				lock.notifyAll();
 			}
 		}
+
+        ACTIVE_WORKFLOWS.remove(workflow);
 		
 	}
 
     @Function    //TODO return monitor object
     public String monitor(){
-        return "test result";
+        return String.valueOf(ACTIVE_WORKFLOWS);
     }
 
 	public static Serializable waitFor(String id){
