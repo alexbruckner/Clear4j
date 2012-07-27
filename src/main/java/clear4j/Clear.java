@@ -126,9 +126,11 @@ public final class Clear {
                         String operation = instr.getFunction().getOperation();
                         Arg<?>[] args = instr.getFunction().getArgs();
 
-                        System.out.println(operation);
+                        if (LOG.isLoggable(Level.INFO)){
+                            LOG.info(String.format("operation [%s]", operation));
+                        }
 
-                        try {
+                        try { //TODO all this needs cleaning up!!!!!!!!!!!!!!
 
                             //TODO new instance?
                             Object processorObject = processorClass.getConstructor().newInstance();
@@ -141,8 +143,6 @@ public final class Clear {
                                     if (!operation.equals("finalProcess")) { //TODO proper checking
 
                                         if (!operation.equals("initialProcess")) {
-
-                                            System.out.println(method.getName() + ", args.length: " + args.length + ", param length: " + method.getParameterTypes().length);
 
                                             if (args.length == 0 && method.getParameterTypes().length > 1) {
                                                 continue; // match args with method params

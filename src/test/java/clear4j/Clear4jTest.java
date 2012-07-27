@@ -49,7 +49,6 @@ public class Clear4jTest {
 
     @Test
     public void testSimpleWorkFlow() throws Exception {
-        System.out.println(Arrays.toString(getFunctions()));
         // start the workflow process
         String filePath = TestConfig.TEST_FILE_PATH.getValue();
         Workflow workflow = new Workflow(filePath, getFunctions());
