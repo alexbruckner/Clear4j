@@ -10,6 +10,7 @@ public class Instruction<T extends Serializable> implements Serializable {
     protected final Function function;
     private final T value;
     private volatile boolean done;
+    private volatile Exception exception;
 
     public Instruction(Function operation, final T value) {
         this.function = operation;
@@ -46,4 +47,11 @@ public class Instruction<T extends Serializable> implements Serializable {
 		this.done = done;
 	}
 
+    public void setException(Exception exception) {
+        this.exception = exception;
+    }
+
+    public Exception getException() {
+        return exception;
+    }
 }

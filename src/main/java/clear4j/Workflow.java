@@ -2,7 +2,7 @@ package clear4j;
 
 import clear4j.msg.queue.Host;
 import clear4j.processor.instruction.Instruction;
-import clear4j.processors.FinalProcessor;
+import clear4j.processors.WorkflowProcessor;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -32,13 +32,16 @@ public class Workflow implements Serializable {
     
     public Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
         this.instructions = new CopyOnWriteArrayList<Instruction<?>>();
+
+        this.instructions.add(Instruction.define(Functions.initialProcess()));
+
         this.instructions.add(Instruction.define(firstFunction, initialValue));
 
         for (Function function : moreFunctions){
         	this.instructions.add(Instruction.define(function));
         }
 
-        this.instructions.add(Instruction.define(Functions.finalProcess())); //TODO lose one or the other?
+        this.instructions.add(Instruction.define(Functions.finalProcess()));
 
         this.id = String.format("%s-%s-%s", Host.LOCAL_HOST, System.currentTimeMillis(), instanceCount.addAndGet(1));
 
@@ -96,7 +99,7 @@ public class Workflow implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public <T extends Serializable> T waitFor() {
-		FinalProcessor.waitFor(id);
+		WorkflowProcessor.waitFor(id);
 		return (T) this.getCurrentInstruction().getValue();
 	}
 	
