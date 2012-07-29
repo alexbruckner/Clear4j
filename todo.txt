@@ -1,3 +1,4 @@
+* clean up Clear class. move functionality that belongs together into same module.
 * workflow progress monitor (spring mvc controller + jetty for monitoring)
 * fork-join support in workflow
 * named method parameters instead of or additionally to Args... / ie (@Param("key") Arg<String, T> value) {where value.name = "key"} ?
