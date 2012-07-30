@@ -3,6 +3,7 @@ package clear4j.processors;
 import clear4j.Clear;
 import clear4j.Runner;
 import clear4j.beans.Workflow;
+import clear4j.monitor.beans.Results;
 import clear4j.processor.Arg;
 import clear4j.processor.Function;
 import clear4j.processor.instruction.Instruction;
@@ -10,6 +11,7 @@ import clear4j.processor.instruction.Instruction;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,9 +65,9 @@ public class WorkflowProcessor {
     	Runner.run(localized, localized.getNextInstruction());
     }
 
-    @Function    //TODO return monitor object
-    public String monitor(){
-        return String.valueOf(ACTIVE_WORKFLOWS);
+    @Function
+    public Results monitor(){
+        return new Results(Collections.unmodifiableList(ACTIVE_WORKFLOWS));
     }
 
     public static void processWorkflow(Workflow workflow) {
