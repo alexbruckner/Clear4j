@@ -38,10 +38,6 @@ public final class Clear {
         return workflow;
     }
 
-    public static void run(String host, int port, Workflow workflow){
-        Runner.run(host, port, workflow);
-    }
-    
     static {
     	System.out.println(String.format("running on port [%s]", Host.LOCAL_HOST.getPort()));
         definedOperations = new HashSet<String>();

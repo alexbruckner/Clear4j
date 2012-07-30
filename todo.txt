@@ -1,3 +1,4 @@
+* log4j?
 * clean up Clear class. move functionality that belongs together into same module.
 * workflow progress monitor (spring mvc controller + jetty for monitoring)
 * fork-join support in workflow

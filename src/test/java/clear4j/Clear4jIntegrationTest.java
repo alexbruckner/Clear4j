@@ -5,7 +5,6 @@ import clear4j.beans.Function;
 import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
 import clear4j.config.Workflows;
-import clear4j.monitor.WorkflowMonitor;
 import clear4j.processor.Arg;
 import org.junit.Test;
 
@@ -21,17 +20,10 @@ public class Clear4jIntegrationTest extends Clear4jTest {
 
     @Test
     public void testWorkflowMonitor() throws InterruptedException {
-    	new WorkflowMonitor("localhost", 7777).start();
         // starts a workflow here that instructs the remote machine to start a workflow with remote println, which in this case is local to the remote machine.
-        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));
-        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));
-        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));
-        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));
-        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));
-        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));
-        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));
-        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));
-    	Thread.sleep(10000);
+        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));   //TODO clean up
+        Thread.sleep(1000);
+        Clear.run(Workflows.getMonitorWorkflow("localhost", 7777)).waitFor();
     }
-    
+
 }

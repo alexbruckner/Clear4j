@@ -27,7 +27,4 @@ public final class Runner {
         run(workflow, workflow.getLastInstruction());
     }
 
-    public static void run(String host, int port, Workflow workflow) {
-
-    }
 }
