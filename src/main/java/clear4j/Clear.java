@@ -106,7 +106,7 @@ public final class Clear {
                     @Override
                     public void onMessage(Message<Workflow> message) {
                         Workflow workflow = message.getPayload();
-                        WorkflowProcessor.processWorkflow(processorClass, workflow);
+                        WorkflowProcessor.processWorkflow(workflow);
                     }
                     
                 });

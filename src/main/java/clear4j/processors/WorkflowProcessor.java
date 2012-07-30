@@ -68,9 +68,10 @@ public class WorkflowProcessor {
         return String.valueOf(ACTIVE_WORKFLOWS);
     }
 
-    public static void processWorkflow(Class<?> processorClass, Workflow workflow) {
+    public static void processWorkflow(Workflow workflow) {
     	Instruction<?> instr = workflow.getCurrentInstruction();
 
+        Class<?> processorClass = instr.getFunction().getProcessorClass();
         String operation = instr.getFunction().getOperation();
         Arg<?>[] args = instr.getFunction().getArgs();
 
