@@ -59,7 +59,8 @@ public class WorkflowProcessor {
 
     @Function
     public void runWorkflowRemotely(Workflow workflow){
-        Clear.run(Workflow.localize(workflow));
+    	Workflow localized = Workflow.localize(workflow);
+    	Runner.run(localized, localized.getNextInstruction());
     }
 
     @Function    //TODO return monitor object
