@@ -1,12 +1,12 @@
 package clear4j;
 
-import java.io.Serializable;
-
 import clear4j.beans.Function;
 import clear4j.beans.Workflow;
 import clear4j.msg.Messenger;
 import clear4j.msg.beans.DefaultQueue;
 import clear4j.processor.instruction.Instruction;
+
+import java.io.Serializable;
 
 public final class Runner {
 	private Runner(){
@@ -25,5 +25,9 @@ public final class Runner {
     
     public static void runFinalProcess(Workflow workflow) {
         run(workflow, workflow.getLastInstruction());
+    }
+
+    public static void run(String host, int port, Workflow workflow) {
+
     }
 }

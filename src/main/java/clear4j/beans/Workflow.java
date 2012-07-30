@@ -104,5 +104,13 @@ public class Workflow implements Serializable {
 	public <T extends Serializable> T waitFor() {
 		return (T) WorkflowProcessor.waitFor(id);  //if workflow is remote we want to get the value from the workflow returned.
 	}
-	
+
+    public static Workflow localize(Workflow workflow){
+        workflow.instructions.remove(0);
+        workflow.instructions.remove(workflow.instructions.size()-1);
+        workflow.instructions.add(0, Instruction.define(Functions.initialProcess()));
+        workflow.instructions.add(Instruction.define(Functions.finalProcess()));
+        return workflow;
+    }
+
 }

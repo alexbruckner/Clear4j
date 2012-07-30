@@ -36,7 +36,7 @@ public class WorkflowProcessor {
         }
         ACTIVE_WORKFLOWS.add(workflow);
     }
-    
+
     @Function
 	public void finalProcess(Workflow workflow){
 
@@ -54,14 +54,19 @@ public class WorkflowProcessor {
 		}
 
         ACTIVE_WORKFLOWS.remove(workflow);
-		
+
 	}
+
+    @Function
+    public void runWorkflowRemotely(Workflow workflow){
+        Clear.run(Workflow.localize(workflow));
+    }
 
     @Function    //TODO return monitor object
     public String monitor(){
         return String.valueOf(ACTIVE_WORKFLOWS);
     }
-    
+
     public static void processWorkflow(Class<?> processorClass, Workflow workflow) {
     	Instruction<?> instr = workflow.getCurrentInstruction();
 
@@ -131,7 +136,7 @@ public class WorkflowProcessor {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, e.getMessage(), e);
         }
-						
+
 	}
 
 	public static Serializable waitFor(String id){
