@@ -37,6 +37,11 @@ public final class Clear {
         Runner.run(workflow, workflow.getNextInstruction());
         return workflow;
     }
+    
+    public static Workflow run(Function function) {
+        Workflow workflow = new Workflow(function);
+    	return run(workflow);
+    }
 
     static {
     	System.out.println(String.format("running on port [%s]", Host.LOCAL_HOST.getPort()));
