@@ -10,6 +10,7 @@ import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
 import clear4j.processor.CustomLoader;
 import clear4j.processors.WorkflowProcessor;
+import clear4j.web.WebServer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -74,6 +75,18 @@ public final class Clear {
                     }
                 }
             }
+
+            //webserver
+            String webserverPort = System.getProperty("clear4j.monitor.port");
+            if (webserverPort != null) {
+                try{
+                    int port = Integer.parseInt(webserverPort);
+                    new WebServer(port);
+                } catch (NumberFormatException e){
+                    e.printStackTrace();
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
