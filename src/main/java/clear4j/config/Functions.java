@@ -43,4 +43,8 @@ public class Functions {
         return new Function(WorkflowProcessor.class, Host.LOCAL_HOST, "monitor");
     }
 
+    public static Function sleep() {
+        return new Function(SleepProcessor.class, Host.LOCAL_HOST, "sleep");
+    }
+
 }

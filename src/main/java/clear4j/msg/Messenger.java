@@ -79,6 +79,9 @@ public final class Messenger {
                 } else {
                     try {
                         Host targetHost = message.getTarget().getHost();
+                        if (LOG.isLoggable(Level.INFO)){
+                            LOG.info(String.format("connecting to [%s]", targetHost));
+                        }
                         Socket socket = new Socket(targetHost.getHost(), targetHost.getPort());
                         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                         out.flush();

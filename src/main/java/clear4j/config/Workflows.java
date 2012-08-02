@@ -4,6 +4,7 @@ import clear4j.beans.Function;
 import clear4j.beans.Workflow;
 import clear4j.msg.queue.beans.HostPort;
 import clear4j.processors.PrintProcessor;
+import clear4j.processors.SleepProcessor;
 import clear4j.processors.WorkflowProcessor;
 
 import java.io.Serializable;
@@ -27,6 +28,8 @@ public class Workflows {
         return new Workflow(workflow, new Function[]{new Function(WorkflowProcessor.class, new HostPort(host, port), "runWorkflowRemotely")});
     }
 
-
+    public static Workflow remotePrintlnAndSleep( String host, int port, Serializable value){
+        return new Workflow(value, new Function[]{new Function(PrintProcessor.class, new HostPort(host, port), "println"), new Function(SleepProcessor.class, new HostPort(host, port), "sleep")});
+    }
 
 }

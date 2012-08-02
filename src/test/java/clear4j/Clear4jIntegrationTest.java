@@ -6,15 +6,22 @@ import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
 import clear4j.config.Workflows;
 import clear4j.processor.Arg;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
 
 public class Clear4jIntegrationTest extends Clear4jTest {
 
     @Override
-    protected Function[] getFunctions(){
-        return new Function[]{ 
-    		Functions.loadText(), Function.withArgs(TestFunctions.println(), new Arg<String>("test-key", "test-value"))
+    protected Function[] getFunctions() {
+        return new Function[]{
+                Functions.loadText(), Function.withArgs(TestFunctions.println(), new Arg<String>("test-key", "test-value"))
         };
     }
 
@@ -24,6 +31,30 @@ public class Clear4jIntegrationTest extends Clear4jTest {
         Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintln("localhost", 7777, "test value PRINT")));   //TODO clean up
         Thread.sleep(3000);
         Clear.run(Workflows.getMonitorWorkflow("localhost", 7777)).waitFor();
+    }
+
+    @Test
+    public void testMonitorWebserver() throws InterruptedException, IOException {
+        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintlnAndSleep("localhost", 7777, "test value PRINT")));   //TODO clean up
+        Thread.sleep(3000);
+        String monitorHtml = readFromURL("http://localhost:7778");
+        System.out.println(monitorHtml);
+        Assert.assertTrue(monitorHtml.contains("<h1>Clear4j monitor</h1>"));
+        Assert.assertTrue(monitorHtml.contains("<br/>___localhost:7777->clear4j.processors.SleepProcessor.sleep"));
+    }
+
+
+    private static String readFromURL(String url) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        URL oracle = new URL(url);
+        URLConnection yc = oracle.openConnection();
+        BufferedReader in = new BufferedReader(new InputStreamReader(
+                yc.getInputStream()));
+        String inputLine;
+        while ((inputLine = in.readLine()) != null)
+            sb.append(inputLine).append(String.format("%n"));
+        in.close();
+        return sb.toString();
     }
 
 }

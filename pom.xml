@@ -54,6 +54,10 @@
                             <name>clear4j.port</name>
                             <value>7777</value>
                         </systemProperty>
+                        <systemProperty>
+                            <name>clear4j.monitor.port</name>
+                            <value>7778</value>
+                        </systemProperty>
                     </systemProperties>
                 </configuration>
                 <executions>
