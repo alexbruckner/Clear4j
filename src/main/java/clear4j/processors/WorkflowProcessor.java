@@ -55,7 +55,7 @@ public class WorkflowProcessor {
 			}
 		}
 
-        //ACTIVE_WORKFLOWS.remove(workflow);   //TODO for now we retain all workflows that were started locally.
+        ACTIVE_WORKFLOWS.remove(workflow);   //TODO for now we retain all workflows that were started locally.
 
 	}
 
