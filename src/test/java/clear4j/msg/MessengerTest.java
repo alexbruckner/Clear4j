@@ -36,7 +36,7 @@ public class MessengerTest {
     
     @Test
     public void testExceptionInReceiver() throws InterruptedException {
-    	Messenger.register("test", new MessageListener<String>() {
+    	Receiver<String> receiver = Messenger.register("test", new MessageListener<String>() {
             @Override
             public void onMessage(Message<String> message) {
                 System.out.println("message received");
@@ -44,6 +44,7 @@ public class MessengerTest {
             }
         });
     	Messenger.send("test", "payload");
+        Messenger.unregister(receiver);
     }
 
     @Test

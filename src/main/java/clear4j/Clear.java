@@ -134,7 +134,11 @@ public final class Clear {
    
 
     public static void main(String[] args) {
-        Clear.start();
+        new Thread(new Runnable() {
+            public void run() {
+                Clear.start();
+            }
+        }).start();
     }
 
     public static void start() {
@@ -145,6 +149,5 @@ public final class Clear {
             throw new RuntimeException(e);
         }
     }
-
 
 }
