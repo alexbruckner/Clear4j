@@ -60,8 +60,12 @@ public class WebServer {
         // blank line signals the end of the client HTTP
         // headers.
         String str = ".";
-        while (!str.equals(""))
+        System.out.println("incoming");
+        while (!str.equals("")) {
+            System.out.println(str);
             str = in.readLine();
+        }
+        System.out.println("done incoming.");
 
         // Send the response
         // Send the headers
