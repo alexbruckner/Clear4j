@@ -1,12 +1,17 @@
 package clear4j.web;
 
 import clear4j.Clear;
+import clear4j.beans.Function;
+import clear4j.beans.Workflow;
 import clear4j.config.Functions;
+import clear4j.msg.queue.Host;
 import clear4j.msg.queue.management.RemoteAdapter;
+import clear4j.processor.instruction.Instruction;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -53,38 +58,59 @@ public class WebServer {
 
     private void handleSocket(Socket socket) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        
+        // read html request
+        String requestPath = readRequest(in);
+        System.out.format("PATH: [%s]%n", requestPath);         
+        
+        // send the response //TODO image requests
         PrintWriter out = new PrintWriter(socket.getOutputStream());
-
-        // read the data sent. We basically ignore it,
-        // stop reading once a blank line is hit. This
-        // blank line signals the end of the client HTTP
-        // headers.
-        String str = ".";
-        System.out.println("incoming");
-        while (!str.equals("")) {
-            System.out.println(str);
-            str = in.readLine();
-        }
-        System.out.println("done incoming.");
-
-        // Send the response
-        // Send the headers
-        out.println("HTTP/1.0 200 OK");
-        out.println("Content-Type: text/html");
-        out.println("Server: Bot");
-        // this blank line signals the end of the headers
-        out.println("");
-        // Send the HTML page
-        out.println("<h1>Clear4j monitor</h1>");
-        String output = String.valueOf(Clear.run(Functions.monitor()).waitFor()).replace("\n", "<br/>");
-        out.println(output);
-        out.flush();
+        printResponse(out);
+        
         socket.close();
 
     }
 
-    public static void main(String[] args) throws IOException {
-        new WebServer(9877);
-    }
+	private String readRequest(BufferedReader in) throws IOException {
+		// read the html headers
+        System.out.println("incoming");
+        String header = in.readLine();
+        String request = header;
+        while (!header.equals("")) {
+            System.out.println(header);
+            header = in.readLine();
+        }
+        System.out.println("done incoming.");
+        return request.substring(4);
+	}
+	
+	private void printResponse(PrintWriter out) {
+        // send the headers
+		out.println("HTTP/1.0 200 OK");
+        out.println("Content-Type: text/html");
+        out.println("Server: Clear4j");
+        // this blank line signals the end of the headers
+        out.println("");
+        // send the HTML page
+        out.println(String.format("<h1>Clear4j monitor @ %s</h1>", Host.LOCAL_HOST));
+        String output = toHtml((List<Workflow>)Clear.run(Functions.monitor()).waitFor());
+        out.println(output);
+        
+        out.flush();
+	}
+
+	private synchronized String toHtml(List<Workflow> workflows) {
+		StringBuilder sb = new StringBuilder();
+		for (Workflow workflow : workflows) {
+			sb.append(String.format("WORKFLOW[%s]%n", workflow.getId()));
+	        for (Instruction<?> instruction : workflow.getInstructions()){
+	            Serializable pipedValue = instruction.getValue();
+	            Function function = instruction.getFunction();
+	            sb.append(String.format("___%s->%s.%s(%s) : %s %n", function.getHost(), function.getProcessorClass().getName(), function.getOperation(), pipedValue, instruction.isDone() ? "DONE" : "-")); //TODO args
+	        }
+	        sb.append(String.format("%n"));
+		}
+		return sb.toString();
+	}
 
 }
