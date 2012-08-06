@@ -91,26 +91,34 @@ public class WebServer {
         out.println("Server: Clear4j");
         // this blank line signals the end of the headers
         out.println("");
+        
         // send the HTML page
-        out.println(String.format("<h1>Clear4j monitor @ %s</h1>", Host.LOCAL_HOST));
-        @SuppressWarnings("unchecked")
-		String output = toHtml((List<Workflow>)Clear.run(Functions.monitor()).waitFor());
-        out.println(output);
+        renderHtml(out);
         
         out.flush();
 	}
 
+	private void renderHtml(PrintWriter out) {
+		out.format("<h1>Clear4j monitor @ %s</h1>%n", Host.LOCAL_HOST);
+        @SuppressWarnings("unchecked")
+		String output = toHtml((List<Workflow>)Clear.run(Functions.monitor()).waitFor());
+        out.println(output);
+	}
+
 	private synchronized String toHtml(List<Workflow> workflows) {
 		StringBuilder sb = new StringBuilder();
+		sb.append("<ul>");
 		for (Workflow workflow : workflows) {
-			sb.append(String.format("WORKFLOW[%s]%n", workflow.getId()));
-	        for (Instruction<?> instruction : workflow.getInstructions()){
+			sb.append(String.format("<li>WORKFLOW[%s]%n<ul>%n", workflow.getId()));
+			List<Instruction<?>> instructions = workflow.getInstructions();
+	        for (Instruction<?> instruction : instructions.subList(1, instructions.size() - 1)){
 	            Serializable pipedValue = instruction.getValue();
 	            Function function = instruction.getFunction();
-	            sb.append(String.format("___%s->%s.%s(%s) : %s %n", function.getHost(), function.getProcessorClass().getName(), function.getOperation(), pipedValue, instruction.isDone() ? "DONE" : "-")); //TODO args
+	            sb.append(String.format("<li>%s.%s(%s) : %s</li>%n", function.getProcessorClass().getName(), function.getOperation(), pipedValue, instruction.isDone() ? "DONE" : "")); //TODO args
 	        }
-	        sb.append(String.format("%n"));
+	        sb.append(String.format("</ul>%n</li>%n"));
 		}
+		sb.append("</ul>");
 		return sb.toString();
 	}
 

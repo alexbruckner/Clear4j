@@ -39,8 +39,8 @@ public class Clear4jIntegrationTest extends Clear4jTest {
         Thread.sleep(3000);
         String monitorHtml = readFromURL("http://localhost:7778");
         System.out.println(monitorHtml);
-        Assert.assertTrue(monitorHtml.contains("<h1>Clear4j monitor</h1>"));
-        Assert.assertTrue(monitorHtml.contains("<br/>___localhost:7777->clear4j.processors.SleepProcessor.sleep"));
+        Assert.assertTrue(monitorHtml.contains("<li>clear4j.processors.PrintProcessor.println(test value PRINT) : </li>"));
+        Assert.assertTrue(monitorHtml.contains("<li>clear4j.processors.SleepProcessor.sleep(null) : </li>"));
     }
 
 
