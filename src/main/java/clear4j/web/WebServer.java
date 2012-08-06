@@ -93,7 +93,8 @@ public class WebServer {
         out.println("");
         // send the HTML page
         out.println(String.format("<h1>Clear4j monitor @ %s</h1>", Host.LOCAL_HOST));
-        String output = toHtml((List<Workflow>)Clear.run(Functions.monitor()).waitFor());
+        @SuppressWarnings("unchecked")
+		String output = toHtml((List<Workflow>)Clear.run(Functions.monitor()).waitFor());
         out.println(output);
         
         out.flush();
