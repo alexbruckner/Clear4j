@@ -8,7 +8,9 @@ import java.io.Serializable;
 
 public class Result implements Serializable {
 
-    private final String result;
+	private static final long serialVersionUID = 1L;
+	
+	private final String result;
 
     public Result(final Workflow workflow) {
         StringBuilder sb = new StringBuilder();
