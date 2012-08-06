@@ -1,4 +1,5 @@
-* make monitor webserver pretty
+* workflow needs name
+* make monitor webserver pretty (+ show workflow name)
 * each processor queue should handle messages specific to the processor rather than having a deal with workflow schema as currently done in WorkflowProcessor.
 * fork-join support in workflow
 * example blogsite. initially show workflow in controller that saves a blog entry. then make that workflow into one processor that is called.
