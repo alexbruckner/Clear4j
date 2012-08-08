@@ -3,7 +3,7 @@ package clear4j.web;
 import clear4j.Clear;
 import clear4j.beans.Function;
 import clear4j.beans.Workflow;
-import clear4j.config.Functions;
+import clear4j.config.Workflows;
 import clear4j.msg.queue.Host;
 import clear4j.msg.queue.management.RemoteAdapter;
 import clear4j.processor.instruction.Instruction;
@@ -101,7 +101,7 @@ public class WebServer {
 	private void renderHtml(PrintWriter out) {
 		out.format("<h1>Clear4j monitor @ %s</h1>%n", Host.LOCAL_HOST);
         @SuppressWarnings("unchecked")
-		String output = toHtml((List<Workflow>)Clear.run(Functions.monitor()).waitFor());
+		String output = toHtml((List<Workflow>)Clear.run(Workflows.getMonitorWorkflow()).waitFor());
         out.println(output);
 	}
 
@@ -109,7 +109,7 @@ public class WebServer {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<ul>");
 		for (Workflow workflow : workflows) {
-			sb.append(String.format("<li>WORKFLOW[%s]%n<ul>%n", workflow.getId()));
+			sb.append(String.format("<li>%s%n<ul>%n", workflow.getNamedId()));
 			List<Instruction<?>> instructions = workflow.getInstructions();
 	        for (Instruction<?> instruction : instructions.subList(1, instructions.size() - 1)){
 	            Serializable pipedValue = instruction.getValue();

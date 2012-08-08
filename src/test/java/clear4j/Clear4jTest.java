@@ -36,7 +36,7 @@ public class Clear4jTest {
 
     @Test
     public void testMonitorFunction(){
-        Clear.run(Workflows.getMonitorWorkflow("localhost", 9876)).waitFor();
+        Clear.run(Workflows.getMonitorWorkflow()).waitFor();
     }
     
     @Test

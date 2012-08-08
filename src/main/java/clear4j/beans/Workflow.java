@@ -24,6 +24,8 @@ public class Workflow implements Serializable {
 
     private final String id;
     
+    private volatile String name;
+    
     public Workflow(final Serializable initialValue, Function[] functions){
     	this(initialValue, functions[0], Arrays.copyOfRange(functions, 1, functions.length));
     }
@@ -49,6 +51,7 @@ public class Workflow implements Serializable {
 
         this.id = String.format("%s-%s-%s", Host.LOCAL_HOST, System.currentTimeMillis(), instanceCount.addAndGet(1));
 
+        this.name = id;
     }
 
     public String getId() {
@@ -117,4 +120,17 @@ public class Workflow implements Serializable {
     public List<Instruction<?>> getInstructions() {
         return Collections.unmodifiableList(instructions);
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getNamedId() {
+		return name.equals(id) ? name : String.format("%s (%s)", name, id);
+	}
+    
 }

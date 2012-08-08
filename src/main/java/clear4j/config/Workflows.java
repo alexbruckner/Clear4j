@@ -2,6 +2,7 @@ package clear4j.config;
 
 import clear4j.beans.Function;
 import clear4j.beans.Workflow;
+import clear4j.msg.queue.Host;
 import clear4j.msg.queue.beans.HostPort;
 import clear4j.processors.PrintProcessor;
 import clear4j.processors.SleepProcessor;
@@ -13,8 +14,10 @@ import java.io.Serializable;
 public class Workflows {
 
 
-    public static Workflow getMonitorWorkflow(String host, int port){
-        return new Workflow(new Function(WorkflowProcessor.class, new HostPort(host, port), "monitor"), Functions.println());
+    public static Workflow getMonitorWorkflow(){
+    	Workflow monitorWorkflow = new Workflow(new Function(WorkflowProcessor.class, Host.LOCAL_HOST, "monitor"));
+    	monitorWorkflow.setName("Monitor");
+    	return monitorWorkflow;
     }
 
     public static Workflow remotePrintln( String host, int port, Serializable value){
