@@ -63,11 +63,13 @@ public class Clear4jTest {
 
         // wait for the result
         String text1 = workflow.waitFor();
+		Assert.assertNotNull(text1);
 
-        // load it the boring way
-        String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
+		// load it the boring way
+		String text2 = FileUtils.loadTextFromFile(TestConfig.TEST_FILE_PATH.getValue());
+		Assert.assertNotNull(text2);
 
-        // assert same content
+		// assert same content
         Assert.assertEquals(text2, text1);
     	
     }

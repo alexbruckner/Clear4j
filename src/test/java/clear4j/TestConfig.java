@@ -7,7 +7,7 @@ package clear4j;
  * Time: 16:18
  */
 public enum TestConfig {
-    TEST_FILE_PATH("/tmp/test.txt"),
+    TEST_FILE_PATH("test.txt"),
     TEST_FILE_CONTENT("This is\na sample\nfile content.");
 
     private String value;

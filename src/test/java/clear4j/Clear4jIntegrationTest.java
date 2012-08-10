@@ -31,10 +31,9 @@ public class Clear4jIntegrationTest extends Clear4jTest {
         Thread.sleep(3000);
         String monitorHtml = readFromURL("http://localhost:7778");
         System.out.println(monitorHtml);
-        Assert.assertTrue(monitorHtml.contains("<li>clear4j.processors.PrintProcessor.println(test value PRINT) : </li>"));
-        Assert.assertTrue(monitorHtml.contains("<li>clear4j.processors.SleepProcessor.sleep(null) : </li>"));
+        Assert.assertTrue(monitorHtml.contains("<li> <img width=10 height=10 src=\"/yellow.png\"/> clear4j.processors.PrintProcessor.println(test value PRINT)</li>"));
+        Assert.assertTrue(monitorHtml.contains("<li> <img width=10 height=10 src=\"/yellow.png\"/> clear4j.processors.SleepProcessor.sleep(null)</li>"));
     }
-
 
     private static String readFromURL(String url) throws IOException {
         StringBuilder sb = new StringBuilder();

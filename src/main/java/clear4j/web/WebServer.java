@@ -140,7 +140,7 @@ public class WebServer {
 		} else if (instruction.getException() != null) {
 			return "<img width=10 height=10 src=\"/red.png\"/>";
 		} else {
-			return  "<img width=10 height=10 src=\"/yellow.png\"/>";
+			return "<img width=10 height=10 src=\"/yellow.png\"/>";
 		}
 	}
 
