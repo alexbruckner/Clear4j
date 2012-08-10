@@ -1,5 +1,5 @@
-* make monitor webserver pretty
 * each processor queue should handle messages specific to the processor rather than having a deal with workflow schema as currently done in WorkflowProcessor.
+* check whether finished remote functions update the instruction status correctly in the workflow. (works locally)
 * fork-join support in workflow
 * example blogsite. initially show workflow in controller that saves a blog entry. then make that workflow into one processor that is called.
 * timeouts on waitFor. so that can wait on user input within workflow back from webserver processor?
