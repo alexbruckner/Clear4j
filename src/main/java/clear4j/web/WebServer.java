@@ -69,7 +69,6 @@ public class WebServer {
 
 		// read html request
 		String requestPath = readRequest(in);
-		System.out.format("PATH: [%s]%n", requestPath);
 
 		//TODO proper response handlers for content type managing (for now just get the monitor page working)
 		if (requestPath.equals("/")){
@@ -88,14 +87,11 @@ public class WebServer {
 
 	private String readRequest(BufferedReader in) throws IOException {
 		// read the html headers
-		System.out.println("incoming");
 		String header = in.readLine();
 		String request = header;
 		while (!header.equals("")) {
-			System.out.println(header);
 			header = in.readLine();
 		}
-		System.out.println("done incoming.");
 		return request.substring(4, request.indexOf("HTTP") - 1);
 	}
 
