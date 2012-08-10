@@ -71,18 +71,15 @@ public class WebServer {
 		String requestPath = readRequest(in);
 		System.out.format("PATH: [%s]%n", requestPath);
 
+		//TODO proper response handlers for content type managing (for now just get the monitor page working)
 		if (requestPath.equals("/favicon.ico")) {
-
 			OutputStream out = socket.getOutputStream();
 			out.write(Images.FAVICON);
 			out.flush();
 			out.close();
-
 		} else {
 			// send the html response
-			PrintWriter out = new PrintWriter(socket.getOutputStream());
-			printResponse(out);
-			out.close();
+			printResponse(socket.getOutputStream());
 		}
 
 	}
@@ -100,7 +97,8 @@ public class WebServer {
 		return request.substring(4, request.indexOf("HTTP") - 1);
 	}
 
-	private void printResponse(PrintWriter out) {
+	private void printResponse(OutputStream outputStream) {
+		PrintWriter out = new PrintWriter(outputStream);
 		// send the headers
 		out.println("HTTP/1.0 200 OK");
 		out.println("Content-Type: text/html");
@@ -112,6 +110,7 @@ public class WebServer {
 		renderHtml(out);
 
 		out.flush();
+		out.close();
 	}
 
 	private void renderHtml(PrintWriter out) {
