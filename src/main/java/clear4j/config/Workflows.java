@@ -20,10 +20,6 @@ public class Workflows {
     	return monitorWorkflow;
     }
 
-    public static Workflow remotePrintln( String host, int port, Serializable value){
-        return new Workflow(value, new Function[]{new Function(PrintProcessor.class, new HostPort(host, port), "println")});
-    }
-
     /*
      * starts and finishes a workflow on a remote machine (the individual instructions are still being sent to where they should go.)
      */
