@@ -12,7 +12,6 @@ import clear4j.web.img.Images;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,7 +28,7 @@ public class WebServer {
 		webserver(port);
 	}
 
-	private <T extends Serializable> void webserver(final int port) throws IOException {
+	private void webserver(final int port) throws IOException {
 		final ServerSocket serverSocket = new ServerSocket(port);
 		new Thread() {
 			@Override
@@ -71,7 +70,7 @@ public class WebServer {
 		String requestPath = readRequest(in);
 
 		//TODO proper response handlers for content type managing (for now just get the monitor page working)
-		if (requestPath.equals("/")){
+		if (requestPath.equals("/")) {
 			// send the html response
 			printResponse(socket.getOutputStream());
 		} else if (requestPath.endsWith(".ico") || requestPath.endsWith(".png")) {
@@ -127,12 +126,22 @@ public class WebServer {
 			for (Instruction<?> instruction : instructions.subList(1, instructions.size() - 1)) {
 				Serializable pipedValue = instruction.getValue();
 				Function function = instruction.getFunction();
-				sb.append(String.format("<li>%s.%s(%s) : %s</li>%n", function.getProcessorClass().getName(), function.getOperation(), pipedValue, instruction.isDone() ? "DONE" : "")); //TODO args
+				sb.append(String.format("<li> %s %s.%s(%s)</li>%n", getStatus(instruction), function.getProcessorClass().getName(), function.getOperation(), pipedValue)); //TODO args
 			}
 			sb.append(String.format("</ul>%n</li>%n"));
 		}
 		sb.append("</ul>");
 		return sb.toString();
+	}
+
+	private String getStatus(Instruction<?> instruction) {
+		if (instruction.isDone()){
+			return "<img width=10 height=10 src=\"/green.png\"/>";
+		} else if (instruction.getException() != null) {
+			return "<img width=10 height=10 src=\"/red.png\"/>";
+		} else {
+			return  "<img width=10 height=10 src=\"/yellow.png\"/>";
+		}
 	}
 
 }
