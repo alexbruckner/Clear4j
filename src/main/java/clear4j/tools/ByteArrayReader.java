@@ -16,7 +16,8 @@ public class ByteArrayReader {
 
 	public static void main(String[] args) throws IOException {
 
-		FileInputStream fis = new FileInputStream(new File("/temp/img/favicon.ico"));
+		FileInputStream fis = new FileInputStream(
+				new File("C:\\Users\\Alex\\IntelliJ_IDEA_Projects\\Clear4j\\data\\img\\red.png"));
 		byte[] buffer = new byte[fis.available()];
 		fis.read(buffer);
 		System.out.println(Arrays.toString(buffer));

@@ -72,14 +72,16 @@ public class WebServer {
 		System.out.format("PATH: [%s]%n", requestPath);
 
 		//TODO proper response handlers for content type managing (for now just get the monitor page working)
-		if (requestPath.equals("/favicon.ico")) {
+		if (requestPath.equals("/")){
+			// send the html response
+			printResponse(socket.getOutputStream());
+		} else if (requestPath.endsWith(".ico") || requestPath.endsWith(".png")) {
 			OutputStream out = socket.getOutputStream();
-			out.write(Images.FAVICON);
+			out.write(Images.get(requestPath));
 			out.flush();
 			out.close();
 		} else {
-			// send the html response
-			printResponse(socket.getOutputStream());
+			System.err.format("invalid request: [%s]%n", requestPath);
 		}
 
 	}
@@ -114,7 +116,7 @@ public class WebServer {
 	}
 
 	private void renderHtml(PrintWriter out) {
-		out.format("<h1>Clear4j monitor @ %s</h1>%n", Host.LOCAL_HOST);
+		out.format("<h1><img src=\"/red.png\"/><img src=\"/yellow.png\"/><img src=\"/green.png\"/> &nbsp; Clear4j monitor @ %s</h1>%n", Host.LOCAL_HOST);
 		@SuppressWarnings("unchecked")
 		String output = toHtml((List<Workflow>) Clear.run(Workflows.getMonitorWorkflow()).waitFor());
 		out.println(output);
