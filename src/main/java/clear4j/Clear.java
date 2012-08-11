@@ -8,12 +8,16 @@ import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Host;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
+import clear4j.processor.Arg;
 import clear4j.processor.CustomLoader;
+import clear4j.processor.instruction.Instruction;
 import clear4j.processors.WorkflowProcessor;
 import clear4j.web.WebServer;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -105,7 +109,7 @@ public final class Clear {
 
 
     private static void setup(Function function) {
-        if (!definedOperations.contains(function.getOperation())) {
+        if (!definedOperations.contains(function.getOperation())) { //allows for overrides
 
             definedOperations.add(function.getOperation());
 
@@ -124,14 +128,86 @@ public final class Clear {
                     @Override
                     public void onMessage(Message<Workflow> message) {
                         Workflow workflow = message.getPayload();
-                        WorkflowProcessor.processWorkflow(workflow);
+                        processWorkflow(workflow);
                     }
                     
                 });
             }
         }
     }
-   
+
+	private static void processWorkflow(Workflow workflow) {
+		Instruction<?> instr = workflow.getCurrentInstruction();
+
+		Class<?> processorClass = instr.getFunction().getProcessorClass();
+		String operation = instr.getFunction().getOperation();
+		Arg<?>[] args = instr.getFunction().getArgs();
+
+		if (LOG.isLoggable(Level.INFO)){
+			LOG.info(String.format("operation [%s]", operation));
+		}
+
+		try { //TODO all this needs cleaning up!!!!!!!!!!!!!!
+
+			//TODO new instance?
+			Object processorObject = processorClass.getConstructor().newInstance();
+
+			for (final Method method : processorClass.getDeclaredMethods()) {
+
+				clear4j.processor.Function annotation = method.getAnnotation(clear4j.processor.Function.class);
+				if (annotation != null && method.getName().equals(operation)) {
+
+					if (!operation.equals("finalProcess")) { //TODO proper checking
+
+						if (!operation.equals("initialProcess")) {
+
+							if (args.length == 0 && method.getParameterTypes().length > 1) {
+								continue; // match args with method params
+							}
+
+							if (LOG.isLoggable(Level.INFO)) {
+								LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and args [%s]", method.getName(), processorObject, instr.getValue(), Arrays.toString(args)));
+							}
+							try {
+								Serializable returnValue;
+								if (args.length > 0 && method.getParameterTypes().length == 2) {
+									returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
+								} else if (method.getParameterTypes().length == 1) {
+									returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
+								} else {
+									returnValue = (Serializable) method.invoke(processorObject);
+								}
+								if (LOG.isLoggable(Level.INFO)) {
+									LOG.info(String.format("Returned value: [%s]", returnValue));
+								}
+
+								//run next instruction in the workflow piping in the return value returned from this call
+								instr.setDone(true);
+								Runner.run(workflow, returnValue);
+
+							} catch (Exception e) {
+								instr.setException(e);
+								Runner.runFinalProcess(workflow);
+								throw new RuntimeException(String.format("Exception in workflow [%s] at instruction [%s]", workflow, instr), e);
+							}
+
+						} else {   //run inital process
+							method.invoke(processorObject, workflow);
+							Clear.run(workflow);
+						}
+
+					} else { //run final process
+						method.invoke(processorObject, workflow);
+					}
+
+				}
+			}
+
+		} catch (Exception e) {
+			LOG.log(Level.SEVERE, e.getMessage(), e);
+		}
+
+	}
 
     public static void main(String[] args) {
         new Thread(new Runnable() {
