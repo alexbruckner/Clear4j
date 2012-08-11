@@ -110,7 +110,6 @@ public final class Clear {
 
     private static void setup(Function function) {
         if (!definedOperations.contains(function.getOperation())) { //allows for overrides
-
             definedOperations.add(function.getOperation());
 
             if (LOG.isLoggable(Level.INFO)) {
@@ -120,21 +119,24 @@ public final class Clear {
             final Class<?> processorClass = function.getProcessorClass();
 
             if (function.getHost().isLocal() && !definedProcessors.contains(processorClass)) {
-
                 definedProcessors.add(processorClass);
 
-                Messenger.register(new DefaultQueue(processorClass.getName(), function.getHost()), new MessageListener<Workflow>() {
-
-                    @Override
-                    public void onMessage(Message<Workflow> message) {
-                        Workflow workflow = message.getPayload();
-                        processWorkflow(workflow);
-                    }
-                    
-                });
+                setup(processorClass);
             }
         }
     }
+
+	private static void setup(Class<?> processorClass) {
+		Messenger.register(new DefaultQueue(processorClass.getName(), Host.LOCAL_HOST), new MessageListener<Workflow>() {
+
+			@Override
+			public void onMessage(Message<Workflow> message) {
+				Workflow workflow = message.getPayload();
+				processWorkflow(workflow);
+			}
+
+		});
+	}
 
 	private static void processWorkflow(Workflow workflow) {
 		Instruction<?> instr = workflow.getCurrentInstruction();

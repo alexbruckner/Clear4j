@@ -14,7 +14,11 @@ public class Function implements Serializable {
     private final String operation;
     private final Arg<?>[] args;
     
-    public Function(Class<?> processorClass, Host host, String operation, Arg<?>... args) {
+    public Function(Class<?> processorClass, String operation, Arg<?>... args) {
+		this(Host.LOCAL_HOST, processorClass, operation, args);
+	}
+
+	public Function(Host host, Class<?> processorClass, String operation, Arg<?>... args) {
         this.processorClass = processorClass;
         this.host = host;
         this.operation = operation;
@@ -22,11 +26,11 @@ public class Function implements Serializable {
     }
     
     public static Function withArgs(final Function function, final Arg<?>... args){
-    	return new Function(function.getProcessorClass(), function.getHost(), function.getOperation(), args);
+    	return new Function(function.getHost(), function.getProcessorClass(), function.getOperation(), args);
     }
 
     public static <T extends Serializable> Function withArg(final Function function, String key, T value){
-        return new Function(function.getProcessorClass(), function.getHost(), function.getOperation(), new Arg<T>(key, value));
+        return new Function(function.getHost(), function.getProcessorClass(), function.getOperation(), new Arg<T>(key, value));
     }
 
 	public Class<?> getProcessorClass() {

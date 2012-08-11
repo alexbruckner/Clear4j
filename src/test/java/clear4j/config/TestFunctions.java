@@ -8,7 +8,7 @@ import clear4j.processors.PrintProcessor;
 public class TestFunctions {
 
 	public static Function println() {
-        return new Function(PrintProcessor.class, new HostPort(Host.LOCAL_HOST.getHost(), 7777), "println");
+        return new Function(new HostPort(Host.LOCAL_HOST.getHost(), 7777), PrintProcessor.class,  "println");
     }
 
 }

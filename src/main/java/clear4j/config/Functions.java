@@ -8,19 +8,19 @@ import clear4j.processors.*;
 public class Functions {
 	
 	public static Function loadText(){
-		return new Function(FileProcessor.class, Host.LOCAL_HOST, "loadText");
+		return new Function(FileProcessor.class, "loadText");
 	}
 	
 	public static Function println(){
-		return new Function(PrintProcessor.class, Host.LOCAL_HOST, "println");
+		return new Function(PrintProcessor.class, "println");
 	}
 
 	public static Function throwRuntimeException(){
-		return new Function(ThrowExceptionProcessor.class, Host.LOCAL_HOST, "throwRuntimeException");
+		return new Function(ThrowExceptionProcessor.class, "throwRuntimeException");
 	}
 	
 	public static Function throwCheckedException(){
-		return new Function(ThrowExceptionProcessor.class, Host.LOCAL_HOST, "throwCheckedException");
+		return new Function(ThrowExceptionProcessor.class,"throwCheckedException");
 	}
 
     /*
@@ -28,11 +28,11 @@ public class Functions {
      */
 
     public static Function initialProcess() {
-        return new Function(WorkflowProcessor.class, Host.LOCAL_HOST, "initialProcess");
+        return new Function(WorkflowProcessor.class, "initialProcess");
     }
 
     public static Function finalProcess(){
-        return new Function(WorkflowProcessor.class, Host.LOCAL_HOST, "finalProcess");
+        return new Function(WorkflowProcessor.class, "finalProcess");
     }
 
     /*
@@ -40,11 +40,11 @@ public class Functions {
      */
 
     public static Function monitor() {
-        return new Function(WorkflowProcessor.class, Host.LOCAL_HOST, "monitor");
+        return new Function(WorkflowProcessor.class, "monitor");
     }
 
     public static Function sleep() {
-        return new Function(SleepProcessor.class, Host.LOCAL_HOST, "sleep");
+        return new Function(SleepProcessor.class, "sleep");
     }
 
 }

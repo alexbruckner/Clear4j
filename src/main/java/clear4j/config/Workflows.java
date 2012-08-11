@@ -15,7 +15,7 @@ public class Workflows {
 
 
     public static Workflow getMonitorWorkflow(){
-    	Workflow monitorWorkflow = new Workflow(new Function(WorkflowProcessor.class, Host.LOCAL_HOST, "monitor"));
+    	Workflow monitorWorkflow = new Workflow(new Function(WorkflowProcessor.class, "monitor"));
     	monitorWorkflow.setName("Monitor");
     	return monitorWorkflow;
     }
@@ -24,11 +24,11 @@ public class Workflows {
      * starts and finishes a workflow on a remote machine (the individual instructions are still being sent to where they should go.)
      */
     public static Workflow runWorkflowRemotely(String host, int port, Workflow workflow){
-        return new Workflow(workflow, new Function[]{new Function(WorkflowProcessor.class, new HostPort(host, port), "runWorkflowRemotely")});
+        return new Workflow(workflow, new Function[]{new Function(new HostPort(host, port), WorkflowProcessor.class, "runWorkflowRemotely")});
     }
 
     public static Workflow remotePrintlnAndSleep( String host, int port, Serializable value){
-        return new Workflow(value, new Function[]{new Function(PrintProcessor.class, new HostPort(host, port), "println"), new Function(SleepProcessor.class, new HostPort(host, port), "sleep")});
+        return new Workflow(value, new Function[]{new Function(new HostPort(host, port), PrintProcessor.class, "println"), new Function(new HostPort(host, port), SleepProcessor.class, "sleep")});
     }
 
 }
