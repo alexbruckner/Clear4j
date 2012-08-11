@@ -158,6 +158,16 @@ public final class Clear {
 
 	private static void verify(Class<?> processorClass, Set<Function> definedFunctions) {
 		//TODO!!!
+
+		for (Function definedFunction : definedFunctions) {
+
+			String method = definedFunction.getOperation();
+			Args additionalArguments = definedFunction.getArgs();
+
+
+
+		}
+
 	}
 
 	private static void processWorkflow(Workflow workflow, final Set<Function> definedFunctions) {
