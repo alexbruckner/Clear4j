@@ -11,7 +11,6 @@ import clear4j.msg.queue.MessageListener;
 import clear4j.processor.Arg;
 import clear4j.processor.CustomLoader;
 import clear4j.processor.instruction.Instruction;
-import clear4j.processors.WorkflowProcessor;
 import clear4j.web.WebServer;
 
 import java.io.Serializable;
@@ -19,7 +18,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,13 +31,11 @@ import java.util.logging.Logger;
  */
 public final class Clear {
 
-    private static final Set<String> definedOperations;
-    private static final Set<Class<?>> definedProcessors;
+	private static final Logger LOG = Logger.getLogger(Clear.class.getName());
 
-    private Clear() {
-    }
+	private static final Map<Class<?>, Set<Function>> DEFINED_FUNCTIONS;
 
-    private static final Logger LOG = Logger.getLogger(Clear.class.getName());
+    private Clear() {}
 
     public static Workflow run(Workflow workflow) {
         Runner.run(workflow, workflow.getNextInstruction());
@@ -50,8 +49,7 @@ public final class Clear {
 
     static {
     	System.out.println(String.format("running on port [%s]", Host.LOCAL_HOST.getPort()));
-        definedOperations = new HashSet<String>();
-        definedProcessors = new HashSet<Class<?>>();
+        DEFINED_FUNCTIONS = new ConcurrentHashMap<Class<?>, Set<Function>>();
         init();
     }
 
@@ -62,12 +60,12 @@ public final class Clear {
             String additionalConfigClassName = System.getProperty("clear4j.config.class");
             if (additionalConfigClassName != null) {
                 Class<?> additionalConfigClass = Class.forName(additionalConfigClassName);
-                setupConfigClass(additionalConfigClass);
+                prepareConfigClass(additionalConfigClass);
             }
 
             for (Class<?> loaded : CustomLoader.getClasses("clear4j.config")) {
                 if (loaded.getAnnotation(Config.class) != null) {
-                    setupConfigClass(loaded);
+					prepareConfigClass(loaded);
                 }
             }
 
@@ -75,10 +73,12 @@ public final class Clear {
             if (customConfigPackage != null) {
                 for (Class<?> loaded : CustomLoader.getClasses(customConfigPackage)) {
                     if (loaded.getAnnotation(Config.class) != null) {
-                        setupConfigClass(loaded);
+						prepareConfigClass(loaded);
                     }
                 }
             }
+
+			setupProcessors();
 
             //webserver
             String webserverPort = System.getProperty("clear4j.monitor.port");
@@ -98,32 +98,57 @@ public final class Clear {
     }
 
 
-    private static void setupConfigClass(Class<?> loaded) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+    private static void prepareConfigClass(Class<?> loaded) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         for (Method method : loaded.getDeclaredMethods()) {
             if (Function.class == method.getReturnType()) {
                 Function function = (Function) method.invoke(null);
-                setup(function);
+                if (function.getHost().isLocal()){  // only setup processors for local functions
+					addToDefinedFunctions(function);
+				}
             }
         }
     }
 
+	private static void addToDefinedFunctions(Function function){
+		final Class<?> processorClass = function.getProcessorClass();
 
-    private static void setup(Function function) {
-        if (!definedOperations.contains(function.getOperation())) { //allows for overrides
-            definedOperations.add(function.getOperation());
+		Set<Function> definedFunctions = DEFINED_FUNCTIONS.get(processorClass);
 
-            if (LOG.isLoggable(Level.INFO)) {
-                LOG.info(String.format("Adding function [%s]", function));
-            }
+		if (definedFunctions == null) {
+			definedFunctions = new HashSet<Function>();
+			DEFINED_FUNCTIONS.put(processorClass, definedFunctions);
+		}
 
-            final Class<?> processorClass = function.getProcessorClass();
+//		boolean operationExists = false; // TODO check this is needed.
+//		String operation = function.getOperation();
+//		for (Function definedFunction : definedFunctions){
+//			if (definedFunction.getOperation().equals(operation)){
+//				operationExists = true;
+//				break;
+//			}
+//		}
 
-            if (function.getHost().isLocal() && !definedProcessors.contains(processorClass)) {
-                definedProcessors.add(processorClass);
+//		if (!operationExists) {
+			definedFunctions.add(function);
+//		}
+	}
 
-                setup(processorClass);
-            }
-        }
+
+    private static void setupProcessors() {
+
+		for (Map.Entry<Class<?>, Set<Function>> e : DEFINED_FUNCTIONS.entrySet()){
+
+			Class<?> processorClass = e.getKey();
+
+			if (LOG.isLoggable(Level.INFO)) {
+				LOG.info(String.format("Setting up processor [%s]", processorClass));
+				LOG.info(String.format(" -> with functions [%s]", e.getValue()));
+			}
+
+			setup(processorClass);
+
+		}
+
     }
 
 	private static void setup(Class<?> processorClass) {
