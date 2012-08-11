@@ -119,18 +119,7 @@ public final class Clear {
 			DEFINED_FUNCTIONS.put(processorClass, definedFunctions);
 		}
 
-//		boolean operationExists = false; // TODO check this is needed.
-//		String operation = function.getOperation();
-//		for (Function definedFunction : definedFunctions){
-//			if (definedFunction.getOperation().equals(operation)){
-//				operationExists = true;
-//				break;
-//			}
-//		}
-
-//		if (!operationExists) {
-			definedFunctions.add(function);
-//		}
+		definedFunctions.add(function);
 	}
 
 
@@ -139,31 +128,39 @@ public final class Clear {
 		for (Map.Entry<Class<?>, Set<Function>> e : DEFINED_FUNCTIONS.entrySet()){
 
 			Class<?> processorClass = e.getKey();
+			Set<Function> definedFunctions = e.getValue();
 
 			if (LOG.isLoggable(Level.INFO)) {
 				LOG.info(String.format("Setting up processor [%s]", processorClass));
-				LOG.info(String.format(" -> with functions [%s]", e.getValue()));
+				LOG.info(String.format(" -> with functions [%s]", definedFunctions));
 			}
 
-			setup(processorClass);
+			setup(processorClass, definedFunctions);
 
 		}
 
     }
 
-	private static void setup(Class<?> processorClass) {
+	private static void setup(final Class<?> processorClass, final Set<Function> definedFunctions) {
+
+		verify(processorClass, definedFunctions);
+
 		Messenger.register(new DefaultQueue(processorClass.getName(), Host.LOCAL_HOST), new MessageListener<Workflow>() {
 
 			@Override
 			public void onMessage(Message<Workflow> message) {
 				Workflow workflow = message.getPayload();
-				processWorkflow(workflow);
+				processWorkflow(workflow, definedFunctions);
 			}
 
 		});
 	}
 
-	private static void processWorkflow(Workflow workflow) {
+	private static void verify(Class<?> processorClass, Set<Function> definedFunctions) {
+		//TODO!!!
+	}
+
+	private static void processWorkflow(Workflow workflow, final Set<Function> definedFunctions) {
 		Instruction<?> instr = workflow.getCurrentInstruction();
 
 		Class<?> processorClass = instr.getFunction().getProcessorClass();
