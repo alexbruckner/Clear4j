@@ -158,7 +158,6 @@ public final class Clear {
 	}
 
 	private static void verify(Class<?> processorClass, Set<Function> definedFunctions) {
-		//TODO!!!
 
 		for (Function definedFunction : definedFunctions) {
 
@@ -173,9 +172,9 @@ public final class Clear {
 			//ie 2, Object println(Object pipedValue)
 			//ie 3, Object println(Object pipedValue, Arg<?>[] arguments) // TODO will replace arguments arrays with variable length annotated arguments, ie @Value("key")
 
-			if (isMethodDefined(processorClass, methodName, runtimeArgumentType, Arg[].class)
-					|| isMethodDefined(processorClass, methodName, runtimeArgumentType)
-					|| isMethodDefined(processorClass, methodName)) {
+			if ((runtimeArgumentType != null && isMethodDefined(processorClass, methodName, runtimeArgumentType, Arg[].class))
+					|| (runtimeArgumentType != null && isMethodDefined(processorClass, methodName, runtimeArgumentType))
+					|| (runtimeArgumentType == null && isMethodDefined(processorClass, methodName))) {
 
 				System.out.println("verified.");
 
@@ -213,48 +212,43 @@ public final class Clear {
 			//TODO new instance?
 			Object processorObject = processorClass.getConstructor().newInstance();
 
-			if (!operation.equals("finalProcess")) { //TODO proper checking
 
-				if (!operation.equals("initialProcess")) {
-
-					if (LOG.isLoggable(Level.INFO)) {
-						LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and args [%s]", operation, processorObject, instr.getValue(), Arrays.toString(args)));
-					}
-					try {
-						Serializable returnValue;
-						if (args.length > 0) {
-							Method method = processorClass.getMethod(operation, argumentType, Arg[].class);
-							returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
-						} else if (argumentType != null) {
-							Method method = processorClass.getMethod(operation, argumentType);
-							returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
-						} else {
-							Method method = processorClass.getMethod(operation);
-							returnValue = (Serializable) method.invoke(processorObject);
-						}
-						if (LOG.isLoggable(Level.INFO)) {
-							LOG.info(String.format("Returned value: [%s]", returnValue));
-						}
-
-						//run next instruction in the workflow piping in the return value returned from this call
-						instr.setDone(true);
-						Runner.run(workflow, returnValue);
-
-					} catch (Exception e) {
-						instr.setException(e);
-						Runner.runFinalProcess(workflow);
-						throw new RuntimeException(String.format("Exception in workflow [%s] at instruction [%s]", workflow, instr), e);
-					}
-
-				} else {   //run inital process
-					Method method = processorClass.getMethod(operation, argumentType);
-					method.invoke(processorObject, workflow);
-					Clear.run(workflow);
-				}
-
-			} else { //run final process
+			if (operation.equals("initialProcess") || operation.equals("finalProcess")) {
 				Method method = processorClass.getMethod(operation, argumentType);
 				method.invoke(processorObject, workflow);
+				if (operation.equals("initialProcess")) {
+					Clear.run(workflow);
+				}
+			} else {
+
+				if (LOG.isLoggable(Level.INFO)) {
+					LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and args [%s]", operation, processorObject, instr.getValue(), Arrays.toString(args)));
+				}
+				try {
+					Serializable returnValue;
+					if (args.length > 0) {
+						Method method = processorClass.getMethod(operation, argumentType, Arg[].class);
+						returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
+					} else if (argumentType != null) {
+						Method method = processorClass.getMethod(operation, argumentType);
+						returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
+					} else {
+						Method method = processorClass.getMethod(operation);
+						returnValue = (Serializable) method.invoke(processorObject);
+					}
+					if (LOG.isLoggable(Level.INFO)) {
+						LOG.info(String.format("Returned value: [%s]", returnValue));
+					}
+
+					//run next instruction in the workflow piping in the return value returned from this call
+					instr.setDone(true);
+					Runner.run(workflow, returnValue);
+
+				} catch (Exception e) {
+					instr.setException(e);
+					Runner.runFinalProcess(workflow);
+					throw new RuntimeException(String.format("Exception in workflow [%s] at instruction [%s]", workflow, instr), e);
+				}
 			}
 
 		} catch (Exception e) {
