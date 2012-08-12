@@ -102,7 +102,23 @@ public final class Clear {
 	private static void prepareConfigClass(Class<?> loaded) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		for (Method method : loaded.getDeclaredMethods()) {
 			if (Function.class == method.getReturnType()) {
-				Function function = (Function) method.invoke(null);
+
+				System.out.println(Arrays.toString(method.getParameterTypes()));
+
+				boolean isArgClass = false;
+				for (Class cl : method.getParameterTypes()){
+					if (cl == Arg[].class){
+						isArgClass = true;
+						break;
+					}
+				}
+
+				Function function;
+				if (isArgClass) {
+					function = (Function) method.invoke(null, new Object[]{new Arg[0]});
+				} else {
+					function = (Function) method.invoke(null);
+				}
 				if (function.getHost().isLocal()) {  // only setup processors for local functions
 					addToDefinedFunctions(function);
 				}
@@ -220,6 +236,8 @@ public final class Clear {
 					Clear.run(workflow);
 				}
 			} else {
+
+				//TODO is value = null try m() first before m(value).
 
 				if (LOG.isLoggable(Level.INFO)) {
 					LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and args [%s]", operation, processorObject, instr.getValue(), Arrays.toString(args)));

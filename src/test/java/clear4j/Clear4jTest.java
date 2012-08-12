@@ -31,7 +31,7 @@ public class Clear4jTest {
 
     protected Function[] getFunctions(){
         return new Function[]{ 
-    		Functions.loadText(), Function.withArg(Functions.println(), "test-key", "test-value")
+    		Functions.loadText(), Functions.println(new Arg<String>("test-key", "test-value"))
         };
     }
 
@@ -85,7 +85,7 @@ public class Clear4jTest {
 		Clear.run(new Workflow("piped value test", new Function[]{Functions.println()})).waitFor();
 
 		//println without initial value (ie calls Object println(Object valuwe, Arg[] args) method)
-		Clear.run(new Workflow("piped value test", new Function[]{Function.withArgs(Functions.println(), new Arg<String>("key1", "value1"), new Arg<String>("key2", "value2"))})).waitFor();
+		Clear.run(new Workflow("piped value test", new Function[]{Functions.println(new Arg<String>("key1", "value1"), new Arg<String>("key2", "value2"))})).waitFor();
 
 
 

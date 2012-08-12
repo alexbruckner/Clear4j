@@ -4,6 +4,7 @@ import clear4j.beans.Function;
 import clear4j.beans.Workflow;
 import clear4j.msg.beans.AbstractRemoteOrigin;
 import clear4j.msg.queue.Host;
+import clear4j.processor.Arg;
 import clear4j.processors.*;
 
 @Config
@@ -15,6 +16,10 @@ public class Functions {
 	
 	public static Function println(){
 		return new Function(PrintProcessor.class, "println", Object.class);
+	}
+
+	public static Function println(Arg... args){
+		return new Function(PrintProcessor.class, "println", Object.class, args);
 	}
 
 	public static Function throwRuntimeException(){
