@@ -8,10 +8,10 @@ import java.util.Arrays;
 
 public class PrintProcessor {
 
-//	@Function    //TODO adding this method should not break the test
-//	public void println(){
-//		System.out.println();
-//	}
+	@Function
+	public void println(){
+		System.out.println();
+	}
 	
 	@Function
 	public Object println(Object value){
