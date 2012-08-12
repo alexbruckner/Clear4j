@@ -151,7 +151,7 @@ public final class Clear {
 			@Override
 			public void onMessage(Message<Workflow> message) {
 				Workflow workflow = message.getPayload();
-				processWorkflow(workflow, definedFunctions);
+				processWorkflow(workflow);
 			}
 
 		});
@@ -195,7 +195,7 @@ public final class Clear {
 		}
 	}
 
-	private static void processWorkflow(Workflow workflow, final Set<Function> definedFunctions) {
+	private static void processWorkflow(Workflow workflow) {
 		Instruction<?> instr = workflow.getCurrentInstruction();
 
 		Class<?> processorClass = instr.getFunction().getProcessorClass();

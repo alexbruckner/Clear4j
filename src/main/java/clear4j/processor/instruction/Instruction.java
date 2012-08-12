@@ -43,7 +43,7 @@ public class Instruction<T extends Serializable> implements Serializable {
     	return done;
     }
 
-	public void setDone(boolean done) {
+	public synchronized void setDone(boolean done) {
 		this.done = done;
 	}
 
