@@ -35,81 +35,82 @@ public final class Clear {
 
 	private static final Map<Class<?>, Set<Function>> DEFINED_FUNCTIONS;
 
-    private Clear() {}
+	private Clear() {
+	}
 
-    public static Workflow run(Workflow workflow) {
-        Runner.run(workflow, workflow.getNextInstruction());
-        return workflow;
-    }
-    
-    public static Workflow run(Function function) {
-        Workflow workflow = new Workflow(function);
-    	return run(workflow);
-    }
+	public static Workflow run(Workflow workflow) {
+		Runner.run(workflow, workflow.getNextInstruction());
+		return workflow;
+	}
 
-    static {
-    	System.out.println(String.format("running on port [%s]", Host.LOCAL_HOST.getPort()));
-        DEFINED_FUNCTIONS = new ConcurrentHashMap<Class<?>, Set<Function>>();
-        init();
-    }
+	public static Workflow run(Function function) {
+		Workflow workflow = new Workflow(function);
+		return run(workflow);
+	}
 
-    private static void init() {
-        //load all function definitions
-        try {
+	static {
+		System.out.println(String.format("running on port [%s]", Host.LOCAL_HOST.getPort()));
+		DEFINED_FUNCTIONS = new ConcurrentHashMap<Class<?>, Set<Function>>();
+		init();
+	}
 
-            String additionalConfigClassName = System.getProperty("clear4j.config.class");
-            if (additionalConfigClassName != null) {
-                Class<?> additionalConfigClass = Class.forName(additionalConfigClassName);
-                prepareConfigClass(additionalConfigClass);
-            }
+	private static void init() {
+		//load all function definitions
+		try {
 
-            for (Class<?> loaded : CustomLoader.getClasses("clear4j.config")) {
-                if (loaded.getAnnotation(Config.class) != null) {
+			String additionalConfigClassName = System.getProperty("clear4j.config.class");
+			if (additionalConfigClassName != null) {
+				Class<?> additionalConfigClass = Class.forName(additionalConfigClassName);
+				prepareConfigClass(additionalConfigClass);
+			}
+
+			for (Class<?> loaded : CustomLoader.getClasses("clear4j.config")) {
+				if (loaded.getAnnotation(Config.class) != null) {
 					prepareConfigClass(loaded);
-                }
-            }
+				}
+			}
 
-            String customConfigPackage = System.getProperty("clear4j.config.package");
-            if (customConfigPackage != null) {
-                for (Class<?> loaded : CustomLoader.getClasses(customConfigPackage)) {
-                    if (loaded.getAnnotation(Config.class) != null) {
+			String customConfigPackage = System.getProperty("clear4j.config.package");
+			if (customConfigPackage != null) {
+				for (Class<?> loaded : CustomLoader.getClasses(customConfigPackage)) {
+					if (loaded.getAnnotation(Config.class) != null) {
 						prepareConfigClass(loaded);
-                    }
-                }
-            }
+					}
+				}
+			}
 
 			setupProcessors();
 
-            //webserver
-            String webserverPort = System.getProperty("clear4j.monitor.port");
-            if (webserverPort != null) {
-                try{
-                    int port = Integer.parseInt(webserverPort);
-                    new WebServer(port);
-                } catch (NumberFormatException e){
-                    e.printStackTrace();
-                }
-            }
+			//webserver
+			String webserverPort = System.getProperty("clear4j.monitor.port");
+			if (webserverPort != null) {
+				try {
+					int port = Integer.parseInt(webserverPort);
+					new WebServer(port);
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+			}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
 
 
-    private static void prepareConfigClass(Class<?> loaded) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        for (Method method : loaded.getDeclaredMethods()) {
-            if (Function.class == method.getReturnType()) {
-                Function function = (Function) method.invoke(null);
-                if (function.getHost().isLocal()){  // only setup processors for local functions
+	private static void prepareConfigClass(Class<?> loaded) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		for (Method method : loaded.getDeclaredMethods()) {
+			if (Function.class == method.getReturnType()) {
+				Function function = (Function) method.invoke(null);
+				if (function.getHost().isLocal()) {  // only setup processors for local functions
 					addToDefinedFunctions(function);
 				}
-            }
-        }
-    }
+			}
+		}
+	}
 
-	private static void addToDefinedFunctions(Function function){
+	private static void addToDefinedFunctions(Function function) {
 		final Class<?> processorClass = function.getProcessorClass();
 
 		Set<Function> definedFunctions = DEFINED_FUNCTIONS.get(processorClass);
@@ -123,9 +124,9 @@ public final class Clear {
 	}
 
 
-    private static void setupProcessors() {
+	private static void setupProcessors() {
 
-		for (Map.Entry<Class<?>, Set<Function>> e : DEFINED_FUNCTIONS.entrySet()){
+		for (Map.Entry<Class<?>, Set<Function>> e : DEFINED_FUNCTIONS.entrySet()) {
 
 			Class<?> processorClass = e.getKey();
 			Set<Function> definedFunctions = e.getValue();
@@ -139,7 +140,7 @@ public final class Clear {
 
 		}
 
-    }
+	}
 
 	private static void setup(final Class<?> processorClass, final Set<Function> definedFunctions) {
 
@@ -161,13 +162,38 @@ public final class Clear {
 
 		for (Function definedFunction : definedFunctions) {
 
-			String method = definedFunction.getOperation();
-			Args additionalArguments = definedFunction.getArgs();
+			String methodName = definedFunction.getOperation();
+			Class<?> runtimeArgumentType = definedFunction.getRuntimeArgumentType();
 
+			System.out.format("verifying %s.%s", processorClass.getName(), methodName);
 
+			//the class can define multiple methods of the same name with different parameter types
+			// which method gets called depends on whether the instruction has a value set //TODO rethink allowed method signatures
+			//ie 1, void/Object println()  , ie no piped value set
+			//ie 2, Object println(Object pipedValue)
+			//ie 3, Object println(Object pipedValue, Arg<?>[] arguments) // TODO will replace arguments arrays with variable length annotated arguments, ie @Value("key")
+
+			if (isMethodDefined(processorClass, methodName, runtimeArgumentType, Arg[].class)
+					|| isMethodDefined(processorClass, methodName, runtimeArgumentType)
+					|| isMethodDefined(processorClass, methodName)) {
+
+				System.out.println("verified.");
+
+			} else {
+				throw new RuntimeException(String.format("not verified: %s.%s", processorClass.getName(), methodName));
+			}
 
 		}
 
+	}
+
+	private static boolean isMethodDefined(Class<?> processorClass, String methodName, Class<?>... parameterTypes) {
+		try {
+			processorClass.getDeclaredMethod(methodName, parameterTypes);
+			return true;
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
 	}
 
 	private static void processWorkflow(Workflow workflow, final Set<Function> definedFunctions) {
@@ -177,7 +203,7 @@ public final class Clear {
 		String operation = instr.getFunction().getOperation();
 		Arg<?>[] args = instr.getFunction().getArgs();
 
-		if (LOG.isLoggable(Level.INFO)){
+		if (LOG.isLoggable(Level.INFO)) {
 			LOG.info(String.format("operation [%s]", operation));
 		}
 
@@ -243,21 +269,21 @@ public final class Clear {
 
 	}
 
-    public static void main(String[] args) {
-        new Thread(new Runnable() {
-            public void run() {
-                Clear.start();
-            }
-        }).start();
-    }
+	public static void main(String[] args) {
+		new Thread(new Runnable() {
+			public void run() {
+				Clear.start();
+			}
+		}).start();
+	}
 
-    public static void start() {
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
+	public static void start() {
+		try {
+			Thread.currentThread().join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
 
 }

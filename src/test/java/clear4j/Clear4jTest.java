@@ -4,6 +4,7 @@ import clear4j.beans.Function;
 import clear4j.beans.Workflow;
 import clear4j.config.Functions;
 import clear4j.config.Workflows;
+import clear4j.processor.Arg;
 import clear4j.processors.FileUtils;
 import junit.framework.Assert;
 import org.junit.AfterClass;
@@ -73,5 +74,22 @@ public class Clear4jTest {
         Assert.assertEquals(text2, text1);
     	
     }
+
+	@Test
+	public void testPrintProcessor() {
+
+		//println without initial value (ie calls void println() method)
+		Clear.run(new Workflow(Functions.println())).waitFor();
+
+		//println without initial value (ie calls Object println(Object value) method) //TODO remove need to set function array
+		Clear.run(new Workflow("piped value test", new Function[]{Functions.println()})).waitFor();
+
+		//println without initial value (ie calls Object println(Object valuwe, Arg[] args) method)
+		Clear.run(new Workflow("piped value test", new Function[]{Function.withArgs(Functions.println(), new Arg<String>("key1", "value1"), new Arg<String>("key2", "value2"))})).waitFor();
+
+
+
+
+	}
   
 }
