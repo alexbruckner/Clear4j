@@ -1,16 +1,11 @@
 package clear4j.processors;
 
-import clear4j.Clear;
 import clear4j.Runner;
 import clear4j.beans.Workflow;
-import clear4j.processor.Arg;
-import clear4j.processor.Function;
-import clear4j.processor.instruction.Instruction;
+import clear4j.processor.annotations.Function;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

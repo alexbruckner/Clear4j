@@ -8,7 +8,7 @@ import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Host;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
-import clear4j.processor.Arg;
+import clear4j.processor.Param;
 import clear4j.processor.CustomLoader;
 import clear4j.processor.instruction.Instruction;
 import clear4j.web.WebServer;
@@ -107,7 +107,7 @@ public final class Clear {
 
 				boolean isArgClass = false;
 				for (Class cl : method.getParameterTypes()){
-					if (cl == Arg[].class){
+					if (cl == Param[].class){
 						isArgClass = true;
 						break;
 					}
@@ -115,7 +115,7 @@ public final class Clear {
 
 				Function function;
 				if (isArgClass) {
-					function = (Function) method.invoke(null, new Object[]{new Arg[0]});
+					function = (Function) method.invoke(null, new Object[]{new Param[0]});
 				} else {
 					function = (Function) method.invoke(null);
 				}
@@ -186,9 +186,9 @@ public final class Clear {
 			// which method gets called depends on whether the instruction has a value set //TODO rethink allowed method signatures
 			//ie 1, void/Object println()  , ie no piped value set
 			//ie 2, Object println(Object pipedValue)
-			//ie 3, Object println(Object pipedValue, Arg<?>[] arguments) // TODO will replace arguments arrays with variable length annotated arguments, ie @Value("key")
+			//ie 3, Object println(Object pipedValue, Param<?>[] arguments) // TODO will replace arguments arrays with variable length annotated arguments, ie @Value("key")
 
-			if ((runtimeArgumentType != null && isMethodDefined(processorClass, methodName, runtimeArgumentType, Arg[].class))
+			if ((runtimeArgumentType != null && isMethodDefined(processorClass, methodName, runtimeArgumentType, Param[].class))
 					|| (runtimeArgumentType != null && isMethodDefined(processorClass, methodName, runtimeArgumentType))
 					|| (runtimeArgumentType == null && isMethodDefined(processorClass, methodName))) {
 
@@ -217,7 +217,7 @@ public final class Clear {
 		Class<?> processorClass = instr.getFunction().getProcessorClass();
 		String operation = instr.getFunction().getOperation();
 		Class<?> argumentType = instr.getFunction().getRuntimeArgumentType();
-		Arg<?>[] args = instr.getFunction().getArgs();
+		Param<?>[] params = instr.getFunction().getParams();
 
 		if (LOG.isLoggable(Level.INFO)) {
 			LOG.info(String.format("operation [%s]", operation));
@@ -240,13 +240,13 @@ public final class Clear {
 				//TODO is value = null try m() first before m(value).
 
 				if (LOG.isLoggable(Level.INFO)) {
-					LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and args [%s]", operation, processorObject, instr.getValue(), Arrays.toString(args)));
+					LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and params [%s]", operation, processorObject, instr.getValue(), Arrays.toString(params)));
 				}
 				try {
 					Serializable returnValue;
-					if (args.length > 0) {
-						Method method = processorClass.getMethod(operation, argumentType, Arg[].class);
-						returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getArgs());
+					if (params.length > 0) {
+						Method method = processorClass.getMethod(operation, argumentType, Param[].class);
+						returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getParams());
 					} else if (argumentType != null) {
 						Method method = processorClass.getMethod(operation, argumentType);
 						returnValue = (Serializable) method.invoke(processorObject, instr.getValue());

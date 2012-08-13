@@ -1,7 +1,7 @@
 package clear4j.processors;
 
-import clear4j.processor.Arg;
-import clear4j.processor.Function;
+import clear4j.processor.Param;
+import clear4j.processor.annotations.Function;
 
 import java.util.Arrays;
 
@@ -21,8 +21,8 @@ public class PrintProcessor {
 	
 	//extra parameters
 	@Function
-	public Object println(Object value, Arg<?>... args){
-		System.out.println(String.format("Extra Args: [%s]", Arrays.toString(args)));
+	public Object println(Object value, Param<?>... params){
+		System.out.println(String.format("Extra Args: [%s]", Arrays.toString(params)));
 		return println(value);
 	}
 	

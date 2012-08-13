@@ -1,6 +1,6 @@
 package clear4j.processors;
 
-import clear4j.processor.Function;
+import clear4j.processor.annotations.Function;
 
 
 public class FileProcessor {

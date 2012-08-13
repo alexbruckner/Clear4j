@@ -5,7 +5,7 @@ import clear4j.beans.Function;
 import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
 import clear4j.config.Workflows;
-import clear4j.processor.Arg;
+import clear4j.processor.Param;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,7 +21,7 @@ public class Clear4jIntegrationTest extends Clear4jTest {
     @Override
     protected Function[] getFunctions() {
         return new Function[]{
-                Functions.loadText(), TestFunctions.println(new Arg<String>("test-key", "test-value"))
+                Functions.loadText(), TestFunctions.println(new Param<String>("test-key", "test-value"))
         };
     }
 

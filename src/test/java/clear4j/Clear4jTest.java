@@ -4,7 +4,7 @@ import clear4j.beans.Function;
 import clear4j.beans.Workflow;
 import clear4j.config.Functions;
 import clear4j.config.Workflows;
-import clear4j.processor.Arg;
+import clear4j.processor.Param;
 import clear4j.processors.FileUtils;
 import junit.framework.Assert;
 import org.junit.AfterClass;
@@ -31,7 +31,7 @@ public class Clear4jTest {
 
     protected Function[] getFunctions(){
         return new Function[]{ 
-    		Functions.loadText(), Functions.println(new Arg<String>("test-key", "test-value"))
+    		Functions.loadText(), Functions.println(new Param<String>("test-key", "test-value"))
         };
     }
 
@@ -84,8 +84,8 @@ public class Clear4jTest {
 		//println without initial value (ie calls Object println(Object value) method) //TODO remove need to set function array
 		Clear.run(new Workflow("piped value test", new Function[]{Functions.println()})).waitFor();
 
-		//println without initial value (ie calls Object println(Object valuwe, Arg[] args) method)
-		Clear.run(new Workflow("piped value test", new Function[]{Functions.println(new Arg<String>("key1", "value1"), new Arg<String>("key2", "value2"))})).waitFor();
+		//println without initial value (ie calls Object println(Object valuwe, Param[] args) method)
+		Clear.run(new Workflow("piped value test", new Function[]{Functions.println(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))})).waitFor();
 
 
 

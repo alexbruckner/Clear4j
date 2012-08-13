@@ -2,7 +2,7 @@ package clear4j.processors;
 
 import java.io.IOException;
 
-import clear4j.processor.Function;
+import clear4j.processor.annotations.Function;
 
 public class ThrowExceptionProcessor {
 

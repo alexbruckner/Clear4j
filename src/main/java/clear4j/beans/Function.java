@@ -1,7 +1,7 @@
 package clear4j.beans;
 
 import clear4j.msg.queue.Host;
-import clear4j.processor.Arg;
+import clear4j.processor.Param;
 
 import java.io.Serializable;
 
@@ -13,18 +13,18 @@ public class Function implements Serializable {
     private final Host host;
     private final String operation;
 	private final Class<?> runtimeArgumentType;
-    private final Arg<?>[] args;
+    private final Param<?>[] params;
     
-    public Function(Class<?> processorClass, String operation, Class<?> runtimeArgumentType, Arg<?>... args) {
-		this(Host.LOCAL_HOST, processorClass, operation, runtimeArgumentType, args);
+    public Function(Class<?> processorClass, String operation, Class<?> runtimeArgumentType, Param<?>... params) {
+		this(Host.LOCAL_HOST, processorClass, operation, runtimeArgumentType, params);
 	}
 
-	public Function(Host host, Class<?> processorClass, String operation, Class<?> runtimeArgumentType, Arg<?>... args) {
+	public Function(Host host, Class<?> processorClass, String operation, Class<?> runtimeArgumentType, Param<?>... params) {
         this.processorClass = processorClass;
         this.host = host;
         this.operation = operation;
 		this.runtimeArgumentType = runtimeArgumentType;
-        this.args = args;
+        this.params = params;
     }
     
 	public Class<?> getProcessorClass() {
@@ -43,8 +43,8 @@ public class Function implements Serializable {
 		return runtimeArgumentType;
 	}
 
-	public Arg<?>[] getArgs() {
-		return args;
+	public Param<?>[] getParams() {
+		return params;
 	}
 
 	@Override
