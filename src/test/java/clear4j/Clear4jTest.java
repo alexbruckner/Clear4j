@@ -31,7 +31,7 @@ public class Clear4jTest {
 
     protected Function[] getFunctions(){
         return new Function[]{ 
-    		Functions.loadText(), Functions.println(new Param<String>("test-key", "test-value"))
+    		Functions.loadText(), Functions.println(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))
         };
     }
 
@@ -76,7 +76,7 @@ public class Clear4jTest {
     }
 
 	@Test
-	public void testPrintProcessor() {
+	public void testPrintProcessor() {    //TODO add assert statements
 
 		//println without initial value (ie calls void println() method)
 		Clear.run(new Workflow(Functions.println())).waitFor();
@@ -86,9 +86,6 @@ public class Clear4jTest {
 
 		//println without initial value (ie calls Object println(Object valuwe, Param[] args) method)
 		Clear.run(new Workflow("piped value test", new Function[]{Functions.println(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))})).waitFor();
-
-
-
 
 	}
   

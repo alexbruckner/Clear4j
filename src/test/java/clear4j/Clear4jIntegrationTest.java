@@ -21,7 +21,7 @@ public class Clear4jIntegrationTest extends Clear4jTest {
     @Override
     protected Function[] getFunctions() {
         return new Function[]{
-                Functions.loadText(), TestFunctions.println(new Param<String>("test-key", "test-value"))
+                Functions.loadText(), TestFunctions.println(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))
         };
     }
 

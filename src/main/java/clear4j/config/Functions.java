@@ -11,7 +11,12 @@ public class Functions {
 	public static Function loadText(){
 		return new Function(FileProcessor.class, "loadText", String.class);
 	}
-	
+
+    //temporary test method here //TODO move elsewhere
+    public static Function printNewLineOnly(){
+        return new Function(PrintProcessor.class, "println", null);    //TODO remove need to pass null in?
+    }
+
 	public static Function println(){
 		return new Function(PrintProcessor.class, "println", Object.class);
 	}

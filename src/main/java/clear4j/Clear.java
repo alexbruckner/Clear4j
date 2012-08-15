@@ -11,6 +11,7 @@ import clear4j.msg.queue.MessageListener;
 import clear4j.processor.Param;
 import clear4j.processor.CustomLoader;
 import clear4j.processor.instruction.Instruction;
+import clear4j.util.ReflectionUtils;
 import clear4j.web.WebServer;
 
 import java.io.Serializable;
@@ -178,37 +179,17 @@ public final class Clear {
 		for (Function definedFunction : definedFunctions) {
 
 			String methodName = definedFunction.getOperation();
-			Class<?> runtimeArgumentType = definedFunction.getRuntimeArgumentType();
 
 			System.out.format("verifying %s.%s", processorClass.getName(), methodName);
 
-			//the class can define multiple methods of the same name with different parameter types
-			// which method gets called depends on whether the instruction has a value set //TODO rethink allowed method signatures
-			//ie 1, void/Object println()  , ie no piped value set
-			//ie 2, Object println(Object pipedValue)
-			//ie 3, Object println(Object pipedValue, Param<?>[] arguments) // TODO will replace arguments arrays with variable length annotated arguments, ie @Value("key")
-
-			if ((runtimeArgumentType != null && isMethodDefined(processorClass, methodName, runtimeArgumentType, Param[].class))
-					|| (runtimeArgumentType != null && isMethodDefined(processorClass, methodName, runtimeArgumentType))
-					|| (runtimeArgumentType == null && isMethodDefined(processorClass, methodName))) {
-
+			if (ReflectionUtils.methodMatched(definedFunction)) {
 				System.out.println("verified.");
-
 			} else {
 				throw new RuntimeException(String.format("not verified: %s.%s", processorClass.getName(), methodName));
 			}
 
 		}
 
-	}
-
-	private static boolean isMethodDefined(Class<?> processorClass, String methodName, Class<?>... parameterTypes) {
-		try {
-			processorClass.getDeclaredMethod(methodName, parameterTypes);
-			return true;
-		} catch (NoSuchMethodException e) {
-			return false;
-		}
 	}
 
 	private static void processWorkflow(Workflow workflow) {
@@ -226,12 +207,10 @@ public final class Clear {
 		try { //TODO all this needs cleaning up!!!!!!!!!!!!!!
 
 			//TODO new instance?
-			Object processorObject = processorClass.getConstructor().newInstance();
-
 
 			if (operation.equals("initialProcess") || operation.equals("finalProcess")) {
 				Method method = processorClass.getMethod(operation, argumentType);
-				method.invoke(processorObject, workflow);
+				method.invoke(processorClass.getConstructor().newInstance(), workflow);
 				if (operation.equals("initialProcess")) {
 					Clear.run(workflow);
 				}
@@ -240,20 +219,12 @@ public final class Clear {
 				//TODO is value = null try m() first before m(value).
 
 				if (LOG.isLoggable(Level.INFO)) {
-					LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and params [%s]", operation, processorObject, instr.getValue(), Arrays.toString(params)));
+					LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and params [%s]", operation, processorClass.getName(), instr.getValue(), Arrays.toString(params)));
 				}
 				try {
-					Serializable returnValue;
-					if (params.length > 0) {
-						Method method = processorClass.getMethod(operation, argumentType, Param[].class);
-						returnValue = (Serializable) method.invoke(processorObject, instr.getValue(), instr.getFunction().getParams());
-					} else if (argumentType != null) {
-						Method method = processorClass.getMethod(operation, argumentType);
-						returnValue = (Serializable) method.invoke(processorObject, instr.getValue());
-					} else {
-						Method method = processorClass.getMethod(operation);
-						returnValue = (Serializable) method.invoke(processorObject);
-					}
+
+                    Serializable returnValue = ReflectionUtils.invoke(instr);
+
 					if (LOG.isLoggable(Level.INFO)) {
 						LOG.info(String.format("Returned value: [%s]", returnValue));
 					}
