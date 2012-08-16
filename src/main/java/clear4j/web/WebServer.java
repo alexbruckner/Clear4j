@@ -118,6 +118,10 @@ public class WebServer {
 	}
 
 	private synchronized String toHtml(List<Workflow> workflows) {
+        if (workflows == null) {
+            LOG.warning("No workflows found.");
+            return "No workflows found.";
+        }
 		StringBuilder sb = new StringBuilder();
 		sb.append("<ul>");
 		for (Workflow workflow : workflows) {

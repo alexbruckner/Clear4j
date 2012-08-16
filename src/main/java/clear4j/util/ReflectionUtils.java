@@ -5,7 +5,6 @@ import clear4j.processor.Param;
 import clear4j.processor.instruction.Instruction;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,20 +45,28 @@ public final class ReflectionUtils {
         return method;
     }
 
-    public static Serializable invoke(Instruction instr) throws InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException {
+    public static Serializable invoke(Instruction instr) {
         Function function = instr.getFunction();
         Method method = match(function);
         Class<?> processorClass = function.getProcessorClass();
         Serializable value = instr.getValue();
         Param<?>[] params = function.getParams();
-        Object processorObject = processorClass.getConstructor().newInstance();
-        if (params.length == 0){
-            return (Serializable) method.invoke(processorObject, value);
-        } else {
-            Object[] args = new Object[]{value};
-            Object[] paramValues = createParamValues(params);
-            args = CollectionUtils.concat(args, paramValues);
-            return (Serializable) method.invoke(processorObject, args);
+        try{
+            Object processorObject = processorClass.getConstructor().newInstance();
+            if (params.length == 0){
+                if (value == null){
+                    return (Serializable) method.invoke(processorObject);
+                } else {
+                    return (Serializable) method.invoke(processorObject, value);
+                }
+            } else {
+                Object[] args = new Object[]{value};
+                Object[] paramValues = createParamValues(params);
+                args = CollectionUtils.concat(args, paramValues);
+                return (Serializable) method.invoke(processorObject, args);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
