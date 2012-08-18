@@ -111,7 +111,7 @@ public class WebServer {
 	}
 
 	private void renderHtml(PrintWriter out) {
-		out.format("<h1><img src=\"/red.png\"/><img src=\"/yellow.png\"/><img src=\"/green.png\"/> &nbsp; Clear4j monitor @ %s</h1>%n", Host.LOCAL_HOST);
+		out.format("<h1><img src=\"/cover.png\"/><img src=\"/red.png\"/><img src=\"/yellow.png\"/><img src=\"/green.png\"/> &nbsp; @ %s</h1>%n", Host.LOCAL_HOST);
 		@SuppressWarnings("unchecked")
 		String output = toHtml((List<Workflow>) Clear.run(Workflows.getMonitorWorkflow()).waitFor());
 		out.println(output);
