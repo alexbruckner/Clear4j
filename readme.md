@@ -91,7 +91,7 @@ public static Workflow loadTextAndPrintRemotely(String path){
 
 <pre>
 <code>
-Clear.run("path_to_text_file", Workflows.loadTextAndPrintRemotely()).waitFor();
+Clear.run(Workflows.loadTextAndPrintRemotely("path_to_text_file")).waitFor();
 </code>
 </pre>
 
