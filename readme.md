@@ -1,4 +1,4 @@
-<img src="data/img/Clear4j_trans.png"/>
+<img src="http://dl.dropbox.com/u/21134784/Clear4j_trans.png"/>
 =======
 ___
 
