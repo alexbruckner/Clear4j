@@ -2,7 +2,7 @@
 =======
 ___
 
-A Remote Workflow Framework for Java
+A 'Clear Code' Remote Workflow Framework for Java
 ===============================
 ---
 
