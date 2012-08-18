@@ -81,8 +81,8 @@ You can create a Workflows class that predefines workflows or create functions o
 
 <pre>
 <code>
-public static Workflow loadTextAndPrintRemotely(){
-    return new Workflow(Functions.loadText(), Functions.println());
+public static Workflow loadTextAndPrintRemotely(String path){
+    return new Workflow(path, Functions.loadText(), Functions.println());
 }
 </code>
 </pre>
@@ -91,7 +91,7 @@ public static Workflow loadTextAndPrintRemotely(){
 
 <pre>
 <code>
-Clear.run(Workflows.loadTextAndPrintRemotely()).waitFor();
+Clear.run("path_to_text_file", Workflows.loadTextAndPrintRemotely()).waitFor();
 </code>
 </pre>
 
