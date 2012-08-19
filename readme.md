@@ -124,6 +124,7 @@ TODO
 * clear framework for creating workflow object, like Workflow.create(function).with(initialValue).pipeTo(anotherFunction).pipeTo(anotherFunction).run();
 * load balancing of functions
 * more example processors
+* iterative constructs (ForEach processor, ie load file -> for each line, do...)?
 * graphical workflow definition and execution tool
 * scripting language for workflow definition and execution
 * hot deploying remote processors on remote machines from local
