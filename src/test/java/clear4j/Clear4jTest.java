@@ -3,6 +3,7 @@ package clear4j;
 import clear4j.beans.Function;
 import clear4j.beans.Workflow;
 import clear4j.config.Functions;
+import clear4j.config.TestFunctions;
 import clear4j.config.Workflows;
 import clear4j.processor.Param;
 import clear4j.processors.FileUtils;
@@ -21,6 +22,7 @@ public class Clear4jTest {
 
     @BeforeClass
     public static void setup(){
+		System.setProperty("clear4j.config.class", "clear4j.config.TestFunctions");
         FileUtils.writeTextToFile(TestConfig.TEST_FILE_PATH.getValue(), TestConfig.TEST_FILE_CONTENT.getValue());
     }
 
@@ -31,7 +33,7 @@ public class Clear4jTest {
 
     protected Function[] getFunctions(){
         return new Function[]{ 
-    		Functions.loadText(), Functions.println(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))
+    		Functions.loadText(), TestFunctions.println(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))
         };
     }
 
@@ -42,12 +44,12 @@ public class Clear4jTest {
     
     @Test
     public void testCheckedException() {
-    	Clear.run(new Workflow(Functions.throwCheckedException())).waitFor();
+    	Clear.run(new Workflow(TestFunctions.throwCheckedException())).waitFor();
     }
     
     @Test
     public void testRuntimeException() {
-    	Clear.run(new Workflow(Functions.throwRuntimeException())).waitFor();
+    	Clear.run(new Workflow(TestFunctions.throwRuntimeException())).waitFor();
     }
     
     @Test
@@ -85,7 +87,7 @@ public class Clear4jTest {
 		Clear.run(new Workflow("piped value test", new Function[]{Functions.println()})).waitFor();
 
 		//println without initial value (ie calls Object println(Object valuwe, Param[] args) method)
-		Clear.run(new Workflow("piped value test", new Function[]{Functions.println(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))})).waitFor();
+		Clear.run(new Workflow("piped value test", new Function[]{TestFunctions.println(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))})).waitFor();
 
 	}
   

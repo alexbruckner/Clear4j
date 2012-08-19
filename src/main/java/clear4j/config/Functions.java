@@ -12,25 +12,8 @@ public class Functions {
 		return new Function(FileProcessor.class, "loadText", String.class);
 	}
 
-    //temporary test method here //TODO move elsewhere
-    public static Function printNewLineOnly(){
-        return new Function(PrintProcessor.class, "println", null);    //TODO remove need to pass null in?
-    }
-
 	public static Function println(){
 		return new Function(PrintProcessor.class, "println", Object.class);
-	}
-
-	public static Function println(Param... params){
-		return new Function(PrintProcessor.class, "println", Object.class, params);
-	}
-
-	public static Function throwRuntimeException(){
-		return new Function(ThrowExceptionProcessor.class, "throwRuntimeException", null);
-	}
-	
-	public static Function throwCheckedException(){
-		return new Function(ThrowExceptionProcessor.class,"throwCheckedException", null);
 	}
 
     /*

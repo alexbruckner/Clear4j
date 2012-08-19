@@ -2,6 +2,7 @@ package clear4j.beans;
 
 import clear4j.msg.queue.Host;
 import clear4j.processor.Param;
+import clear4j.processors.PrintProcessor;
 
 import java.io.Serializable;
 
@@ -26,7 +27,11 @@ public class Function implements Serializable {
 		this.runtimeArgumentType = runtimeArgumentType;
         this.params = params;
     }
-    
+
+	public Function(Class<?> processorClass, String operation) {
+		this(processorClass, operation, null);
+	}
+
 	public Class<?> getProcessorClass() {
 		return processorClass;
 	}

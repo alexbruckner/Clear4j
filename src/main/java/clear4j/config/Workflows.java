@@ -27,8 +27,4 @@ public class Workflows {
         return new Workflow(workflow, new Function[]{new Function(new HostPort(host, port), WorkflowProcessor.class, "runWorkflowRemotely", Workflow.class)});
     }
 
-    public static Workflow remotePrintlnAndSleep( String host, int port, Serializable value){
-        return new Workflow(value, new Function[]{new Function(new HostPort(host, port), PrintProcessor.class, "println", Object.class), new Function(new HostPort(host, port), SleepProcessor.class, "sleep", Object.class)});
-    }
-
 }

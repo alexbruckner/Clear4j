@@ -4,6 +4,7 @@ package clear4j;
 import clear4j.beans.Function;
 import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
+import clear4j.config.TestWorkflows;
 import clear4j.config.Workflows;
 import clear4j.processor.Param;
 import org.junit.Assert;
@@ -21,13 +22,13 @@ public class Clear4jIntegrationTest extends Clear4jTest {
     @Override
     protected Function[] getFunctions() {
         return new Function[]{
-                Functions.loadText(), TestFunctions.println(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))
+                Functions.loadText(), TestFunctions.remotePrintln(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))
         };
     }
 
     @Test
     public void testMonitorWebserver() throws InterruptedException, IOException {
-        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, Workflows.remotePrintlnAndSleep("localhost", 7777, "test value PRINT")));   //TODO clean up
+        Clear.run(Workflows.runWorkflowRemotely("localhost", 7777, TestWorkflows.remotePrintlnAndSleep("localhost", 7777, "test value PRINT")));   //TODO clean up
         Thread.sleep(3000);
         String monitorHtml = readFromURL("http://localhost:7778");
         System.out.println(monitorHtml);
