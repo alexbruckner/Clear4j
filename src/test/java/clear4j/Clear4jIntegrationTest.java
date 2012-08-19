@@ -22,7 +22,7 @@ public class Clear4jIntegrationTest extends Clear4jTest {
     @Override
     protected Function[] getFunctions() {
         return new Function[]{
-                Functions.loadText(), TestFunctions.remotePrintln(new Param<String>("key1", "value1"), new Param<String>("key2", "value2"))
+                Functions.loadText(), TestFunctions.remotePrintln(new Param<String>("value1"), new Param<String>("value2"))
         };
     }
 

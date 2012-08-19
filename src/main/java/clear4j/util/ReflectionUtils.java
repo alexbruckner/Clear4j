@@ -70,7 +70,6 @@ public final class ReflectionUtils {
         }
     }
 
-    //TODO for now ignore keys and assume parameters are ordered.
     private static Class<?>[] createParamTypes(Param<?>[] params) {
 
         List<Class<?>> parameterTypes = new ArrayList<Class<?>>(params.length);
@@ -82,8 +81,6 @@ public final class ReflectionUtils {
         return parameterTypes.toArray(new Class<?>[parameterTypes.size()]);
     }
 
-
-    //TODO for now ignore keys and assume parameters are ordered.
     private static Object[] createParamValues(Param<?>[] params) {
 
         List<Object> parameterTypes = new ArrayList<Object>(params.length);

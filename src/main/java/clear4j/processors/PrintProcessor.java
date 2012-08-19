@@ -20,8 +20,8 @@ public class PrintProcessor {
 	}
 
     @Function
-    public Object println(Object value, @Param("key1") String value1, @Param("key2") String value2){
-        System.out.println(String.format("Extra Args: key1 = [%s], key2 = [%s]", value1, value2));
+    public Object println(Object value, @Param String value1, @Param String value2){
+        System.out.println(String.format("Extra Args: value1 = [%s], value2 = [%s]", value1, value2));
         return println(value);
     }
 }
