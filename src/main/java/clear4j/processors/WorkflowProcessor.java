@@ -2,7 +2,6 @@ package clear4j.processors;
 
 import clear4j.Runner;
 import clear4j.beans.Workflow;
-import clear4j.processor.annotations.Function;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ public class WorkflowProcessor {
     // Active workflows
     private static final List<Workflow> ACTIVE_WORKFLOWS = new CopyOnWriteArrayList<Workflow>();
 
-    @Function
     public void initialProcess(Workflow workflow){
         if (LOG.isLoggable(Level.INFO)){
             LOG.info(String.format("Running new workflow [%s]", workflow.getId()));
@@ -33,7 +31,6 @@ public class WorkflowProcessor {
         ACTIVE_WORKFLOWS.add(workflow);
     }
 
-    @Function
 	public void finalProcess(Workflow workflow){
 
         if (LOG.isLoggable(Level.INFO)){
@@ -53,13 +50,11 @@ public class WorkflowProcessor {
 
 	}
 
-    @Function
     public void runWorkflowRemotely(Workflow workflow){
     	Workflow localized = Workflow.localize(workflow);
     	Runner.run(localized, localized.getNextInstruction());
     }
 
-    @Function
     public List<Workflow> monitor(){
     	synchronized(ACTIVE_WORKFLOWS){
     		return new ArrayList<Workflow>(ACTIVE_WORKFLOWS);
