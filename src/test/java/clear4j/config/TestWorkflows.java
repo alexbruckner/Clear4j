@@ -16,6 +16,6 @@ import java.io.Serializable;
  */
 public class TestWorkflows {
 	public static Workflow remotePrintlnAndSleep(String host, int port, Serializable value){
-		return new Workflow(value, new Function[]{new Function(new HostPort(host, port), PrintProcessor.class, "println", Object.class), new Function(new HostPort(host, port), SleepProcessor.class, "sleep", Object.class)});
+		return new Workflow(value, new Function(new HostPort(host, port), PrintProcessor.class, "println", Object.class), new Function(new HostPort(host, port), SleepProcessor.class, "sleep", Object.class));
 	}
 }

@@ -2,6 +2,7 @@ package clear4j;
 
 
 import clear4j.beans.Function;
+import clear4j.beans.Workflow;
 import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
 import clear4j.config.TestWorkflows;
@@ -20,11 +21,9 @@ import java.net.URLConnection;
 public class Clear4jIntegrationTest extends Clear4jTest {
 
     @Override
-    protected Function[] getFunctions() {
-        return new Function[]{
-                Functions.loadText(), TestFunctions.remotePrintln(new Param<String>("value1"), new Param<String>("value2"))
-        };
-    }
+	protected Workflow getWorkflow(String path){
+		return new Workflow(path, Functions.loadText(), TestFunctions.remotePrintln(new Param<String>("value1"), new Param<String>("value2")));
+	}
 
     @Test
     public void testMonitorWebserver() throws InterruptedException, IOException {

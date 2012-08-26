@@ -25,16 +25,12 @@ public class Workflow implements Serializable {
     private final String id;
     
     private volatile String name;
-    
-    public Workflow(final Serializable initialValue, Function[] functions){
-    	this(initialValue, functions[0], Arrays.copyOfRange(functions, 1, functions.length));
-    }
-    
-    public Workflow(Function firstFunction, Function... moreFunctions){
-    	this(null, firstFunction, moreFunctions);
-    }
-    
-    private Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
+
+	public Workflow(Function firstFunction, Function... moreFunctions){
+	 	this(null, firstFunction, moreFunctions);
+	}
+
+	public Workflow(final Serializable initialValue, Function firstFunction, Function... moreFunctions){
         this.instructions = new CopyOnWriteArrayList<Instruction<?>>();
 
         this.instructions.add(Instruction.define(Functions.initialProcess()));

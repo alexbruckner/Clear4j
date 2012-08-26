@@ -1,6 +1,5 @@
 package clear4j;
 
-import clear4j.beans.Function;
 import clear4j.beans.Workflow;
 import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
@@ -31,11 +30,10 @@ public class Clear4jTest {
         FileUtils.removeFile(TestConfig.TEST_FILE_PATH.getValue());
     }
 
-    protected Function[] getFunctions(){
-        return new Function[]{ 
-    		Functions.loadText(), TestFunctions.println(new Param<String>("value1"), new Param<String>("value2"))
-        };
+    protected Workflow getWorkflow(String path){
+    	return new Workflow(path, Functions.loadText(), TestFunctions.println(new Param<String>("value1"), new Param<String>("value2")));
     }
+
 
     @Test
     public void testMonitorFunction(){
@@ -61,7 +59,7 @@ public class Clear4jTest {
     public void testSimpleWorkFlow() throws Exception {
         // start the workflow process
         String filePath = TestConfig.TEST_FILE_PATH.getValue();
-        Workflow workflow = new Workflow(filePath, getFunctions());
+        Workflow workflow = getWorkflow(filePath);
         Clear.run(workflow);
 
         // wait for the result
@@ -84,10 +82,10 @@ public class Clear4jTest {
 		Clear.run(new Workflow(Functions.println())).waitFor();
 
 		//println without initial value (ie calls Object println(Object value) method) //TODO remove need to set function array
-		Clear.run(new Workflow("piped value test", new Function[]{Functions.println()})).waitFor();
+		Clear.run(new Workflow("piped value test", Functions.println())).waitFor();
 
 		//println without initial value (ie calls Object println(Object valuwe, Param[] args) method)
-		Clear.run(new Workflow("piped value test", new Function[]{TestFunctions.println(new Param<String>("value1"), new Param<String>("value2"))})).waitFor();
+		Clear.run(new Workflow("piped value test", TestFunctions.println(new Param<String>("value1"), new Param<String>("value2")))).waitFor();
 
 	}
   
