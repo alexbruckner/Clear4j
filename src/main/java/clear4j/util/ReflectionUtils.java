@@ -61,8 +61,7 @@ public final class ReflectionUtils {
                 }
             } else {
                 Object[] args = new Object[]{value};
-                Object[] paramValues = createParamValues(params);
-                args = CollectionUtils.concat(args, paramValues);
+                args = CollectionUtils.concat(args, params);
                 return (Serializable) method.invoke(processorObject, args);
             }
         } catch (Exception e) {
@@ -75,21 +74,10 @@ public final class ReflectionUtils {
         List<Class<?>> parameterTypes = new ArrayList<Class<?>>(params.length);
 
         for (Param param : params){
-            parameterTypes.add(param.getValue().getClass());
+            parameterTypes.add(Param.class);
         }
 
         return parameterTypes.toArray(new Class<?>[parameterTypes.size()]);
-    }
-
-    private static Object[] createParamValues(Param<?>[] params) {
-
-        List<Object> parameterTypes = new ArrayList<Object>(params.length);
-
-        for (Param param : params){
-            parameterTypes.add(param.getValue());
-        }
-
-        return parameterTypes.toArray(new Object[parameterTypes.size()]);
     }
 
     private static Method getDeclaredMethod(Class<?> processorClass, String methodName, Class<?>... parameterTypes) {
