@@ -4,7 +4,6 @@ import clear4j.beans.Workflow;
 import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
 import clear4j.config.Workflows;
-import clear4j.processor.Param;
 import clear4j.processors.FileUtils;
 import junit.framework.Assert;
 import org.junit.AfterClass;
@@ -19,51 +18,51 @@ import org.junit.Test;
  */
 public class Clear4jTest {
 
-    @BeforeClass
-    public static void setup(){
+	@BeforeClass
+	public static void setup() {
 		System.setProperty("clear4j.config.class", "clear4j.config.TestFunctions");
-        FileUtils.writeTextToFile(TestConfig.TEST_FILE_PATH.getValue(), TestConfig.TEST_FILE_CONTENT.getValue());
-    }
+		FileUtils.writeTextToFile(TestConfig.TEST_FILE_PATH.getValue(), TestConfig.TEST_FILE_CONTENT.getValue());
+	}
 
-    @AfterClass
-    public static void tearDown(){
-        FileUtils.removeFile(TestConfig.TEST_FILE_PATH.getValue());
-    }
+	@AfterClass
+	public static void tearDown() {
+		FileUtils.removeFile(TestConfig.TEST_FILE_PATH.getValue());
+	}
 
-    protected Workflow getWorkflow(String path){
-    	return new Workflow(path, Functions.loadText(), TestFunctions.println(new Param<String>("value1"), new Param<String>("value2")));
-    }
+	protected Workflow getWorkflow(String path) {
+		return new Workflow(path, Functions.loadText(), Functions.println());
+	}
 
 
-    @Test
-    public void testMonitorFunction(){
-        Clear.run(Workflows.getMonitorWorkflow()).waitFor();
-    }
-    
-    @Test
-    public void testCheckedException() {
-    	Clear.run(new Workflow(TestFunctions.throwCheckedException())).waitFor();
-    }
-    
-    @Test
-    public void testRuntimeException() {
-    	Clear.run(new Workflow(TestFunctions.throwRuntimeException())).waitFor();
-    }
-    
-    @Test
-    public void testPrintlnNull() {
-    	Assert.assertNull(Clear.run(new Workflow(Functions.println())).waitFor());
-    }
+	@Test
+	public void testMonitorFunction() {
+		Clear.run(Workflows.getMonitorWorkflow()).waitFor();
+	}
 
-    @Test
-    public void testSimpleWorkFlow() throws Exception {
-        // start the workflow process
-        String filePath = TestConfig.TEST_FILE_PATH.getValue();
-        Workflow workflow = getWorkflow(filePath);
-        Clear.run(workflow);
+	@Test
+	public void testCheckedException() {
+		Clear.run(new Workflow(TestFunctions.throwCheckedException())).waitFor();
+	}
 
-        // wait for the result
-        String text1 = workflow.waitFor();
+	@Test
+	public void testRuntimeException() {
+		Clear.run(new Workflow(TestFunctions.throwRuntimeException())).waitFor();
+	}
+
+	@Test
+	public void testPrintlnNull() {
+		Assert.assertNull(Clear.run(new Workflow(Functions.println())).waitFor());
+	}
+
+	@Test
+	public void testSimpleWorkFlow() throws Exception {
+		// start the workflow process
+		String filePath = TestConfig.TEST_FILE_PATH.getValue();
+		Workflow workflow = getWorkflow(filePath);
+		Clear.run(workflow);
+
+		// wait for the result
+		String text1 = workflow.waitFor();
 		Assert.assertNotNull(text1);
 
 		// load it the boring way
@@ -71,9 +70,9 @@ public class Clear4jTest {
 		Assert.assertNotNull(text2);
 
 		// assert same content
-        Assert.assertEquals(text2, text1);
-    	
-    }
+		Assert.assertEquals(text2, text1);
+
+	}
 
 	@Test
 	public void testPrintProcessor() {    //TODO add assert statements
@@ -84,9 +83,6 @@ public class Clear4jTest {
 		//println without initial value (ie calls Object println(Object value) method) //TODO remove need to set function array
 		Clear.run(new Workflow("piped value test", Functions.println())).waitFor();
 
-		//println without initial value (ie calls Object println(Object valuwe, Param[] args) method)
-		Clear.run(new Workflow("piped value test", TestFunctions.println(new Param<String>("value1"), new Param<String>("value2")))).waitFor();
-
 	}
-  
+
 }

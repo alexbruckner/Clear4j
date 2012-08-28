@@ -2,46 +2,44 @@ package clear4j.config;
 
 import clear4j.beans.Function;
 import clear4j.beans.Workflow;
-import clear4j.processor.Param;
-import clear4j.processors.*;
+import clear4j.processors.FileProcessor;
+import clear4j.processors.PrintProcessor;
+import clear4j.processors.SleepProcessor;
+import clear4j.processors.WorkflowProcessor;
 
 @Config
 public class Functions {
 
-	public static Function loadText(){
+	public static Function loadText() {
 		return new Function(FileProcessor.class, "loadText", String.class);
 	}
 
-	public static Function println(){
+	public static Function println() {
 		return new Function(PrintProcessor.class, "println", Object.class);
 	}
 
-	public static Function println2(Param... params){ //TODO test, remove!
-		return new Function(PrintProcessor.class, "println", Object.class, params);
+	/*
+		 * SPECIALS
+		 */
+
+	public static Function initialProcess() {
+		return new Function(WorkflowProcessor.class, "initialProcess", Workflow.class);
 	}
 
-    /*
-     * SPECIALS
-     */
+	public static Function finalProcess() {
+		return new Function(WorkflowProcessor.class, "finalProcess", Workflow.class);
+	}
 
-    public static Function initialProcess() {
-        return new Function(WorkflowProcessor.class, "initialProcess", Workflow.class);
-    }
+	/*
+		 * MORE SPECIALS
+		 */
 
-    public static Function finalProcess(){
-        return new Function(WorkflowProcessor.class, "finalProcess", Workflow.class);
-    }
+	public static Function monitor() {
+		return new Function(WorkflowProcessor.class, "monitor", null);
+	}
 
-    /*
-     * MORE SPECIALS
-     */
-
-    public static Function monitor() {
-        return new Function(WorkflowProcessor.class, "monitor", null);
-    }
-
-    public static Function sleep() {
-        return new Function(SleepProcessor.class, "sleep", Object.class );
-    }
+	public static Function sleep() {
+		return new Function(SleepProcessor.class, "sleep", Object.class);
+	}
 
 }

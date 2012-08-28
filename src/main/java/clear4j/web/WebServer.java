@@ -12,7 +12,6 @@ import clear4j.web.img.Images;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -127,11 +126,11 @@ public class WebServer {
 	private String asHtmlList(Map<Class<?>, Set<Function>> definedFunctions) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<ul>");
-		for (Class processorClass : definedFunctions.keySet()){
+		for (Class processorClass : definedFunctions.keySet()) {
 			sb.append("<li>").append(processorClass.getName());
 			sb.append("<ul>");
-			for (Function f : definedFunctions.get(processorClass)){
-				sb.append("<li>").append(f.getOperation()).append("(").append(f.getRuntimeArgumentType()).append(", ").append(Arrays.toString(f.getParams())).append(")").append("</li>");
+			for (Function f : definedFunctions.get(processorClass)) {
+				sb.append("<li>").append(f.getOperation()).append("(").append(f.getRuntimeArgumentType()).append(")").append("</li>");
 			}
 			sb.append("</ul>");
 			sb.append("</li>");
@@ -140,10 +139,10 @@ public class WebServer {
 	}
 
 	private synchronized String toHtml(List<Workflow> workflows) {
-        if (workflows == null) {
-            LOG.warning("No workflows found.");
-            return "No workflows found.";
-        }
+		if (workflows == null) {
+			LOG.warning("No workflows found.");
+			return "No workflows found.";
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("<ul>");
 		for (Workflow workflow : workflows) {
@@ -161,7 +160,7 @@ public class WebServer {
 	}
 
 	private String getStatus(Instruction<?> instruction) {
-		if (instruction.isDone()){
+		if (instruction.isDone()) {
 			return "<img width=10 height=10 src=\"/green.png\"/>";
 		} else if (instruction.getException() != null) {
 			return "<img width=10 height=10 src=\"/red.png\"/>";

@@ -1,14 +1,13 @@
 package clear4j;
 
-import clear4j.config.Config;
 import clear4j.beans.Function;
 import clear4j.beans.Workflow;
+import clear4j.config.Config;
 import clear4j.msg.Messenger;
 import clear4j.msg.beans.DefaultQueue;
 import clear4j.msg.queue.Host;
 import clear4j.msg.queue.Message;
 import clear4j.msg.queue.MessageListener;
-import clear4j.processor.Param;
 import clear4j.processor.CustomLoader;
 import clear4j.processor.instruction.Instruction;
 import clear4j.util.ReflectionUtils;
@@ -106,20 +105,9 @@ public final class Clear {
 
 				System.out.println(Arrays.toString(method.getParameterTypes()));
 
-				boolean isArgClass = false;
-				for (Class cl : method.getParameterTypes()){
-					if (cl == Param[].class){
-						isArgClass = true;
-						break;
-					}
-				}
-
 				Function function;
-				if (isArgClass) {
-					function = (Function) method.invoke(null, new Object[]{new Param[0]});
-				} else {
-					function = (Function) method.invoke(null);
-				}
+
+				function = (Function) method.invoke(null);
 				if (function.getHost().isLocal()) {  // only setup processors for local functions
 					addToDefinedFunctions(function);
 				}
@@ -198,7 +186,6 @@ public final class Clear {
 		Class<?> processorClass = instr.getFunction().getProcessorClass();
 		String operation = instr.getFunction().getOperation();
 		Class<?> argumentType = instr.getFunction().getRuntimeArgumentType();
-		Param<?>[] params = instr.getFunction().getParams();
 
 		if (LOG.isLoggable(Level.INFO)) {
 			LOG.info(String.format("operation [%s]", operation));
@@ -219,11 +206,11 @@ public final class Clear {
 				//TODO is value = null try m() first before m(value).
 
 				if (LOG.isLoggable(Level.INFO)) {
-					LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s] and params [%s]", operation, processorClass.getName(), instr.getValue(), Arrays.toString(params)));
+					LOG.info(String.format("Invoking method [%s] on [%s] with piped value [%s]", operation, processorClass.getName(), instr.getValue()));
 				}
 				try {
 
-                    Serializable returnValue = ReflectionUtils.invoke(instr);
+					Serializable returnValue = ReflectionUtils.invoke(instr);
 
 					if (LOG.isLoggable(Level.INFO)) {
 						LOG.info(String.format("Returned value: [%s]", returnValue));
