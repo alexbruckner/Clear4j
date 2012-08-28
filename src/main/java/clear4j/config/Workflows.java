@@ -11,7 +11,7 @@ public class Workflows {
 
 
     public static Workflow getMonitorWorkflow(){
-    	Workflow monitorWorkflow = new Workflow(new Function(WorkflowProcessor.class, "monitor", null));
+    	Workflow monitorWorkflow = new Workflow(new Function(WorkflowProcessor.class, "monitor"));
     	monitorWorkflow.setName("Monitor");
     	return monitorWorkflow;
     }

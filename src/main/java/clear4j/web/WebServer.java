@@ -13,6 +13,8 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -112,9 +114,28 @@ public class WebServer {
 
 	private void renderHtml(PrintWriter out) {
 		out.format("<h1><img src=\"/cover.png\"/><img src=\"/red.png\"/><img src=\"/yellow.png\"/><img src=\"/green.png\"/> &nbsp; @ %s</h1>%n", Host.LOCAL_HOST);
+		out.println("<h2>Defined Functions</h2>");
+		String definedFunctions = asHtmlList(Clear.getDefinedFunctions());
+		out.println(definedFunctions);
+		out.println("<h2>Running Workflows</h2>");
 		@SuppressWarnings("unchecked")
 		String output = toHtml((List<Workflow>) Clear.run(Workflows.getMonitorWorkflow()).waitFor());
 		out.println(output);
+	}
+
+	private String asHtmlList(Map<Class<?>, Set<Function>> definedFunctions) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<ul>");
+		for (Class processorClass : definedFunctions.keySet()){
+			sb.append("<li>").append(processorClass.getName());
+			sb.append("<ul>");
+			for (Function f : definedFunctions.get(processorClass)){
+				sb.append("<li>").append(f.getOperation()).append("(").append(f.getRuntimeArgumentType()).append(")").append("</li>");
+			}
+			sb.append("</ul>");
+			sb.append("</li>");
+		}
+		return sb.append("</ul>").toString();
 	}
 
 	private synchronized String toHtml(List<Workflow> workflows) {

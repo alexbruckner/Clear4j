@@ -108,6 +108,7 @@ NY/A
 
 TODO
 ====
+* monitor webserver to show available functions.
 * exception test cases for missing method declarations with proper errors saying which ones are missing.
 * move test functions into test
 * each processor queue should handle messages specific to the processor rather than having a deal with workflow schema as currently done in WorkflowProcessor.

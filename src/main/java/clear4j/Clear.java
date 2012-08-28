@@ -246,6 +246,10 @@ public final class Clear {
 
 	}
 
+	public static Map<Class<?>, Set<Function>> getDefinedFunctions() {
+		return DEFINED_FUNCTIONS;
+	}
+
 	public static void main(String[] args) {
 		new Thread(new Runnable() {
 			public void run() {
