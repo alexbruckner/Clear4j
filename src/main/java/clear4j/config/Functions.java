@@ -16,6 +16,10 @@ public class Functions {
 		return new Function(PrintProcessor.class, "println", Object.class);
 	}
 
+	public static Function println2(Param... params){ //TODO test, remove!
+		return new Function(PrintProcessor.class, "println", Object.class, params);
+	}
+
     /*
      * SPECIALS
      */

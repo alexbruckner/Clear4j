@@ -12,6 +12,7 @@ import clear4j.web.img.Images;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -130,7 +131,7 @@ public class WebServer {
 			sb.append("<li>").append(processorClass.getName());
 			sb.append("<ul>");
 			for (Function f : definedFunctions.get(processorClass)){
-				sb.append("<li>").append(f.getOperation()).append("(").append(f.getRuntimeArgumentType()).append(")").append("</li>");
+				sb.append("<li>").append(f.getOperation()).append("(").append(f.getRuntimeArgumentType()).append(", ").append(Arrays.toString(f.getParams())).append(")").append("</li>");
 			}
 			sb.append("</ul>");
 			sb.append("</li>");
