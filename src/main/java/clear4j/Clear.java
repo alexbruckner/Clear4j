@@ -16,7 +16,6 @@ import clear4j.web.WebServer;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -103,11 +102,7 @@ public final class Clear {
 		for (Method method : loaded.getDeclaredMethods()) {
 			if (Function.class == method.getReturnType()) {
 
-				System.out.println(Arrays.toString(method.getParameterTypes()));
-
-				Function function;
-
-				function = (Function) method.invoke(null);
+				Function function = (Function) method.invoke(null);
 				if (function.getHost().isLocal()) {  // only setup processors for local functions
 					addToDefinedFunctions(function);
 				}
