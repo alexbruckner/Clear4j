@@ -16,8 +16,8 @@ public class ReflectionUtilsTest {
 
 	@Test
 	public void testMethodInvoking() {     //TODO assert statements!
-		ReflectionUtils.invoke(new Instruction<String>(TestFunctions.printNewLineOnly(), null)); //TODO remove need for null
-		ReflectionUtils.invoke(new Instruction<String>(Functions.println(), "test"));
+		Assert.assertNull(ReflectionUtils.invoke(new Instruction<String>(TestFunctions.printNewLineOnly())));
+		Assert.assertEquals("test", ReflectionUtils.invoke(new Instruction<String>(Functions.println(), "test")));
 	}
 
 }
