@@ -2,7 +2,6 @@ package clear4j;
 
 
 import clear4j.beans.Workflow;
-import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
 import clear4j.config.TestWorkflows;
 import clear4j.config.Workflows;
@@ -20,7 +19,7 @@ public class Clear4jIntegrationTest extends Clear4jTest {
 
 	@Override
 	protected Workflow getWorkflow(String path) {
-		return new Workflow(path, Functions.loadText(), TestFunctions.remotePrintln());
+		return new Workflow(path, TestFunctions.loadText(), TestFunctions.remotePrintln());
 	}
 
 	@Test

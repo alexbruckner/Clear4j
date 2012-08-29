@@ -59,7 +59,17 @@
                             <name>clear4j.monitor.port</name>
                             <value>7778</value>
                         </systemProperty>
+                        <!-- include the test function definitions-->
+                        <systemProperty>
+                            <name>clear4j.config.class</name>
+                            <value>clear4j.config.TestFunctions</value>
+                        </systemProperty>
                     </systemProperties>
+                    <!-- include the test processor classes-->
+                    <webAppConfig>
+                        <contextPath>/${project.name}</contextPath>
+                        <extraClasspath>${project.build.testOutputDirectory}</extraClasspath>
+                    </webAppConfig>
                 </configuration>
                 <executions>
                     <execution>

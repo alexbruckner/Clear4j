@@ -1,7 +1,6 @@
 package clear4j;
 
 import clear4j.beans.Workflow;
-import clear4j.config.Functions;
 import clear4j.config.TestFunctions;
 import clear4j.config.Workflows;
 import clear4j.processors.FileUtils;
@@ -30,7 +29,7 @@ public class Clear4jTest {
 	}
 
 	protected Workflow getWorkflow(String path) {
-		return new Workflow(path, Functions.loadText(), Functions.println());
+		return new Workflow(path, TestFunctions.loadText(), TestFunctions.println());
 	}
 
 
@@ -51,7 +50,7 @@ public class Clear4jTest {
 
 	@Test
 	public void testPrintlnNull() {
-		Assert.assertNull(Clear.run(new Workflow(Functions.println())).waitFor());
+		Assert.assertNull(Clear.run(new Workflow(TestFunctions.println())).waitFor());
 	}
 
 	@Test
@@ -78,10 +77,10 @@ public class Clear4jTest {
 	public void testPrintProcessor() {    //TODO add assert statements
 
 		//println without initial value (ie calls void println() method)
-		Clear.run(new Workflow(Functions.println())).waitFor();
+		Clear.run(new Workflow(TestFunctions.println())).waitFor();
 
 		//println without initial value (ie calls Object println(Object value) method) //TODO remove need to set function array
-		Clear.run(new Workflow("piped value test", Functions.println())).waitFor();
+		Clear.run(new Workflow("piped value test", TestFunctions.println())).waitFor();
 
 	}
 
