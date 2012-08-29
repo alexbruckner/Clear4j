@@ -5,7 +5,6 @@ import clear4j.processor.instruction.Instruction;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public final class ReflectionUtils {
 
@@ -21,17 +20,18 @@ public final class ReflectionUtils {
 		String operation = function.getOperation();
 		Class<?> operationType = function.getRuntimeArgumentType();
 
-		Class<?>[] parameterTypes;
+		Method method;
+		try {
+			if (operationType == null) {
+				method = processorClass.getDeclaredMethod(operation);
+			} else {
+				method = processorClass.getDeclaredMethod(operation, operationType);
+			}
 
-		if (operationType == null) {
-			parameterTypes = null;
-		} else {
-			parameterTypes = new Class<?>[]{operationType};
+		} catch (NoSuchMethodException e) {
+			String msg = String.format("--> tried to get method (%s, %s, %s)%n", processorClass, operation, operationType);
+			throw new RuntimeException(msg, e); //TODO
 		}
-
-		Method method = getDeclaredMethod(processorClass, operation, parameterTypes);
-
-		System.out.format("isMethodDefined(%s, %s, %s)?: %s %n", processorClass, operation, Arrays.toString(parameterTypes), method != null);
 
 		return method;
 	}
@@ -44,22 +44,15 @@ public final class ReflectionUtils {
 		try {
 			Object processorObject = processorClass.getConstructor().newInstance();
 			if (value != null) {
-				Object[] args = new Object[]{value};
-				return (Serializable) method.invoke(processorObject, args);
+				return (Serializable) method.invoke(processorObject, value);
 			} else {
 				return (Serializable) method.invoke(processorObject);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			String msg = String.format("--> tried to invoke method (%s, %s, %s)%n", processorClass, method.getName(), value);
+			throw new RuntimeException(msg, e);
 		}
 	}
 
-	private static Method getDeclaredMethod(Class<?> processorClass, String methodName, Class<?>... parameterTypes) {
-		try {
-			return processorClass.getDeclaredMethod(methodName, parameterTypes);
-		} catch (NoSuchMethodException e) {
-			return null;
-		}
-	}
 
 }
