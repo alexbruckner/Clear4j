@@ -48,4 +48,30 @@ public class Function implements Serializable {
 	public String toString() {
 		return String.format("Function{processorClass=%s, host=%s, operation='%s'}", processorClass, host, operation);
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Function)) return false;
+
+		Function function = (Function) o;
+
+		if (!host.equals(function.host)) return false;
+		if (!operation.equals(function.operation)) return false;
+		if (!processorClass.equals(function.processorClass)) return false;
+
+		if (runtimeArgumentType != null && !runtimeArgumentType.equals(function.runtimeArgumentType)) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = processorClass.hashCode();
+		result = 31 * result + host.hashCode();
+		result = 31 * result + operation.hashCode();
+		if (runtimeArgumentType != null)
+			result = 31 * result + runtimeArgumentType.hashCode();
+		return result;
+	}
 }
