@@ -29,8 +29,8 @@ public final class ReflectionUtils {
 			}
 
 		} catch (NoSuchMethodException e) {
-			String msg = String.format("--> tried to get method (%s, %s, %s)%n", processorClass, operation, operationType);
-			throw new RuntimeException(msg, e); //TODO
+			String msg = String.format("Missing method in %s:  %s(%s)%n", processorClass, operation, operationType == null ? "" : operationType);
+			throw new RuntimeException(msg, e);
 		}
 
 		return method;
